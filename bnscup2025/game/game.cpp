@@ -2,11 +2,13 @@
 #include "game.hpp"
 
 #include "terrain/visibility.hpp"
+#include "terrain/map_generator.hpp"
 
 namespace bnscup2025::game {
 
 Game::Game() :
-  terrain_(terrain::NodeGrid(100, 100)) {
+  terrain_(terrain::MapGenerator::Generate(Size(100, 100), 2, 0.5, 10.0)),
+  visibility_mask_texture_(Scene::Size()) {
 }
 
 void Game::Update() {
@@ -31,16 +33,7 @@ void Game::Update() {
     scale_ /= Pow(1.5, Scene::DeltaTime());
   }
 
-  Size node_size = terrain_.GetNodeGridSize();
-
-  for (int k = 0; k < 20; ++k) {
-    int x = Random(1, node_size.x - 2);
-    int y = Random(1, node_size.y - 2);
-    terrain_.ModifyNode(Point { x, y }, Random(0.0, 1.0));
-  }
-
   terrain_.Update();
-
 
 }
 
@@ -48,22 +41,34 @@ void Game::Render() {
 
   terrain_.Render(center_, scale_);
 
-  Vec2 offset = -(center_ - Scene::Size() / (2.0 * scale_)) * scale_;
-  const Transformer2D t1 { Mat3x2::Translate(offset) };
-  const Transformer2D t2 { Mat3x2::Scale(scale_) };
+
 
   const auto lines = terrain_.CreateVisibleWallLines(center_, scale_);
-  Print << lines.size();
+  Print << U"スクリーン上に描画されうる線分の数：" << lines.size();
 
   terrain::Visibility visibility(terrain_);
   Vec2 p1 = Cursor::PosF();
   Vec2 p2 = Scene::CenterF();
   const auto visible = visibility.CalcVisibilityTriangles(center_, scale_, center_, (p1 - p2).normalized(), 100.0_deg, 100);
-  Print << visible.size();
+  Print << U"可視範囲の三角形の数：" << visible.size();
 
-
-  for (const auto& tri : visible) {
-    tri.draw(Palette::Yellow.withAlpha(128));
+  {
+    const ScopedRenderTarget2D target { visibility_mask_texture_.clear(ColorF{ 0.0, 0.0, 0.0, 0.0 }) };
+    BlendState blendState = BlendState::Default2D;
+    blendState.srcAlpha = Blend::SrcAlpha;
+    blendState.dstAlpha = Blend::DestAlpha;
+    blendState.opAlpha = BlendOp::Max;
+    const auto t = terrain_.CreateRenderTransformer(center_, scale_);
+    for (const auto& tri : visible) {
+      tri.draw(ColorF { 1.0, 1.0, 1.0, 1.0 });
+    }
+    Circle { center_, 1.0 }.draw(ColorF { 1.0, 1.0, 1.0, 1.0 });
+  }
+  Graphics2D::Flush();
+  visibility_mask_texture_.resolve();
+  {
+    const ScopedRenderStates2D blend { BlendState::Multiplicative };
+    visibility_mask_texture_.draw();
   }
 }
 

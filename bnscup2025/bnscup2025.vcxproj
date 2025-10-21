@@ -121,6 +121,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="terrain\map_generator.cpp" />
     <ClCompile Include="terrain\marching_squares.cpp" />
     <ClCompile Include="terrain\terrain.cpp" />
     <ClCompile Include="terrain\visibility.cpp" />
@@ -333,6 +334,7 @@
     <ClInclude Include="game\game.hpp" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="terrain\grid_points.hpp" />
+    <ClInclude Include="terrain\map_generator.hpp" />
     <ClInclude Include="terrain\map_grid.hpp" />
     <ClInclude Include="terrain\marching_squares.hpp" />
     <ClInclude Include="terrain\terrain.hpp" />
