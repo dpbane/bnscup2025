@@ -160,93 +160,93 @@ std::pair<Array<Array<Vec2>>, Array<Polygon>> MarchingSquares::CalcEdgeLinesAndP
       break;
 
     case Case::Full:
-      polygons.emplace_back(Array<Vec2>{ p_tl, p_tr, p_br, p_bl });
+      polygons.emplace_back(Array<Vec2>{ p_tl, p_tr, p_br, p_bl }.uniqued_consecutive());
       break;
 
     case Case::TopLeft:
       edge_lines.push_back({ p_top, p_left });
-      polygons.emplace_back(Array<Vec2>{ p_tl, p_top, p_left });
+      polygons.emplace_back(Array<Vec2>{ p_tl, p_top, p_left }.uniqued_consecutive());
       break;
 
     case Case::TopRight:
       edge_lines.push_back({ p_right, p_top });
-      polygons.emplace_back(Array<Vec2>{ p_tr, p_right, p_top});
+      polygons.emplace_back(Array<Vec2>{ p_tr, p_right, p_top}.uniqued_consecutive());
       break;
 
     case Case::BottomLeft:
       edge_lines.push_back({ p_left, p_bottom });
-      polygons.emplace_back(Array<Vec2>{ p_bl, p_left, p_bottom});
+      polygons.emplace_back(Array<Vec2>{ p_bl, p_left, p_bottom}.uniqued_consecutive());
       break;
 
     case Case::BottomRight:
       edge_lines.push_back({ p_bottom, p_right });
-      polygons.emplace_back(Array<Vec2>{ p_br, p_bottom, p_right});
+      polygons.emplace_back(Array<Vec2>{ p_br, p_bottom, p_right}.uniqued_consecutive());
       break;
 
     case Case::Top:
       edge_lines.push_back({ p_right, p_left });
-      polygons.emplace_back(Array<Vec2>{ p_tl, p_tr, p_right, p_left});
+      polygons.emplace_back(Array<Vec2>{ p_tl, p_tr, p_right, p_left}.uniqued_consecutive());
       break;
 
     case Case::Bottom:
       edge_lines.push_back({ p_left, p_right });
-      polygons.emplace_back(Array<Vec2>{ p_bl, p_left, p_right, p_br});
+      polygons.emplace_back(Array<Vec2>{ p_bl, p_left, p_right, p_br}.uniqued_consecutive());
       break;
 
     case Case::Left:
       edge_lines.push_back({ p_top, p_bottom });
-      polygons.emplace_back(Array<Vec2>{ p_tl, p_top, p_bottom, p_bl});
+      polygons.emplace_back(Array<Vec2>{ p_tl, p_top, p_bottom, p_bl}.uniqued_consecutive());
       break;
 
     case Case::Right:
       edge_lines.push_back({ p_bottom, p_top });
-      polygons.emplace_back(Array<Vec2>{ p_tr, p_br, p_bottom, p_top});
+      polygons.emplace_back(Array<Vec2>{ p_tr, p_br, p_bottom, p_top}.uniqued_consecutive());
       break;
 
     case Case::InvertedTopLeft:
       edge_lines.push_back({ p_left, p_top });
-      polygons.emplace_back(Array<Vec2>{ p_left, p_top, p_tr, p_br, p_bl});
+      polygons.emplace_back(Array<Vec2>{ p_left, p_top, p_tr, p_br, p_bl}.uniqued_consecutive());
       break;
 
     case Case::InvertedTopRight:
       edge_lines.push_back({ p_top, p_right });
-      polygons.emplace_back(Array<Vec2>{ p_tl, p_top, p_right, p_br, p_bl});
+      polygons.emplace_back(Array<Vec2>{ p_tl, p_top, p_right, p_br, p_bl}.uniqued_consecutive());
       break;
 
     case Case::InvertedBottomLeft:
       edge_lines.push_back({ p_bottom, p_left });
-      polygons.emplace_back(Array<Vec2>{ p_tl, p_tr, p_br, p_bottom, p_left});
+      polygons.emplace_back(Array<Vec2>{ p_tl, p_tr, p_br, p_bottom, p_left}.uniqued_consecutive());
       break;
 
     case Case::InvertedBottomRight:
       edge_lines.push_back({ p_right, p_bottom });
-      polygons.emplace_back(Array<Vec2>{ p_tl, p_tr, p_right, p_bottom, p_bl});
+      polygons.emplace_back(Array<Vec2>{ p_tl, p_tr, p_right, p_bottom, p_bl}.uniqued_consecutive());
       break;
 
     case Case::SaddleRisingConnected:
       edge_lines.push_back({ p_left, p_center_tl, p_top });
       edge_lines.push_back({ p_right, p_center_br, p_bottom });
-      polygons.emplace_back(Array<Vec2>{ p_left, p_center_tl, p_top, p_tr, p_right, p_center_br, p_bottom, p_bl });
+      polygons.emplace_back(Array<Vec2>{ p_left, p_center_tl, p_top, p_tr, p_right, p_center_br, p_bottom, p_bl }.uniqued_consecutive());
       break;
 
     case Case::SaddleRisingSeparated:
       edge_lines.push_back({ p_left, p_center_bl, p_bottom });
       edge_lines.push_back({ p_right, p_center_tr, p_top });
-      polygons.emplace_back(Array<Vec2>{ p_left, p_center_bl, p_bottom, p_bl });
-      polygons.emplace_back(Array<Vec2>{ p_right, p_center_tr, p_top, p_tr });
+      polygons.emplace_back(Array<Vec2>{ p_left, p_center_bl, p_bottom, p_bl }.uniqued_consecutive());
+      polygons.emplace_back(Array<Vec2>{ p_right, p_center_tr, p_top, p_tr }.uniqued_consecutive());
       break;
 
     case Case::SaddleFallingConnected:
       edge_lines.push_back({ p_top, p_center_tr, p_right });
       edge_lines.push_back({ p_bottom, p_center_bl, p_left });
-      polygons.emplace_back(Array<Vec2>{ p_top, p_center_tr, p_right, p_br, p_bottom, p_center_bl, p_left, p_tl });
+      polygons.emplace_back(Array<Vec2>{ p_top, p_center_tr, p_right, p_br, p_bottom, p_center_bl, p_left, p_tl }.uniqued_consecutive());
       break;
 
     case Case::SaddleFallingSeparated:
       edge_lines.push_back({ p_top, p_center_tl, p_left });
       edge_lines.push_back({ p_bottom, p_center_br, p_right });
-      polygons.emplace_back(Array<Vec2>{ p_top, p_center_tl, p_left, p_tl });
-      polygons.emplace_back(Array<Vec2>{ p_bottom, p_center_br, p_right, p_br });
+      polygons.emplace_back(Array<Vec2>{ p_top, p_center_tl, p_left, p_tl }.uniqued_consecutive());
+      polygons.emplace_back(Array<Vec2>{ p_bottom, p_center_br, p_right, p_br }.uniqued_consecutive());
       break;
 
     default:

@@ -115,8 +115,12 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="camera\camera.cpp" />
     <ClCompile Include="game\game.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="player\player.cpp" />
+    <ClCompile Include="render\blend_mode.cpp" />
+    <ClCompile Include="render\lightbloom.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
@@ -330,8 +334,12 @@
     <Xml Include="App\example\xml\test.xml" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="camera\camera.hpp" />
     <ClInclude Include="fps_addon.hpp" />
     <ClInclude Include="game\game.hpp" />
+    <ClInclude Include="player\player.hpp" />
+    <ClInclude Include="render\blend_mode.hpp" />
+    <ClInclude Include="render\lightbloom.hpp" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="terrain\grid_points.hpp" />
     <ClInclude Include="terrain\map_generator.hpp" />

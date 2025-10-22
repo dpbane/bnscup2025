@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "terrain/terrain.hpp"
+#include "camera/camera.hpp"
 
 namespace bnscup2025::game {
 
@@ -13,9 +14,7 @@ public:
 
 private:
   terrain::Terrain terrain_;
-
-  SizeF scale_ { 50.0, 50.0 };
-  Vec2 center_ { 0.0, 0.0 };
+  camera::Camera camera_;
 
   MSRenderTexture visibility_mask_texture_;
 

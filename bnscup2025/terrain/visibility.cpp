@@ -7,7 +7,7 @@ Visibility::Visibility(const Terrain& terrain) :
   terrain_(terrain) {
 }
 
-Array<Triangle> Visibility::CalcVisibilityTriangles(const Vec2& center, const SizeF& cell_size, const Vec2& eye_position, const Vec2& direction, double fov, double length) const {
+Array<Triangle> Visibility::CalcVisibilityTriangles(const camera::Camera& cam, const Vec2& eye_position, const Vec2& direction, double fov, double length) const {
   // 交点情報の定義
   struct IntersectInfo {
     double angle { 0 };
@@ -29,7 +29,7 @@ Array<Triangle> Visibility::CalcVisibilityTriangles(const Vec2& center, const Si
   };
 
   // Step 1: 壁となる線分群のうち、2つの端点が視野内にないものを除外する
-  auto lines = terrain_.CreateVisibleWallLines(center, cell_size);  // 画面内に存在する線分
+  auto lines = terrain_.CreateVisibleWallLines(cam);  // 画面内に存在する線分
   for (auto itr = lines.begin(); itr != lines.end(); ) {
     const double angle1 = AngleFromDirection(itr->begin);
     const double angle2 = AngleFromDirection(itr->end);

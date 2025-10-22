@@ -3,30 +3,30 @@
 
 #include <ranges>
 
+#include "render/blend_mode.hpp"
+#include "render/lightbloom.hpp"
+
 namespace bnscup2025::terrain {
 
 constexpr int kBlurRate = 4;
 
 Terrain::Terrain(NodeGrid node_grid) :
   node_grid_(node_grid),
-  marching_squares_(node_grid_, 0.5),
-  temp_texture_(Scene::Size()),
-  blur_texture_(Scene::Size() / kBlurRate),
-  blur_internal_texture_(Scene::Size() / kBlurRate) {
+  marching_squares_(node_grid_, 0.5) {
 }
 
 void Terrain::Update() {
   marching_squares_.Update(node_grid_);
 }
 
-void Terrain::Render(const Vec2& center, const SizeF& cell_size) const {
+void Terrain::Render(const camera::Camera& cam) const {
 
   // 描画範囲セルの取得
-  Array<Point> visible_cells = CreateVisibleCells(center, cell_size);
+  Array<Point> visible_cells = CreateVisibleCells(cam);
 
   // 各種描画
-  RenderGround(visible_cells, center, cell_size);
-  RenderGroundEdges(visible_cells, center, cell_size);
+  RenderGround(visible_cells, cam);
+  RenderGroundEdges(visible_cells, cam);
   //RenderWalls(visible_cells, wall_height);
   //RenderWallTopEdges(visible_cells, wall_height);
 
@@ -48,8 +48,8 @@ Size Terrain::GetCellGridSize() const {
   return marching_squares_.GetPolygons().GetSize();
 }
 
-Array<Line> Terrain::CreateVisibleWallLines(const Vec2& center, const SizeF& cell_size) const {
-  Array<Point> visible_cells = CreateVisibleCells(center, cell_size);
+Array<Line> Terrain::CreateVisibleWallLines(const camera::Camera& cam) const {
+  Array<Point> visible_cells = CreateVisibleCells(cam);
   const auto& lines = marching_squares_.GetEdgeLines();
 
   Array<Line> ret;
@@ -64,18 +64,11 @@ Array<Line> Terrain::CreateVisibleWallLines(const Vec2& center, const SizeF& cel
   return ret;
 }
 
-Transformer2D Terrain::CreateRenderTransformer(const Vec2& center, const SizeF& cell_size) const {
-  Vec2 offset = -(center - Scene::Size() / (2.0 * cell_size)) * cell_size;
-  Transformer2D t { Mat3x2::Scale(cell_size).translated(offset) };
-  return t;
-}
-
-void Terrain::RenderGround(const Array<Point>& visible_cells, const Vec2& center, const SizeF& cell_size) const {
+void Terrain::RenderGround(const Array<Point>& visible_cells, const camera::Camera& cam) const {
 
   {
-    const ScopedRenderTarget2D target { temp_texture_.clear(ColorF{ 0.0, 0.0, 0.0, 0.0 }) };
-    const ScopedRenderStates2D blend { MakeBlendState() };
-    const auto t = CreateRenderTransformer(center, cell_size);
+    const ScopedRenderStates2D blend { render::BlendMode::AlphaMax() };
+    const auto t = cam.CreateRenderTransformer();
 
     const auto& polygons = marching_squares_.GetPolygons();
     for (const auto& pos : visible_cells) {
@@ -85,46 +78,37 @@ void Terrain::RenderGround(const Array<Point>& visible_cells, const Vec2& center
       }
     }
   }
-
-  Graphics2D::Flush();
-  temp_texture_.resolve();
-  temp_texture_.draw();
 }
 
-void Terrain::RenderGroundEdges(const Array<Point>& visible_cells, const Vec2& center, const SizeF& cell_size) const {
+void Terrain::RenderGroundEdges(const Array<Point>& visible_cells, const camera::Camera& cam) const {
+  const auto& lightbloom = render::LightBloom::GetInstance();
+
   // 通常の線を描画
   {
-    const ScopedRenderTarget2D target { temp_texture_.clear(ColorF{ 0.0, 0.0, 0.0, 0.0 }) };
-    const ScopedRenderStates2D blend { MakeBlendState() };
-    const auto t = CreateRenderTransformer(center, cell_size);
+    const auto target = lightbloom.CreateRenderTarget();
+    const auto transform = cam.CreateRenderTransformer();
+    const auto blend { render::BlendMode::AlphaMax() };
 
     const auto& lines = marching_squares_.GetEdgeLines();
     for (const auto& pos : visible_cells) {
       const auto edge_lines = lines.Get(pos);
       for (const auto& vec_array : edge_lines) {
         for (size_t i = 0; i < vec_array.size() - 1; ++i) {
-          Line { vec_array[i], vec_array[i + 1] }.draw(LineStyle::RoundCap, 0.1, ColorF { 0.2, 0.2, 1.0 });
+          Line { vec_array[i], vec_array[i + 1] }.draw(LineStyle::RoundCap, 0.2, ColorF { 0.2, 0.2, 1.0 });
         }
       }
     }
   }
 
   // ブラー処理
-  Graphics2D::Flush();
-  temp_texture_.resolve();
-  Shader::Downsample(temp_texture_, blur_texture_);
-  Shader::GaussianBlur(blur_texture_, blur_internal_texture_, blur_texture_);
-
-  // 描画
-  {
-    const ScopedRenderStates2D blend { BlendState::Additive };
-    temp_texture_.draw();
-    blur_texture_.resized(Scene::Size()).draw();
-  }
+  lightbloom.Apply(1.0, 1.0, 1.0);
 }
 
 
-Array<Point> Terrain::CreateVisibleCells(Vec2 center, SizeF cell_size) const {
+Array<Point> Terrain::CreateVisibleCells(const camera::Camera& cam) const {
+  const Vec2& center = cam.GetCenter();
+  const SizeF& cell_size = cam.GetCellSize();
+
   int begin_index_x = static_cast<int>(std::floor(center.x - Scene::Width() / (2.0 * cell_size.x)));
   int begin_index_y = static_cast<int>(std::floor(center.y - Scene::Height() / (2.0 * cell_size.y)));
   int index_count_x = static_cast<int>(std::ceil(Scene::Width() / cell_size.x)) + 1;
@@ -141,15 +125,5 @@ Array<Point> Terrain::CreateVisibleCells(Vec2 center, SizeF cell_size) const {
   return visible_cells;
 }
 
-BlendState Terrain::MakeBlendState() const {
-  BlendState blendState = BlendState::Default2D;
-  blendState.srcAlpha = Blend::SrcAlpha;
-  blendState.dstAlpha = Blend::DestAlpha;
-  blendState.opAlpha = BlendOp::Max;
-  return blendState;
 }
 
-
-
-
-}

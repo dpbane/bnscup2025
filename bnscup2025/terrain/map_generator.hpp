@@ -10,7 +10,7 @@ class MapGenerator {
   MapGenerator& operator=(const MapGenerator&) = delete;
 
 public:
-  static NodeGrid Generate(const Size& size, int octaves, double persistence, double scale);
+  static NodeGrid Generate(const Size& size, uint64 seed, int octaves, double persistence, double scale);
 
 
 };
