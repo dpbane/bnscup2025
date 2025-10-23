@@ -17,16 +17,6 @@ public:
   /// @param cam カメラ。
   void Render(const camera::Camera& cam) const;
 
-  /// @brief 指定した位置のノードの値を取得する。
-  /// @param pos ノードの位置
-  /// @return ノードの値
-  double GetNodeValue(Point pos) const;
-
-  /// @brief 指定した位置のノードの値を変更する。
-  /// @param pos ノードの位置
-  /// @param value 新しいノードの値
-  void ModifyNode(Point pos, double value);
-
   /// @brief ノードグリッドのサイズを取得する。
   /// @return ノードグリッドのサイズ
   Size GetNodeGridSize() const;
@@ -35,10 +25,31 @@ public:
   /// @return セルグリッドのサイズ
   Size GetCellGridSize() const;
 
+  /// @brief 指定した位置に対応するケースを取得する。
+  /// @param pos 取得する位置。
+  /// @return 位置に対応するケース
+  MarchingSquares::Case GetCase(const Point& pos) const;
+
   /// @brief 画面に描画される範囲の壁を表す線分の配列を取得する。
   /// @param cam カメラ。
   /// @return 線分の配列。
   Array<Line> CreateVisibleWallLines(const camera::Camera& cam) const;
+
+  /// @brief プレイヤーや敵が壁にめり込まないための押し戻し量を計算する。
+  /// @param circle 押し戻しを適用する円。
+  /// @return 押し戻しを適用した後の中心位置。
+  Vec2 PushbackService(const Circle& circle) const;
+
+  /// @brief ある地点から直線を伸ばしたとき、最初に壁に衝突する位置を計算する。
+  /// @return 衝突位置。衝突しない場合は無効値を返す。
+  Optional<Vec2> CalcLineCollisionPoint(const Vec2& from, const Vec2& direction, double max_distance) const;
+
+  /// @brief 指定した位置を掘削する。
+  /// @param center 掘削中心位置。
+  /// @param radius 掘削半径。
+  /// @param center_might 中心の掘削量。
+  /// @param end_might 端の掘削量。間は線形補完される。
+  void DigAt(const Vec2& center, double radius, double center_might, double end_might);
 
 private:
   /// @brief 地面を描画する。

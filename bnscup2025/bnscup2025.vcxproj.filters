@@ -171,6 +171,9 @@
     <ClCompile Include="render\blend_mode.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="input\input.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="App\icon.ico">
@@ -870,6 +873,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="render\blend_mode.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="input\input.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

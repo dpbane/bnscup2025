@@ -21,7 +21,7 @@ public:
   Array<Triangle> CalcVisibilityTriangles(const camera::Camera& cam, const Vec2& eye_position, const Vec2& direction, double fov, double length) const;
 
 private:
-  const Terrain terrain_;
+  const Terrain& terrain_;
 
 };
 

@@ -5,7 +5,7 @@
 namespace bnscup2025::terrain {
 
 class MarchingSquares {
-private:
+public:
   enum class Case : uint8 {
     None,
     Full,
@@ -36,6 +36,10 @@ public:
   /// @brief 頂点グリッドの変更に応じてセルを更新する。
   /// @param node_grid 最新の頂点グリッド。
   void Update(const NodeGrid& node_grid);
+
+  /// @brief 各セルに対応するケースのグリッドを取得する。
+  /// @return ケースのグリッド。
+  const GridPoints<Case>& GetCaseGrid() const { return case_grid_; }
 
   /// @brief 各セルに対応するエッジラインのグリッドを取得する。
   /// @return エッジラインのグリッド。

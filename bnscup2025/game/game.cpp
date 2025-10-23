@@ -1,75 +1,60 @@
 ﻿#include "stdafx.h"
 #include "game.hpp"
 
+#include "render/blend_mode.hpp"
+
 #include "terrain/visibility.hpp"
 #include "terrain/map_generator.hpp"
+
+#include "input/input.hpp"
 
 namespace bnscup2025::game {
 
 Game::Game() :
-  terrain_(terrain::MapGenerator::Generate(Size(100, 100), RandomUint64(), 2, 0.5, 10.0)),
-  camera_(Vec2 { 0.0, 0.0 }, SizeF { 50.0, 50.0 }),
   visibility_mask_texture_(Scene::Size()) {
+
+  const auto map_params = terrain::MapGenerator::Generate(Size(50, 50), RandomUint64(), 2, 0.5, 10.0);
+  terrain_.emplace(std::move(map_params.terrain));
+  visibility_.emplace(*terrain_);
+  camera_.emplace(Vec2 { 0.0, 0.0 }, SizeF { 50.0, 50.0 });
+
+  player_.emplace(*camera_, *terrain_, map_params.player_position.movedBy(0.5, 0.5));
+
 }
 
 void Game::Update() {
 
-  double speed = 5.0;
-  Vec2 center = camera_.GetCenter();
-  SizeF scale = camera_.GetCellSize();
+  const auto input_data = input::Input::GetInstance().GetData();
 
-  if (KeyA.pressed()) {
-    center.x -= speed * Scene::DeltaTime();
-  }
-  if (KeyD.pressed()) {
-    center.x += speed * Scene::DeltaTime();
-  }
-  if (KeyW.pressed()) {
-    center.y -= speed * Scene::DeltaTime();
-  }
-  if (KeyS.pressed()) {
-    center.y += speed * Scene::DeltaTime();
-  }
-  if (KeyZ.pressed()) {
-    scale *= Pow(1.5, Scene::DeltaTime());
-  }
-  if (KeyX.pressed()) {
-    scale /= Pow(1.5, Scene::DeltaTime());
-  }
+  player_->Update();
 
-  camera_.SetCenter(center);
-  camera_.SetCellSize(scale);
-
-  terrain_.Update();
+  camera_->SetCenter(player_->GetPosition());
+  terrain_->Update();
+  visibility_triangles_ = visibility_->CalcVisibilityTriangles(*camera_, player_->GetPosition(), player_->GetDirectionFace().normalized(), 120.0_deg, 100);
 
 }
 
 void Game::Render() {
 
-  terrain_.Render(camera_);
+  terrain_->Render(*camera_);
+
+  player_->Render();
 
 
-
-  const auto lines = terrain_.CreateVisibleWallLines(camera_);
+  const auto lines = terrain_->CreateVisibleWallLines(*camera_);
   Print << U"スクリーン上に描画されうる線分の数：" << lines.size();
+  Print << U"可視範囲の三角形の数：" << visibility_triangles_.size();
 
-  terrain::Visibility visibility(terrain_);
-  Vec2 p1 = Cursor::PosF();
-  Vec2 p2 = Scene::CenterF();
-  const auto visible = visibility.CalcVisibilityTriangles(camera_, camera_.GetCenter(), (p1 - p2).normalized(), 100.0_deg, 100);
-  Print << U"可視範囲の三角形の数：" << visible.size();
+
 
   {
     const ScopedRenderTarget2D target { visibility_mask_texture_.clear(ColorF{ 0.0, 0.0, 0.0, 0.0 }) };
-    BlendState blendState = BlendState::Default2D;
-    blendState.srcAlpha = Blend::SrcAlpha;
-    blendState.dstAlpha = Blend::DestAlpha;
-    blendState.opAlpha = BlendOp::Max;
-    const auto t = camera_.CreateRenderTransformer();
-    for (const auto& tri : visible) {
+    const auto blend = render::BlendMode::AlphaMax();
+    const auto t = camera_->CreateRenderTransformer();
+    for (const auto& tri : visibility_triangles_) {
       tri.draw(ColorF { 1.0, 1.0, 1.0, 1.0 });
     }
-    Circle { camera_.GetCenter(), 1.0 }.draw(ColorF { 1.0, 1.0, 1.0, 1.0 });
+    Circle { player_->GetPosition(), 1.0 }.draw(ColorF { 1.0, 1.0, 1.0, 1.0 });
   }
   Graphics2D::Flush();
   visibility_mask_texture_.resolve();
