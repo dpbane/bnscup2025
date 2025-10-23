@@ -5,6 +5,7 @@ namespace bnscup2025::input {
 struct InputData {
   Vec2 direction_face;
   Vec2 direction_move;
+  bool shift;
   bool dig;
   bool action;
 };

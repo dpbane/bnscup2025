@@ -13,7 +13,7 @@ namespace bnscup2025::game {
 Game::Game() :
   visibility_mask_texture_(Scene::Size()) {
 
-  const auto map_params = terrain::MapGenerator::Generate(Size(50, 50), RandomUint64(), 2, 0.5, 10.0);
+  auto map_params = terrain::MapGenerator::Generate(Size(50, 50), RandomUint64(), 2, 0.5, 10.0);
   terrain_.emplace(std::move(map_params.terrain));
   visibility_.emplace(*terrain_);
   camera_.emplace(Vec2 { 0.0, 0.0 }, SizeF { 50.0, 50.0 });
@@ -30,7 +30,7 @@ void Game::Update() {
 
   camera_->SetCenter(player_->GetPosition());
   terrain_->Update();
-  visibility_triangles_ = visibility_->CalcVisibilityTriangles(*camera_, player_->GetPosition(), player_->GetDirectionFace().normalized(), 120.0_deg, 100);
+  visibility_triangles_ = visibility_->CalcVisibilityTriangles(*camera_, player_->GetShiftedPosition(), player_->GetDirectionFace().normalized(), 120.0_deg, 100);
 
 }
 
@@ -54,7 +54,7 @@ void Game::Render() {
     for (const auto& tri : visibility_triangles_) {
       tri.draw(ColorF { 1.0, 1.0, 1.0, 1.0 });
     }
-    Circle { player_->GetPosition(), 1.0 }.draw(ColorF { 1.0, 1.0, 1.0, 1.0 });
+    Circle { player_->GetShiftedPosition(), 1.0 }.draw(ColorF { 1.0, 1.0, 1.0, 1.0 });
   }
   Graphics2D::Flush();
   visibility_mask_texture_.resolve();

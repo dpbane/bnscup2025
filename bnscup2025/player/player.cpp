@@ -16,13 +16,10 @@ Player::Player(const camera::Camera& camera, terrain::Terrain& terrain, Vec2 pos
 
 void Player::Update() {
   const auto input_data = input::Input::GetInstance().GetData();
-
-  const double speed = 5.0;
-  position_ += input_data.direction_move.normalized() * speed * Scene::DeltaTime();
-  position_ = terrain_.PushbackService(Circle { position_, 0.45 });
-
   direction_face_ = input_data.direction_face;
 
+  ProcessMove();
+  ProcessShift();
   ProcessDigging();
 }
 
@@ -64,6 +61,28 @@ void Player::Render() const {
 
 
 
+}
+
+void Player::ProcessMove() {
+  const auto input_data = input::Input::GetInstance().GetData();
+
+  const double speed = 5.0;
+  if (not input_data.shift) {
+    position_ += input_data.direction_move.normalized() * speed * Scene::DeltaTime();
+  }
+  position_ = terrain_.PushbackService(Circle { position_, 0.45 });
+}
+
+void Player::ProcessShift() {
+  const auto input_data = input::Input::GetInstance().GetData();
+
+  const double shift_speed = 20.0;
+  if (input_data.shift) {
+    shift_amount_ += input_data.direction_move.normalized() * shift_speed * Scene::DeltaTime();
+  }
+  const double alpha = Pow(0.3, Scene::DeltaTime() * 10);
+  shift_amount_ = shift_amount_ * alpha;
+  shift_amount_ = terrain_.PushbackService(Circle { GetShiftedPosition(), 0.45 }) - position_;
 }
 
 void Player::ProcessDigging() {

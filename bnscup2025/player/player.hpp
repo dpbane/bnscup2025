@@ -14,9 +14,12 @@ public:
 
 
   const Vec2& GetPosition() const { return position_; }
+  const Vec2 GetShiftedPosition() const { return position_ + shift_amount_; }
   const Vec2& GetDirectionFace() const { return direction_face_; }
 
 private:
+  void ProcessMove();
+  void ProcessShift();
   void ProcessDigging();
 
 private:
@@ -24,6 +27,7 @@ private:
   terrain::Terrain& terrain_;
 
   Vec2 position_;
+  Vec2 shift_amount_ { 0.0, 0.0 };
   Vec2 direction_face_ { 0.0, -1.0 };
 
   double dig_timer_ { 0.0 };

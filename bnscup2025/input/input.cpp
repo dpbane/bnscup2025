@@ -18,6 +18,7 @@ InputData Input::GetData() {
   if (KeyD.pressed()) ret.direction_move.x += 1.0;
   if (not ret.direction_move.isZero()) ret.direction_move = ret.direction_move.normalized();
 
+  ret.shift = KeyShift.pressed();
   ret.dig = MouseL.pressed();
   ret.action = MouseR.pressed();
 
