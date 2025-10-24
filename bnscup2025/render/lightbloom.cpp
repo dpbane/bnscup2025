@@ -13,7 +13,7 @@ LightBloom::LightBloom() :
 }
 
 ScopedRenderTarget2D LightBloom::CreateRenderTarget() const {
-  return ScopedRenderTarget2D(blur_x1_texture_.clear(ColorF { 0, 0, 0, 0.0 }));
+  return ScopedRenderTarget2D(blur_x1_texture_.clear(ColorF { 0, 0, 0, 0 }));
 }
 
 void LightBloom::Apply(double x1, double x4, double x8) const {
@@ -44,6 +44,8 @@ void LightBloom::Apply(double x1, double x4, double x8) const {
       blur_x8_texture_.resized(Scene::Size()).draw(ColorF { x8 });
     }
   }
+  Graphics2D::Flush();
+  blur_x1_texture_.resolve();
 }
 
 

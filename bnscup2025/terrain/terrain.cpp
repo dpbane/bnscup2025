@@ -249,7 +249,7 @@ void Terrain::RenderGroundEdges(const Array<Point>& visible_cells, const camera:
   }
 
   // ブラー処理
-  lightbloom.Apply(1.0, 2.0, 2.0);
+  lightbloom.Apply(1.0, 3.0, 3.0);
 }
 
 

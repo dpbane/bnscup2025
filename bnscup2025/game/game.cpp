@@ -18,7 +18,8 @@ Game::Game() :
   visibility_.emplace(*terrain_);
   camera_.emplace(Vec2 { 0.0, 0.0 }, SizeF { 50.0, 50.0 });
 
-  player_.emplace(*camera_, *terrain_, map_params.player_position.movedBy(0.5, 0.5));
+  player_.emplace(*camera_, *terrain_, effect_, map_params.player_position.movedBy(0.5, 0.5));
+  enemy_.emplace(*camera_, *terrain_, *player_, map_params.enemy_position.movedBy(0.5, 0.5));
 
 }
 
@@ -27,6 +28,7 @@ void Game::Update() {
   const auto input_data = input::Input::GetInstance().GetData();
 
   player_->Update();
+  enemy_->Update();
 
   camera_->SetCenter(player_->GetPosition());
   terrain_->Update();
@@ -39,13 +41,14 @@ void Game::Render() {
   terrain_->Render(*camera_);
 
   player_->Render();
+  enemy_->Render();
 
 
   const auto lines = terrain_->CreateVisibleWallLines(*camera_);
-  Print << U"スクリーン上に描画されうる線分の数：" << lines.size();
-  Print << U"可視範囲の三角形の数：" << visibility_triangles_.size();
+  //Print << U"スクリーン上に描画されうる線分の数：" << lines.size();
+  //Print << U"可視範囲の三角形の数：" << visibility_triangles_.size();
 
-
+  effect_.update();
 
   {
     const ScopedRenderTarget2D target { visibility_mask_texture_.clear(ColorF{ 0.0, 0.0, 0.0, 0.0 }) };

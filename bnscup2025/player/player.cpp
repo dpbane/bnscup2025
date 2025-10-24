@@ -6,11 +6,14 @@
 #include "render/blend_mode.hpp"
 #include "render/lightbloom.hpp"
 
+#include "effect/dig.hpp"
+
 namespace bnscup2025::player {
 
-Player::Player(const camera::Camera& camera, terrain::Terrain& terrain, Vec2 pos) :
+Player::Player(const camera::Camera& camera, terrain::Terrain& terrain, Effect& effect, Vec2 pos) :
   camera_(camera),
   terrain_(terrain),
+  effect_(effect),
   position_(pos) {
 }
 
@@ -25,7 +28,8 @@ void Player::Update() {
 
 void Player::Render() const {
   const auto& lightbloom = render::LightBloom::GetInstance();
-  const ColorF color { 0.2, 0.7, 0.3 };
+  const ColorF color_edge { 0.2, 0.9, 0.3 };
+  const ColorF color_body { 0.01, 0.00, 0.02 };
 
   // 本体
   {
@@ -34,7 +38,9 @@ void Player::Render() const {
     const auto t = camera_.CreateRenderTransformer();
 
     // 体（円）
-    Circle { position_, 0.40 }.drawFrame(0.10, color);
+    Circle { position_, 0.40 }
+      .draw(color_body)
+      .drawFrame(0.10, color_edge);
 
     // 目
     const auto& v1 = direction_face_;
@@ -44,20 +50,32 @@ void Player::Render() const {
     const auto pl2 = pl1 + v1 * 0.1;
     const auto pr1 = p1 - v2 * 0.1;
     const auto pr2 = pr1 + v1 * 0.1;
-    Line { pl1, pl2 }.draw(LineStyle::RoundCap, 0.10, color);
-    Line { pr1, pr2 }.draw(LineStyle::RoundCap, 0.10, color);
-
-    // 掘削位置
-    if (digging_position_) {
-      Line { position_ + direction_face_ * 0.5, *digging_position_ }.draw(LineStyle::RoundDot, 0.10, ColorF { 1.0, 0.5, 0.0 });
-      Circle { *digging_position_, 0.35 }.drawFrame(0.20, ColorF { 1.0, 0.5, 0.0 });
-    }
-    else {
-      const Vec2 default_dig_pos = position_ + direction_face_ * 4.0;
-      Line { position_ + direction_face_ * 0.5, default_dig_pos }.draw(LineStyle::RoundDot, 0.10, ColorF { 0.25, 0.25, 0.25 });
-    }
+    Line { pl1, pl2 }.draw(LineStyle::RoundCap, 0.10, color_edge);
+    Line { pr1, pr2 }.draw(LineStyle::RoundCap, 0.10, color_edge);
   }
-  lightbloom.Apply(2.0, 2.0, 2.0);
+  lightbloom.Apply(1.0, 1.0, 1.0);
+
+  // 掘削位置
+  if (digging_position_) {
+    {
+      const auto t = camera_.CreateRenderTransformer();
+      Line { position_ + direction_face_ * 0.5, *digging_position_ }.draw(LineStyle::RoundDot, 0.10, ColorF { 0.6, 0.6, 0.0 });
+    }
+    {
+      const auto target = lightbloom.CreateRenderTarget();
+      const auto blend = render::BlendMode::AlphaMax();
+      const auto t = camera_.CreateRenderTransformer();
+      Circle { *digging_position_, 0.35 }.drawFrame(0.20, ColorF { 1.0, 1.0, 0.0 });
+    }
+    lightbloom.Apply(5.0, 5.0, 5.0);
+
+  }
+  else {
+    const auto t = camera_.CreateRenderTransformer();
+    const Vec2 default_dig_pos = position_ + direction_face_ * 4.0;
+    Line { position_ + direction_face_ * 0.5, default_dig_pos }.draw(LineStyle::RoundDot, 0.10, ColorF { 0.25, 0.25, 0.25 });
+  }
+
 
 
 
@@ -94,6 +112,7 @@ void Player::ProcessDigging() {
   if (input_data.dig && digging_position_ && dig_timer_ <= 0.0) {
     terrain_.DigAt(*digging_position_, 2.0, 0.1, 0.01);
     dig_timer_ = 0.2;
+    effect_.add<effect::Dig>(camera_, *digging_position_, direction_face_, ColorF { 1.0, 1.0, 1.0 });
   }
 }
 

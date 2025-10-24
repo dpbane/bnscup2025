@@ -26,7 +26,7 @@ void Main() {
     ClearPrint();
     game.Update();
     game.Render();
-    Print << Profiler::FPS();
+    //Print << Profiler::FPS();
   }
 }
 

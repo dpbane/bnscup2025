@@ -5,6 +5,7 @@
 #include "camera/camera.hpp"
 
 #include "player/player.hpp"
+#include "enemy/enemy.hpp"
 
 namespace bnscup2025::game {
 
@@ -20,7 +21,10 @@ private:
   Optional<terrain::Visibility> visibility_;
   Optional<camera::Camera> camera_;
 
+  Effect effect_;
+
   Optional<player::Player> player_;
+  Optional<enemy::Enemy> enemy_;
 
   MSRenderTexture visibility_mask_texture_;
   Array<Triangle> visibility_triangles_;

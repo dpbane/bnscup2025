@@ -37,7 +37,7 @@ MapGenerator::Parameters MapGenerator::Generate(const Size& size, uint64 seed, i
   return Parameters {
     .terrain = std::move(terrain),
     .player_position = size / 2,
-    .enemy_position = Point{0, 0}
+    .enemy_position = size / 2
   };
 }
 

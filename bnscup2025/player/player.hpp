@@ -7,7 +7,7 @@ namespace bnscup2025::player {
 
 class Player {
 public:
-  Player(const camera::Camera& camera, terrain::Terrain& terrain, Vec2 pos);
+  Player(const camera::Camera& camera, terrain::Terrain& terrain, Effect& effect, Vec2 pos);
 
   void Update();
   void Render() const;
@@ -25,6 +25,7 @@ private:
 private:
   const camera::Camera& camera_;
   terrain::Terrain& terrain_;
+  Effect& effect_;
 
   Vec2 position_;
   Vec2 shift_amount_ { 0.0, 0.0 };

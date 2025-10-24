@@ -116,9 +116,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="camera\camera.cpp" />
+    <ClCompile Include="effect\dig.cpp" />
+    <ClCompile Include="enemy\enemy.cpp" />
     <ClCompile Include="game\game.cpp" />
     <ClCompile Include="input\input.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="player\grade_value_converter.cpp" />
     <ClCompile Include="player\player.cpp" />
     <ClCompile Include="render\blend_mode.cpp" />
     <ClCompile Include="render\lightbloom.cpp" />
@@ -336,10 +339,14 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="camera\camera.hpp" />
+    <ClInclude Include="effect\dig.hpp" />
+    <ClInclude Include="enemy\enemy.hpp" />
     <ClInclude Include="fps_addon.hpp" />
     <ClInclude Include="game\game.hpp" />
     <ClInclude Include="input\input.hpp" />
+    <ClInclude Include="player\grade_value_converter.hpp" />
     <ClInclude Include="player\player.hpp" />
+    <ClInclude Include="player\power_grade.hpp" />
     <ClInclude Include="render\blend_mode.hpp" />
     <ClInclude Include="render\lightbloom.hpp" />
     <ClInclude Include="stdafx.h" />
