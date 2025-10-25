@@ -62,6 +62,11 @@ private:
   /// @param cam カメラ。
   void RenderGroundEdges(const Array<Point>& visible_cells, const camera::Camera& cam) const;
 
+  /// @brief 地面の境界を描画する際の色を計算する。
+  /// @param pos 境界の位置。
+  /// @return 描画する色。
+  ColorF CalcEdgeColor(const Vec2& pos) const;
+
 private:
   /// @brief 描画範囲内のセルの位置の配列を作成する。
   /// @param cam カメラ。
@@ -71,6 +76,10 @@ private:
 private:
   NodeGrid node_grid_;
   MarchingSquares marching_squares_;
+
+  Array<Point> sinhalite_positions_;
+
+  HashTable<MaterialEnum, std::unique_ptr<IMaterial>> material_table_;
 
 };
 

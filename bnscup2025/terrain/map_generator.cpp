@@ -20,13 +20,23 @@ MapGenerator::Parameters MapGenerator::Generate(const Size& size, uint64 seed, i
   for (const auto& p : step(size)) {
     double nx = (double)p.x / size.x * scale;
     double ny = (double)p.y / size.y * scale;
-    double value = noise.octave2D0_1(nx, ny, octaves, persistence);
+    double density = noise.octave2D0_1(nx, ny, octaves, persistence);
 
-    value += 0.05;
-    value *= WindowFunction((double)p.x / (size.x - 1));
-    value *= WindowFunction((double)p.y / (size.y - 1));
-    value = Clamp(value, 0.0, 1.0);
-    grid.Set(p, value);
+    density += 0.05;
+    density *= WindowFunction((double)p.x / (size.x - 1));
+    density *= WindowFunction((double)p.y / (size.y - 1));
+    density = Clamp(density, 0.0, 1.0);
+
+    MaterialEnum material = MaterialEnum::Normal;
+    if (p.x == 0 || p.x == size.x - 1 || p.y == 0 || p.y == size.y - 1)  material = MaterialEnum::Bounds;
+
+    grid.Set(
+      p,
+      NodeInfo {
+        .density = density,
+        .material = material
+      }
+    );
   }
   Terrain terrain { grid };
 

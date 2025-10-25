@@ -13,6 +13,10 @@ constexpr int kBlurRate = 4;
 Terrain::Terrain(NodeGrid node_grid) :
   node_grid_(node_grid),
   marching_squares_(node_grid_, 0.5) {
+
+  material_table_[MaterialEnum::Normal] = std::make_unique<Material<MaterialEnum::Normal>>();
+  material_table_[MaterialEnum::Bounds] = std::make_unique<Material<MaterialEnum::Bounds>>();
+  material_table_[MaterialEnum::HardRock] = std::make_unique<Material<MaterialEnum::HardRock>>();
 }
 
 void Terrain::Update() {
@@ -195,18 +199,14 @@ void Terrain::DigAt(const Vec2& center, double radius, double center_might, doub
 
       // 掘削量を計算
       const double t = dist / radius;
-      const double dig_might = center_might * (1.0 - t) + end_might * t;
+      const double dig_might = (center_might * (1.0 - t) + end_might * t) * material_table_.at(node_grid_.Get(node_pos).material)->GetDiggability();
 
       // ノードの値を更新
-      double current_value = node_grid_.Get(node_pos);
+      double current_value = node_grid_.Get(node_pos).density;
       current_value += dig_might;
       current_value = std::clamp(current_value, 0.0, 1.0);
-      node_grid_.Set(node_pos, current_value);
+      node_grid_.Set(node_pos, NodeInfo { .density = current_value, .material = node_grid_.Get(node_pos).material });
 
-      // 端の場合は常に0とする
-      if (x == 0 || y == 0 || x == static_cast<int>(node_grid_.GetSize().x) - 1 || y == static_cast<int>(node_grid_.GetSize().y) - 1) {
-        node_grid_.Set(node_pos, 0.0);
-      }
     }
   }
 
@@ -242,7 +242,8 @@ void Terrain::RenderGroundEdges(const Array<Point>& visible_cells, const camera:
       const auto edge_lines = lines.Get(pos);
       for (const auto& vec_array : edge_lines) {
         for (size_t i = 0; i < vec_array.size() - 1; ++i) {
-          Line { vec_array[i], vec_array[i + 1] }.draw(LineStyle::RoundCap, 0.3, ColorF { 0.2, 0.3, 1.0 });
+          const Line line { vec_array[i], vec_array[i + 1] };
+          line.draw(LineStyle::RoundCap, 0.3, CalcEdgeColor(line.begin), CalcEdgeColor(line.end));
         }
       }
     }
@@ -250,6 +251,43 @@ void Terrain::RenderGroundEdges(const Array<Point>& visible_cells, const camera:
 
   // ブラー処理
   lightbloom.Apply(1.0, 3.0, 3.0);
+}
+
+ColorF Terrain::CalcEdgeColor(const Vec2& pos) const {
+  int x_i = static_cast<int>(std::floor(pos.x));
+  int y_i = static_cast<int>(std::floor(pos.y));
+  double x_frac = pos.x - x_i;
+  double y_frac = pos.y - y_i;
+  const Point cell_pos { x_i, y_i };
+  const auto color_lt = material_table_.at(node_grid_.Get(cell_pos.movedBy(0, 0)).material)->GetBaseColor();
+  const auto color_rt = material_table_.at(node_grid_.Get(cell_pos.movedBy(1, 0)).material)->GetBaseColor();
+  const auto color_lb = material_table_.at(node_grid_.Get(cell_pos.movedBy(0, 1)).material)->GetBaseColor();
+  const auto color_rb = material_table_.at(node_grid_.Get(cell_pos.movedBy(1, 1)).material)->GetBaseColor();
+  const double coef_top = 1.0 - y_frac;
+  const double coef_bottom = y_frac;
+  const double coef_left = 1.0 - x_frac;
+  const double coef_right = x_frac;
+  const double coef_lt = coef_top * coef_left;
+  const double coef_rt = coef_top * coef_right;
+  const double coef_lb = coef_bottom * coef_left;
+  const double coef_rb = coef_bottom * coef_right;
+  const ColorF color_base = color_lt * coef_lt + color_rt * coef_rt + color_lb * coef_lb + color_rb * coef_rb;
+
+  double sinhalite_intensity = 0.0;
+  constexpr double kSinhaliteEffectRadius = 8.0;
+  for (const auto& sinhalite_pos : sinhalite_positions_) {
+    const double dist = pos.distanceFrom(sinhalite_pos);
+    const double intensity = std::clamp(1.0 - dist / kSinhaliteEffectRadius, 0.0, 1.0);
+    sinhalite_intensity = std::max(sinhalite_intensity, intensity);
+  }
+  const double int_lt = coef_lt * material_table_.at(node_grid_.Get(cell_pos.movedBy(0, 0)).material)->GetSinhaliteEffectiveness();
+  const double int_rt = coef_rt * material_table_.at(node_grid_.Get(cell_pos.movedBy(1, 0)).material)->GetSinhaliteEffectiveness();
+  const double int_lb = coef_lb * material_table_.at(node_grid_.Get(cell_pos.movedBy(0, 1)).material)->GetSinhaliteEffectiveness();
+  const double int_rb = coef_rb * material_table_.at(node_grid_.Get(cell_pos.movedBy(1, 1)).material)->GetSinhaliteEffectiveness();
+  const double sinhalite_effectiveness = int_lt + int_rt + int_lb + int_rb;
+
+  constexpr ColorF kSinhaliteColor { 1.0, 0.9, 0.2 };
+  return color_base.lerp(kSinhaliteColor, sinhalite_intensity * sinhalite_effectiveness);
 }
 
 

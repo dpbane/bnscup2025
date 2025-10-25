@@ -33,8 +33,8 @@ GridPoints<bool> MarchingSquares::CreateUpdateGrid(const NodeGrid& node_grid) {
   for (size_t y = 0; y < node_grid.GetSize().y; ++y) {
     for (size_t x = 0; x < node_grid.GetSize().x; ++x) {
       const Point point(static_cast<int>(x), static_cast<int>(y));
-      const double prev_value = node_grid_.Get(point);
-      const double curr_value = node_grid.Get(point);
+      const double prev_value = node_grid_.Get(point).density;
+      const double curr_value = node_grid.Get(point).density;
       if (prev_value != curr_value) {
         ret.Set(point.movedBy(0, 0), true);
         ret.Set(point.movedBy(0, -1), true);
@@ -76,14 +76,14 @@ void MarchingSquares::UpdateCell(const GridPoints<bool>& update_grid) {
 }
 
 MarchingSquares::Case MarchingSquares::CalcCellCase(const Point& pos) {
-  const bool tl = node_grid_.Get(pos.movedBy(0, 0)) >= threshold_;
-  const bool tr = node_grid_.Get(pos.movedBy(1, 0)) >= threshold_;
-  const bool bl = node_grid_.Get(pos.movedBy(0, 1)) >= threshold_;
-  const bool br = node_grid_.Get(pos.movedBy(1, 1)) >= threshold_;
-  const bool center = (node_grid_.Get(pos.movedBy(0, 0))
-    + node_grid_.Get(pos.movedBy(1, 0))
-    + node_grid_.Get(pos.movedBy(0, 1))
-    + node_grid_.Get(pos.movedBy(1, 1))) >= (4.0 * threshold_);
+  const bool tl = node_grid_.Get(pos.movedBy(0, 0)).density >= threshold_;
+  const bool tr = node_grid_.Get(pos.movedBy(1, 0)).density >= threshold_;
+  const bool bl = node_grid_.Get(pos.movedBy(0, 1)).density >= threshold_;
+  const bool br = node_grid_.Get(pos.movedBy(1, 1)).density >= threshold_;
+  const bool center = (node_grid_.Get(pos.movedBy(0, 0)).density
+    + node_grid_.Get(pos.movedBy(1, 0)).density
+    + node_grid_.Get(pos.movedBy(0, 1)).density
+    + node_grid_.Get(pos.movedBy(1, 1)).density) >= (4.0 * threshold_);
   uint8 index = 0;
   if (tl) index |= 0b0001;
   if (tr) index |= 0b0010;
@@ -119,10 +119,10 @@ std::pair<Array<Array<Vec2>>, Array<Polygon>> MarchingSquares::CalcEdgeLinesAndP
   std::pair<Array<Array<Vec2>>, Array<Polygon>> ret;
 
   // 基本となる値
-  const double tl = node_grid_.Get(pos.movedBy(0, 0));
-  const double tr = node_grid_.Get(pos.movedBy(1, 0));
-  const double bl = node_grid_.Get(pos.movedBy(0, 1));
-  const double br = node_grid_.Get(pos.movedBy(1, 1));
+  const double tl = node_grid_.Get(pos.movedBy(0, 0)).density;
+  const double tr = node_grid_.Get(pos.movedBy(1, 0)).density;
+  const double bl = node_grid_.Get(pos.movedBy(0, 1)).density;
+  const double br = node_grid_.Get(pos.movedBy(1, 1)).density;
   const double center = (tl + tr + bl + br) / 4.0;
   const Case case_value = case_grid_.Get(pos);
 

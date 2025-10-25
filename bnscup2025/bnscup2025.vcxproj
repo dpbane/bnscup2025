@@ -131,6 +131,9 @@
     </ClCompile>
     <ClCompile Include="terrain\map_generator.cpp" />
     <ClCompile Include="terrain\marching_squares.cpp" />
+    <ClCompile Include="terrain\material\material_bounds.cpp" />
+    <ClCompile Include="terrain\material\material_hardrock.cpp" />
+    <ClCompile Include="terrain\material\material_normal.cpp" />
     <ClCompile Include="terrain\terrain.cpp" />
     <ClCompile Include="terrain\visibility.cpp" />
   </ItemGroup>
@@ -354,6 +357,7 @@
     <ClInclude Include="terrain\map_generator.hpp" />
     <ClInclude Include="terrain\map_grid.hpp" />
     <ClInclude Include="terrain\marching_squares.hpp" />
+    <ClInclude Include="terrain\material\material.hpp" />
     <ClInclude Include="terrain\terrain.hpp" />
     <ClInclude Include="terrain\visibility.hpp" />
   </ItemGroup>

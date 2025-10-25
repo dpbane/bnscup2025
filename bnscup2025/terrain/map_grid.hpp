@@ -1,9 +1,15 @@
 ﻿#pragma once
 
 #include "grid_points.hpp"
+#include "material/material.hpp"
 
 namespace bnscup2025::terrain {
 
-using NodeGrid = GridPoints<double>;
+struct NodeInfo {
+  double density;
+  MaterialEnum material;
+};
+
+using NodeGrid = GridPoints<NodeInfo>;
 
 }
