@@ -192,6 +192,9 @@
     <ClCompile Include="terrain\material\material_bounds.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="terrain\access_map.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="App\icon.ico">
@@ -872,7 +875,7 @@
     <ClInclude Include="terrain\marching_squares.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="terrain\map_grid.hpp">
+    <ClInclude Include="terrain\node_grid.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="terrain\visibility.hpp">
@@ -909,6 +912,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="terrain\material\material.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="terrain\access_map.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="global_constants.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

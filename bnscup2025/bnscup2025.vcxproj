@@ -129,6 +129,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="terrain\access_map.cpp" />
     <ClCompile Include="terrain\map_generator.cpp" />
     <ClCompile Include="terrain\marching_squares.cpp" />
     <ClCompile Include="terrain\material\material_bounds.cpp" />
@@ -353,9 +354,11 @@
     <ClInclude Include="render\blend_mode.hpp" />
     <ClInclude Include="render\lightbloom.hpp" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="terrain\access_map.hpp" />
+    <ClInclude Include="global_constants.hpp" />
     <ClInclude Include="terrain\grid_points.hpp" />
     <ClInclude Include="terrain\map_generator.hpp" />
-    <ClInclude Include="terrain\map_grid.hpp" />
+    <ClInclude Include="terrain\node_grid.hpp" />
     <ClInclude Include="terrain\marching_squares.hpp" />
     <ClInclude Include="terrain\material\material.hpp" />
     <ClInclude Include="terrain\terrain.hpp" />

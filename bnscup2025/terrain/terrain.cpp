@@ -9,10 +9,13 @@
 namespace bnscup2025::terrain {
 
 constexpr int kBlurRate = 4;
+constexpr double kThreshold = 0.5;
 
-Terrain::Terrain(NodeGrid node_grid) :
+Terrain::Terrain(NodeGrid node_grid, Array<Point>&& sinhalite_positions) :
   node_grid_(node_grid),
-  marching_squares_(node_grid_, 0.5) {
+  sinhalite_positions_(std::move(sinhalite_positions)),
+  marching_squares_(node_grid_, kThreshold),
+  access_map_(node_grid_, kThreshold) {
 
   material_table_[MaterialEnum::Normal] = std::make_unique<Material<MaterialEnum::Normal>>();
   material_table_[MaterialEnum::Bounds] = std::make_unique<Material<MaterialEnum::Bounds>>();
@@ -21,6 +24,7 @@ Terrain::Terrain(NodeGrid node_grid) :
 
 void Terrain::Update() {
   marching_squares_.Update(node_grid_);
+  access_map_.Update(node_grid_);
 }
 
 void Terrain::Render(const camera::Camera& cam) const {
@@ -224,6 +228,25 @@ void Terrain::RenderGround(const Array<Point>& visible_cells, const camera::Came
       for (const auto& polygon : cell_polygons) {
         polygon.draw(ColorF { 0.1, 0.1, 0.30 });
       }
+
+      // デバッグ用: アクセスマップの表示
+      /*
+      if (access_map_.GetAccessableMap().Get(pos)) {
+        Circle { pos, 0.1 }.draw(ColorF { 1, 0, 0 });
+
+        const auto direction = access_map_.GetDirectionMap().Get(pos);
+        if (direction.up) Line { Vec2{pos}, Vec2{pos}.movedBy(0, -0.4) }.draw(0.1, ColorF { 1, 0, 0 });
+        if (direction.down) Line { Vec2{pos}, Vec2{pos}.movedBy(0, 0.4) }.draw(0.1, ColorF { 1, 0, 0 });
+        if (direction.left) Line { Vec2{pos}, Vec2{pos}.movedBy(-0.4, 0) }.draw(0.1, ColorF { 1, 0, 0 });
+        if (direction.right) Line { Vec2{pos}, Vec2{pos}.movedBy(0.4, 0) }.draw(0.1, ColorF { 1, 0, 0 });
+        if (direction.up_left) Line { Vec2{pos}, Vec2{pos}.movedBy(-0.4, -0.4) }.draw(0.1, ColorF { 1, 0, 0 });
+        if (direction.up_right) Line { Vec2{pos}, Vec2{pos}.movedBy(0.4, -0.4) }.draw(0.1, ColorF { 1, 0, 0 });
+        if (direction.down_left) Line { Vec2{pos}, Vec2{pos}.movedBy(-0.4, 0.4) }.draw(0.1, ColorF { 1, 0, 0 });
+        if (direction.down_right) Line { Vec2{pos}, Vec2{pos}.movedBy(0.4, 0.4) }.draw(0.1, ColorF { 1, 0, 0 });
+
+      }
+      */
+
     }
   }
 }
@@ -286,7 +309,7 @@ ColorF Terrain::CalcEdgeColor(const Vec2& pos) const {
   const double int_rb = coef_rb * material_table_.at(node_grid_.Get(cell_pos.movedBy(1, 1)).material)->GetSinhaliteEffectiveness();
   const double sinhalite_effectiveness = int_lt + int_rt + int_lb + int_rb;
 
-  constexpr ColorF kSinhaliteColor { 1.0, 0.9, 0.2 };
+  constexpr ColorF kSinhaliteColor { 0.3, 0.25, 0.01 };
   return color_base.lerp(kSinhaliteColor, sinhalite_intensity * sinhalite_effectiveness);
 }
 

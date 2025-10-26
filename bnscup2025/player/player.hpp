@@ -17,6 +17,8 @@ public:
   const Vec2 GetShiftedPosition() const { return position_ + shift_amount_; }
   const Vec2& GetDirectionFace() const { return direction_face_; }
 
+  const Optional<Vec2>& GetSoundPosition() const { return sound_position_; }
+
 private:
   void ProcessMove();
   void ProcessShift();
@@ -33,6 +35,8 @@ private:
 
   double dig_timer_ { 0.0 };
   Optional<Vec2> digging_position_;
+
+  Optional<Vec2> sound_position_;
 
 };
 

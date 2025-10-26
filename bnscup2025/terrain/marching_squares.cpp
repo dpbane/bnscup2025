@@ -12,11 +12,8 @@ MarchingSquares::MarchingSquares(const NodeGrid& node_grid, double threshold) :
 
   // 全てのセルを更新する
   GridPoints<bool> update_grid(node_grid.GetSize() - Size(1, 1));
-  for (size_t y = 0; y < update_grid.GetSize().y; ++y) {
-    for (size_t x = 0; x < update_grid.GetSize().x; ++x) {
-      const Point pos(static_cast<int>(x), static_cast<int>(y));
-      update_grid.Set(pos, true);
-    }
+  for (const auto& point : step(update_grid.GetSize())) {
+    update_grid.Set(point, true);
   }
   UpdateCell(update_grid);
 }
@@ -30,17 +27,14 @@ void MarchingSquares::Update(const NodeGrid& node_grid) {
 GridPoints<bool> MarchingSquares::CreateUpdateGrid(const NodeGrid& node_grid) {
   GridPoints<bool> ret(node_grid.GetSize() - Size(1, 1));
 
-  for (size_t y = 0; y < node_grid.GetSize().y; ++y) {
-    for (size_t x = 0; x < node_grid.GetSize().x; ++x) {
-      const Point point(static_cast<int>(x), static_cast<int>(y));
-      const double prev_value = node_grid_.Get(point).density;
-      const double curr_value = node_grid.Get(point).density;
-      if (prev_value != curr_value) {
-        ret.Set(point.movedBy(0, 0), true);
-        ret.Set(point.movedBy(0, -1), true);
-        ret.Set(point.movedBy(-1, 0), true);
-        ret.Set(point.movedBy(-1, -1), true);
-      }
+  for (const auto& point : step(node_grid.GetSize())) {
+    const double prev_value = node_grid_.Get(point).density;
+    const double curr_value = node_grid.Get(point).density;
+    if (prev_value != curr_value) {
+      ret.Set(point.movedBy(0, 0), true);
+      ret.Set(point.movedBy(0, -1), true);
+      ret.Set(point.movedBy(-1, 0), true);
+      ret.Set(point.movedBy(-1, -1), true);
     }
   }
 
@@ -64,15 +58,13 @@ void MarchingSquares::UpdateCell(const GridPoints<bool>& update_grid) {
 
 
   // 更新が必要なすべてのセルを更新する。
-  for (size_t y = 0; y < case_grid_.GetSize().y; ++y) {
-    for (size_t x = 0; x < case_grid_.GetSize().x; ++x) {
-      const Point pos(static_cast<int>(x), static_cast<int>(y));
-      if (not update_grid.Get(pos)) continue;
+  for (const auto& point : step(case_grid_.GetSize())) {
+    if (not update_grid.Get(point)) continue;
 
-      UpdateCase(pos);
-      UpdateEdgeLinesAndPolygons(pos);
-    }
+    UpdateCase(point);
+    UpdateEdgeLinesAndPolygons(point);
   }
+
 }
 
 MarchingSquares::Case MarchingSquares::CalcCellCase(const Point& pos) {

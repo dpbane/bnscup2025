@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "marching_squares.hpp"
+#include "access_map.hpp"
 
 #include "camera/camera.hpp"
 
@@ -8,7 +9,7 @@ namespace bnscup2025::terrain {
 
 class Terrain {
 public:
-  Terrain(NodeGrid node_grid);
+  Terrain(NodeGrid node_grid, Array<Point>&& sinhalite_positions);
 
   /// @brief 地形を更新する。
   void Update();
@@ -51,6 +52,11 @@ public:
   /// @param end_might 端の掘削量。間は線形補完される。
   void DigAt(const Vec2& center, double radius, double center_might, double end_might);
 
+
+  /// @brief アクセスマップを取得する。
+  /// @return アクセスマップ。
+  const AccessMap& GetAccessMap() const { return access_map_; }
+
 private:
   /// @brief 地面を描画する。
   /// @param visible_cells 描画範囲内のノードの位置の配列
@@ -76,6 +82,7 @@ private:
 private:
   NodeGrid node_grid_;
   MarchingSquares marching_squares_;
+  AccessMap access_map_;
 
   Array<Point> sinhalite_positions_;
 

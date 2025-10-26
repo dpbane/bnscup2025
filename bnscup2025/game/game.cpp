@@ -13,13 +13,21 @@ namespace bnscup2025::game {
 Game::Game() :
   visibility_mask_texture_(Scene::Size()) {
 
-  auto map_params = terrain::MapGenerator::Generate(Size(50, 50), RandomUint64(), 2, 0.5, 10.0);
+  auto map_params = terrain::MapGenerator::Generate(1);
   terrain_.emplace(std::move(map_params.terrain));
   visibility_.emplace(*terrain_);
-  camera_.emplace(Vec2 { 0.0, 0.0 }, SizeF { 50.0, 50.0 });
+  camera_.emplace(Vec2 { 0.0, 0.0 }, SizeF { 60.0, 60.0 });
 
-  player_.emplace(*camera_, *terrain_, effect_, map_params.player_position.movedBy(0.5, 0.5));
-  enemy_.emplace(*camera_, *terrain_, *player_, map_params.enemy_position.movedBy(0.5, 0.5));
+  enemy::EnemyParameters enemy_params {
+    .sound_hear_radius = 10.0,
+    .view_radius = 20.0,
+    .prowl_speed = 2.0,
+    .to_sound_speed = 3.0,
+    .pursuit_speed = 4.0
+  };
+
+  player_.emplace(*camera_, *terrain_, effect_, map_params.player_position);
+  enemy_.emplace(*camera_, *terrain_, *player_, map_params.enemy_position, enemy_params);
 
 }
 

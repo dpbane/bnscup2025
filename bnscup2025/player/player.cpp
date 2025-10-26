@@ -18,6 +18,8 @@ Player::Player(const camera::Camera& camera, terrain::Terrain& terrain, Effect& 
 }
 
 void Player::Update() {
+  sound_position_.reset();
+
   const auto input_data = input::Input::GetInstance().GetData();
   direction_face_ = input_data.direction_face;
 
@@ -88,7 +90,7 @@ void Player::ProcessMove() {
   if (not input_data.shift) {
     position_ += input_data.direction_move.normalized() * speed * Scene::DeltaTime();
   }
-  position_ = terrain_.PushbackService(Circle { position_, 0.45 });
+  position_ = terrain_.PushbackService(Circle { position_, kCharacterRadius });
 }
 
 void Player::ProcessShift() {
@@ -110,9 +112,10 @@ void Player::ProcessDigging() {
   digging_position_ = terrain_.CalcLineCollisionPoint(position_, direction_face_, 4.0);
 
   if (input_data.dig && digging_position_ && dig_timer_ <= 0.0) {
-    terrain_.DigAt(*digging_position_, 2.0, 0.1, 0.01);
+    terrain_.DigAt(*digging_position_, 2.0, 0.15, 0.01);
     dig_timer_ = 0.2;
     effect_.add<effect::Dig>(camera_, *digging_position_, direction_face_, ColorF { 1.0, 1.0, 1.0 });
+    sound_position_ = (*digging_position_ * 0.2 + position_ * 0.8);
   }
 }
 

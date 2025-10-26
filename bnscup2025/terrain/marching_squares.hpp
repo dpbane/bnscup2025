@@ -1,6 +1,6 @@
 ﻿#pragma once
 
-#include "map_grid.hpp"
+#include "node_grid.hpp"
 
 namespace bnscup2025::terrain {
 
