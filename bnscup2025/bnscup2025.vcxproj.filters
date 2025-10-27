@@ -144,7 +144,7 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="game\game.cpp">
+    <ClCompile Include="scene\game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="terrain\marching_squares.cpp">
@@ -193,6 +193,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="terrain\access_map.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="effect\dig_sinhalite.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="player\power_grade.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="scene\title.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -860,7 +869,7 @@
     <ClInclude Include="stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="game\game.hpp">
+    <ClInclude Include="scene\game.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="fps_addon.hpp">
@@ -918,6 +927,21 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="global_constants.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="effect\dig_sinhalite.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scene\title.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scene\scene.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scene\i_scene.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scene\common_data.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -213,7 +213,7 @@ void Terrain::DigAt(const Vec2& center, double radius, double center_might, doub
 
     }
   }
-
+  EarnSinhalite();
 }
 
 void Terrain::RenderGround(const Array<Point>& visible_cells, const camera::Camera& cam) const {
@@ -230,7 +230,7 @@ void Terrain::RenderGround(const Array<Point>& visible_cells, const camera::Came
       }
 
       // デバッグ用: アクセスマップの表示
-      /*
+
       if (access_map_.GetAccessableMap().Get(pos)) {
         Circle { pos, 0.1 }.draw(ColorF { 1, 0, 0 });
 
@@ -245,7 +245,7 @@ void Terrain::RenderGround(const Array<Point>& visible_cells, const camera::Came
         if (direction.down_right) Line { Vec2{pos}, Vec2{pos}.movedBy(0.4, 0.4) }.draw(0.1, ColorF { 1, 0, 0 });
 
       }
-      */
+
 
     }
   }
@@ -311,6 +311,22 @@ ColorF Terrain::CalcEdgeColor(const Vec2& pos) const {
 
   constexpr ColorF kSinhaliteColor { 0.3, 0.25, 0.01 };
   return color_base.lerp(kSinhaliteColor, sinhalite_intensity * sinhalite_effectiveness);
+}
+
+void Terrain::EarnSinhalite() {
+  earned_sinhalite_ = 0;
+
+  for (auto itr = sinhalite_positions_.begin(); itr != sinhalite_positions_.end(); ) {
+    const Point pos = *itr;
+    const auto node_info = node_grid_.Get(pos);
+    if (node_info.density > kThreshold) {
+      ++earned_sinhalite_;
+      itr = sinhalite_positions_.erase(itr);
+    }
+    else {
+      ++itr;
+    }
+  }
 }
 
 

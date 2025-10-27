@@ -7,12 +7,13 @@ MapGenerator::Parameters MapGenerator::Generate(int level) {
 
   const auto node_grid = CreateNodeGrid(Size { 50, 50 }, RandomUint64(), 2, 0.5, 10.0);
   Terrain terrain = { node_grid, std::move(CreateSinhalitePositions(node_grid, 10)) };
-  const auto pos_pair = CreatePlayerAndEnemyPosition(terrain);
+  const auto positions = CreatePlayerAndEnemyPosition(terrain);
 
   return Parameters {
     .terrain = std::move(terrain),
-    .player_position = pos_pair.first,
-    .enemy_position = pos_pair.second,
+    .player_position = positions.player_position,
+    .enemy_position = positions.enemy_position,
+    .exit_position = positions.exit_position
   };
 }
 
@@ -54,7 +55,7 @@ NodeGrid MapGenerator::CreateNodeGrid(const Size& size, uint64 seed, int octaves
   return grid;
 }
 
-std::pair<Vec2, Vec2> MapGenerator::CreatePlayerAndEnemyPosition(const Terrain& terrain) {
+MapGenerator::Positions MapGenerator::CreatePlayerAndEnemyPosition(const Terrain& terrain) {
   // アクセスマップを取得し、領域ごとに分割した配列を取得
   const auto& access_map = terrain.GetAccessMap();
   auto areas_array = access_map.CreateAreasArray();
@@ -95,12 +96,33 @@ std::pair<Vec2, Vec2> MapGenerator::CreatePlayerAndEnemyPosition(const Terrain& 
     break;
   }
 
-  return { player_point, enemy_point };
-}
+  // 出口の位置を確定：2番目に大きい領域からランダム、または敵の位置と同一
+  Point exit_point {};
+  if (areas_array.size() >= 2) {
+    const auto& exit_area = areas_array[1];
+    bool found { false };
+    for (const auto& pos : areas_array[1]) {
+      if (not exit_area.contains(player_point.movedBy(-2, 0)) ||
+        not exit_area.contains(player_point.movedBy(2, 0)) ||
+        not exit_area.contains(player_point.movedBy(0, -2)) ||
+        not exit_area.contains(player_point.movedBy(0, 2))) {
+        continue;
+      }
+      exit_point = pos;
+      found = true;
+      break;
+    }
+    if (not found) exit_point = enemy_point;
+  }
+  else {
+    exit_point = enemy_point;
+  }
 
-Vec2 MapGenerator::CreateExitPosition(const NodeGrid& node_grid, const Vec2 player_pos) {
-  Size size = node_grid.GetSize();
-  return size / 2;
+  return Positions {
+    .player_position = player_point,
+    .enemy_position = enemy_point,
+    .exit_position = exit_point
+  };
 }
 
 Array<Point> MapGenerator::CreateSinhalitePositions(const NodeGrid& node_grid, int count) {

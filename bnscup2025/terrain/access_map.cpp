@@ -108,7 +108,7 @@ void AccessMap::UpdateAccessable(Point point) {
   const double b = node_grid_.Get(point.movedBy(0, 1)).density;
 
   // 自身が壁の中だったらアクセス不可
-  if (c < threshold_) {
+  if (c <= threshold_) {
     accessable_map_.Set(point, false);
     return;
   }
@@ -120,10 +120,10 @@ void AccessMap::UpdateAccessable(Point point) {
   };
 
   // 格子点付近に壁がある場合はアクセス不可
-  const double p_top = t < threshold_ ? CalcT(c, t) : 1.0;
-  const double p_bottom = b < threshold_ ? CalcT(c, b) : 1.0;
-  const double p_left = l < threshold_ ? CalcT(c, l) : 1.0;
-  const double p_right = r < threshold_ ? CalcT(c, r) : 1.0;
+  const double p_top = t <= threshold_ ? CalcT(c, t) : 1.0;
+  const double p_bottom = b <= threshold_ ? CalcT(c, b) : 1.0;
+  const double p_left = l <= threshold_ ? CalcT(c, l) : 1.0;
+  const double p_right = r <= threshold_ ? CalcT(c, r) : 1.0;
   if ((p_top + p_bottom < kCharacterRadius * 2.0) ||
     (p_left + p_right < kCharacterRadius * 2.0)) {
     accessable_map_.Set(point, false);
@@ -161,7 +161,7 @@ void AccessMap::UpdateDirection(Point point) {
     const double v_ext1 = node_grid_.Get(ext1).density;
     const double v_ext2 = node_grid_.Get(ext2).density;
     const double mean = (v_from + v_to + v_ext1 + v_ext2) / 4;
-    if (mean < threshold_) return false;  // 分離型でないならアクセス不可
+    if (mean <= threshold_) return false;  // 分離型でないならアクセス不可
 
     // 分離型鞍点であることが確定したので、対角線における壁の幅を計算
 

@@ -7,6 +7,7 @@
 #include "render/lightbloom.hpp"
 
 #include "effect/dig.hpp"
+#include "effect/dig_sinhalite.hpp"
 
 namespace bnscup2025::player {
 
@@ -114,8 +115,12 @@ void Player::ProcessDigging() {
   if (input_data.dig && digging_position_ && dig_timer_ <= 0.0) {
     terrain_.DigAt(*digging_position_, 2.0, 0.15, 0.01);
     dig_timer_ = 0.2;
-    effect_.add<effect::Dig>(camera_, *digging_position_, direction_face_, ColorF { 1.0, 1.0, 1.0 });
+    effect_.add<effect::Dig>(camera_, *digging_position_, direction_face_);
     sound_position_ = (*digging_position_ * 0.2 + position_ * 0.8);
+
+    if (terrain_.GetEarnedSinhalite() > 0) {
+      effect_.add<effect::DigSinhalite>(camera_, *digging_position_, direction_face_);
+    }
   }
 }
 

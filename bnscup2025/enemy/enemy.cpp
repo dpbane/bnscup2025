@@ -175,6 +175,8 @@ void Enemy::OnToSoundUpdate() {
 }
 
 void Enemy::OnPursuitUpdate() {
+  Print << last_saw_position_;
+  Print << cost_map_.has_value();
   if (CanSeePlayer(parameters_.view_radius, -1.0)) {
     // プレイヤーが見えている場合、直接向かう
     const Vec2 to_player = (player_.GetPosition() - position_).normalized();
@@ -200,6 +202,7 @@ void Enemy::OnPursuitUpdate() {
       await_timer_ += Scene::DeltaTime();
       if (await_timer_ >= 1.0) {
         state_ = State::Prowl;
+        return;
       }
     }
   }

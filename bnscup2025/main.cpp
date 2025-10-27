@@ -1,6 +1,6 @@
 ﻿# include <Siv3D.hpp> // Siv3D v0.6.16
 
-#include "game/game.hpp"
+#include "scene/game.hpp"
 
 #include "fps_addon.hpp"
 
@@ -18,15 +18,19 @@ void Main() {
   //Scene::SetResizeMode(ResizeMode::Keep);
   //Scene::Resize(600, 720);
 
-  game::Game game;
+  scene::App manager;
+  manager.add<scene::Game>(scene::SceneEnum::Game);
+
+  manager.init(scene::SceneEnum::Game, 0);
 
   //Addon::Register(U"FrameRateLimit", std::make_unique<FrameRateLimitAddon>(60));
 
   System::Update();
   while (System::Update()) {
     ClearPrint();
-    game.Update();
-    game.Render();
+    if (not manager.update()) {
+      break;
+    }
     Print << Profiler::FPS();
   }
 }

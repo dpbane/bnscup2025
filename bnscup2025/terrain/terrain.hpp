@@ -52,10 +52,13 @@ public:
   /// @param end_might 端の掘削量。間は線形補完される。
   void DigAt(const Vec2& center, double radius, double center_might, double end_might);
 
-
   /// @brief アクセスマップを取得する。
   /// @return アクセスマップ。
   const AccessMap& GetAccessMap() const { return access_map_; }
+
+  /// @brief このフレームに獲得したシンハライトの量を取得する。
+  /// @return 獲得したシンハライトの量。
+  int GetEarnedSinhalite() const { return earned_sinhalite_; }
 
 private:
   /// @brief 地面を描画する。
@@ -73,6 +76,9 @@ private:
   /// @return 描画する色。
   ColorF CalcEdgeColor(const Vec2& pos) const;
 
+  /// @brief シンハライトを獲得する処理。
+  void EarnSinhalite();
+
 private:
   /// @brief 描画範囲内のセルの位置の配列を作成する。
   /// @param cam カメラ。
@@ -85,6 +91,7 @@ private:
   AccessMap access_map_;
 
   Array<Point> sinhalite_positions_;
+  int earned_sinhalite_ = 0;
 
   HashTable<MaterialEnum, std::unique_ptr<IMaterial>> material_table_;
 

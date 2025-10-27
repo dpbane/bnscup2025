@@ -15,6 +15,13 @@ public:
   };
 
 private:
+  struct Positions {
+    Vec2 player_position;
+    Vec2 enemy_position;
+    Vec2 exit_position;
+  };
+
+private:
   MapGenerator() = delete;
   MapGenerator(const MapGenerator&) = delete;
   MapGenerator& operator=(const MapGenerator&) = delete;
@@ -40,13 +47,7 @@ private:
   /// @brief プレイヤーと敵の初期位置を作成する。
   /// @param terrain 地形クラス。
   /// @return プレイヤーと敵の初期位置。
-  static std::pair<Vec2, Vec2> CreatePlayerAndEnemyPosition(const Terrain& terrain);
-
-  /// @brief 出口の位置を作成する。
-  /// @param node_grid ノードグリッド。
-  /// @param player_pos プレイヤーの初期位置。
-  /// @return 出口の位置。
-  static Vec2 CreateExitPosition(const NodeGrid& node_grid, const Vec2 player_pos);
+  static Positions CreatePlayerAndEnemyPosition(const Terrain& terrain);
 
   /// @brief シンハライトの位置を作成する。
   /// @param node_grid ノードグリッド。
