@@ -8,6 +8,10 @@
 
 #include "player/player.hpp"
 #include "enemy/enemy.hpp"
+#include "exit/exit.hpp"
+#include "npc/speaker.hpp"
+
+#include "render/visibility_mask.hpp"
 
 namespace bnscup2025::scene {
 
@@ -22,6 +26,8 @@ public:
   void draw() const override;
 
 private:
+  bool is_game_;
+
   Optional<terrain::Terrain> terrain_;
   Optional<terrain::Visibility> visibility_;
   Optional<camera::Camera> camera_;
@@ -30,9 +36,10 @@ private:
 
   Optional<player::Player> player_;
   Optional<enemy::Enemy> enemy_;
+  Optional<exit::Exit> exit_;
+  Optional<npc::Speaker> speaker_;
 
-  MSRenderTexture visibility_mask_texture_;
-  Array<Triangle> visibility_triangles_;
+  render::VisibilityMask visibility_mask_;
 
 };
 

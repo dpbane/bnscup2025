@@ -204,6 +204,27 @@
     <ClCompile Include="scene\title.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="exit\exit.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="npc\speaker.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="npc\speaker_lines.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="render\chara_renderer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="render\visibility_mask.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="npc\shop.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="npc\text_window.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="App\icon.ico">
@@ -942,6 +963,27 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="scene\common_data.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="exit\exit.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="npc\speaker.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="npc\speaker_lines.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="render\chara_renderer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="render\visibility_mask.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="npc\shop.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="npc\text_window.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

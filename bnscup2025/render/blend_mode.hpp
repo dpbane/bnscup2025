@@ -10,6 +10,7 @@ private:
 
 public:
   static ScopedRenderStates2D AlphaMax();
+  static ScopedRenderStates2D AlphaMin();
 
 };
 

@@ -21,6 +21,8 @@ InputData Input::GetData() {
   ret.shift = KeyShift.pressed();
   ret.dig = MouseL.pressed();
   ret.action = MouseR.pressed();
+  ret.confirm_trigger = (MouseL.down() || MouseR.down());
+  ret.confirm_keep = (MouseL.pressed() || MouseR.pressed());
 
   return ret;
 }

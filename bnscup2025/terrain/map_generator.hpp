@@ -12,6 +12,8 @@ public:
     Vec2 player_position;
     Vec2 enemy_position;
     Vec2 exit_position;
+    Vec2 speaker_position;
+    Vec2 shop_position;
   };
 
 private:
@@ -27,7 +29,7 @@ private:
   MapGenerator& operator=(const MapGenerator&) = delete;
 
 public:
-  static Parameters Generate(int level);
+  static Parameters Generate(int level, bool is_game);
 
 private:
   /// @brief 地形生成に使用する窓関数のようなもの。0〜1の実数に対し、端で0、それ以外で1に近い値を返す。
@@ -43,6 +45,10 @@ private:
   /// @param scale スケール値。大きいとより狭い範囲で変化が起こる。
   /// @return ノードグリッド。
   static NodeGrid CreateNodeGrid(const Size& size, uint64 seed, int octaves, double persistence, double scale);
+
+  /// @brief 店用のノードグリッドを作成する。
+  /// @return ノードグリッド。
+  static NodeGrid CreateShopNodeGrid(int level);
 
   /// @brief プレイヤーと敵の初期位置を作成する。
   /// @param terrain 地形クラス。

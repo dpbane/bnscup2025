@@ -230,20 +230,21 @@ void Terrain::RenderGround(const Array<Point>& visible_cells, const camera::Came
       }
 
       // デバッグ用: アクセスマップの表示
+      if (false) {
+        if (access_map_.GetAccessableMap().Get(pos)) {
+          Circle { pos, 0.1 }.draw(ColorF { 1, 0, 0 });
 
-      if (access_map_.GetAccessableMap().Get(pos)) {
-        Circle { pos, 0.1 }.draw(ColorF { 1, 0, 0 });
+          const auto direction = access_map_.GetDirectionMap().Get(pos);
+          if (direction.up) Line { Vec2{pos}, Vec2{pos}.movedBy(0, -0.4) }.draw(0.1, ColorF { 1, 0, 0 });
+          if (direction.down) Line { Vec2{pos}, Vec2{pos}.movedBy(0, 0.4) }.draw(0.1, ColorF { 1, 0, 0 });
+          if (direction.left) Line { Vec2{pos}, Vec2{pos}.movedBy(-0.4, 0) }.draw(0.1, ColorF { 1, 0, 0 });
+          if (direction.right) Line { Vec2{pos}, Vec2{pos}.movedBy(0.4, 0) }.draw(0.1, ColorF { 1, 0, 0 });
+          if (direction.up_left) Line { Vec2{pos}, Vec2{pos}.movedBy(-0.4, -0.4) }.draw(0.1, ColorF { 1, 0, 0 });
+          if (direction.up_right) Line { Vec2{pos}, Vec2{pos}.movedBy(0.4, -0.4) }.draw(0.1, ColorF { 1, 0, 0 });
+          if (direction.down_left) Line { Vec2{pos}, Vec2{pos}.movedBy(-0.4, 0.4) }.draw(0.1, ColorF { 1, 0, 0 });
+          if (direction.down_right) Line { Vec2{pos}, Vec2{pos}.movedBy(0.4, 0.4) }.draw(0.1, ColorF { 1, 0, 0 });
 
-        const auto direction = access_map_.GetDirectionMap().Get(pos);
-        if (direction.up) Line { Vec2{pos}, Vec2{pos}.movedBy(0, -0.4) }.draw(0.1, ColorF { 1, 0, 0 });
-        if (direction.down) Line { Vec2{pos}, Vec2{pos}.movedBy(0, 0.4) }.draw(0.1, ColorF { 1, 0, 0 });
-        if (direction.left) Line { Vec2{pos}, Vec2{pos}.movedBy(-0.4, 0) }.draw(0.1, ColorF { 1, 0, 0 });
-        if (direction.right) Line { Vec2{pos}, Vec2{pos}.movedBy(0.4, 0) }.draw(0.1, ColorF { 1, 0, 0 });
-        if (direction.up_left) Line { Vec2{pos}, Vec2{pos}.movedBy(-0.4, -0.4) }.draw(0.1, ColorF { 1, 0, 0 });
-        if (direction.up_right) Line { Vec2{pos}, Vec2{pos}.movedBy(0.4, -0.4) }.draw(0.1, ColorF { 1, 0, 0 });
-        if (direction.down_left) Line { Vec2{pos}, Vec2{pos}.movedBy(-0.4, 0.4) }.draw(0.1, ColorF { 1, 0, 0 });
-        if (direction.down_right) Line { Vec2{pos}, Vec2{pos}.movedBy(0.4, 0.4) }.draw(0.1, ColorF { 1, 0, 0 });
-
+        }
       }
 
 
@@ -266,7 +267,7 @@ void Terrain::RenderGroundEdges(const Array<Point>& visible_cells, const camera:
       for (const auto& vec_array : edge_lines) {
         for (size_t i = 0; i < vec_array.size() - 1; ++i) {
           const Line line { vec_array[i], vec_array[i + 1] };
-          line.draw(LineStyle::RoundCap, 0.3, CalcEdgeColor(line.begin), CalcEdgeColor(line.end));
+          line.draw(LineStyle::RoundCap, 0.5, CalcEdgeColor(line.begin), CalcEdgeColor(line.end));
         }
       }
     }

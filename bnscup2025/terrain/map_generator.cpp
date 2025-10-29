@@ -3,18 +3,36 @@
 
 namespace bnscup2025::terrain {
 
-MapGenerator::Parameters MapGenerator::Generate(int level) {
+MapGenerator::Parameters MapGenerator::Generate(int level, bool is_game) {
 
-  const auto node_grid = CreateNodeGrid(Size { 50, 50 }, RandomUint64(), 2, 0.5, 10.0);
-  Terrain terrain = { node_grid, std::move(CreateSinhalitePositions(node_grid, 10)) };
-  const auto positions = CreatePlayerAndEnemyPosition(terrain);
-
-  return Parameters {
+  if (is_game) {
+    NodeGrid node_grid = CreateNodeGrid(Size { 100, 100 }, RandomUint64(), 2, 0.7, 10.0);
+    Terrain terrain = { node_grid, std::move(CreateSinhalitePositions(node_grid, 10)) };
+    const auto positions = CreatePlayerAndEnemyPosition(terrain);
+    return Parameters {
     .terrain = std::move(terrain),
     .player_position = positions.player_position,
     .enemy_position = positions.enemy_position,
-    .exit_position = positions.exit_position
-  };
+    .exit_position = positions.exit_position,
+    .speaker_position = {},
+    .shop_position = {}
+    };
+  }
+  else {
+    NodeGrid node_grid = CreateShopNodeGrid(level);
+    Terrain terrain = { node_grid, std::move(Array<Point>{}) };
+    return Parameters {
+    .terrain = std::move(terrain),
+    .player_position = Vec2{14.5, 20},
+    .enemy_position = Vec2{},
+    .exit_position = Vec2{14.5, 3},
+    .speaker_position = Vec2 { 24, 11.5 },
+    .shop_position = {}
+    };
+  }
+
+
+
 }
 
 double MapGenerator::WindowFunction(double x) {
@@ -48,6 +66,27 @@ NodeGrid MapGenerator::CreateNodeGrid(const Size& size, uint64 seed, int octaves
       NodeInfo {
         .density = density,
         .material = material
+      }
+    );
+  }
+
+  return grid;
+}
+
+NodeGrid MapGenerator::CreateShopNodeGrid(int level) {
+  NodeGrid grid { Size {30, 30} };
+
+  for (const auto& p : step(grid.GetSize())) {
+    double density = 0;
+    if (p.x >= 12 && p.x <= 17 && p.y >= 1 && p.y < 8) density = 1.0;
+    if (p.x >= 1 && p.x < 29 && p.y >= 8 && p.y < 16) density = 1.0;
+    if (p.x >= 9 && p.x <= 20 && p.y >= 16 && p.y <= grid.GetSize().y - 2) density = 1.0;
+
+    grid.Set(
+      p,
+      NodeInfo {
+        .density = density,
+        .material = MaterialEnum::Normal
       }
     );
   }

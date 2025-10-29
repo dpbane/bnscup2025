@@ -6,7 +6,12 @@ namespace bnscup2025::player {
 /*
   グレードアップ一覧
 
-  [エネルギー最大値アップ] : これのみレベル制でなく、実際の数値を増減させる
+  [エネルギー最大値増加] : 最大エネルギー増加
+  [エネルギー回復速度増加] : エネルギー回復速度アップ
+  [採掘速度増加] : 採掘クールダウン減少
+  [採掘威力増加] : 1回の採掘で掘れる範囲増加
+  [視界拡大] : 視界角度増加
+  [移動速度増加] : 移動速度増加
   [護身術【伸】] : シフト距離増加
   [護身術【心】] : コスト減少
   [護身術【進】] : 移動速度増加
@@ -18,6 +23,11 @@ namespace bnscup2025::player {
 
 enum class PowerGradeItem : uint8 {
   MaxEnergy,
+  EnergyRegen,
+  DigSpeed,
+  DigMight,
+  ViewAngle,
+  MoveSpeed,
   Nobiru,
   Kokoro,
   Susumu,

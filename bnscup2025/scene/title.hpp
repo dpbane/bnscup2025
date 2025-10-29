@@ -12,6 +12,8 @@ public:
   void draw() const override;
 
 private:
+  double time_ = 0.0;
+  std::array<PerlinNoise, 4> noises_;
 
 };
 

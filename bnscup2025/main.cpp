@@ -1,5 +1,6 @@
 ﻿# include <Siv3D.hpp> // Siv3D v0.6.16
 
+#include "scene/title.hpp"
 #include "scene/game.hpp"
 
 #include "fps_addon.hpp"
@@ -19,11 +20,15 @@ void Main() {
   //Scene::Resize(600, 720);
 
   scene::App manager;
+  manager.add<scene::Title>(scene::SceneEnum::Title);
   manager.add<scene::Game>(scene::SceneEnum::Game);
 
-  manager.init(scene::SceneEnum::Game, 0);
+  manager.init(scene::SceneEnum::Title, 0);
 
-  //Addon::Register(U"FrameRateLimit", std::make_unique<FrameRateLimitAddon>(60));
+  // Addon::Register(U"FrameRateLimit", std::make_unique<FrameRateLimitAddon>(60));
+
+  FontAsset::Register(U"Title", 256, U"example/font/DotGothic16/DotGothic16-Regular.ttf", FontStyle::Bitmap);
+  FontAsset::Register(U"Speaker", 64, U"example/font/DotGothic16/DotGothic16-Regular.ttf", FontStyle::Bitmap);
 
   System::Update();
   while (System::Update()) {

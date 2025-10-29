@@ -8,6 +8,8 @@ struct InputData {
   bool shift;
   bool dig;
   bool action;
+  bool confirm_trigger;
+  bool confirm_keep;
 };
 
 class Input {
