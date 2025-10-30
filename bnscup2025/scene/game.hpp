@@ -10,6 +10,8 @@
 #include "enemy/enemy.hpp"
 #include "exit/exit.hpp"
 #include "npc/speaker.hpp"
+#include "npc/shop.hpp"
+#include "npc/tutorial_text.hpp"
 
 #include "render/visibility_mask.hpp"
 
@@ -38,6 +40,8 @@ private:
   Optional<enemy::Enemy> enemy_;
   Optional<exit::Exit> exit_;
   Optional<npc::Speaker> speaker_;
+  Optional<npc::Shop> shop_;
+  Optional<npc::TutorialText> tutorial_text_;
 
   render::VisibilityMask visibility_mask_;
 

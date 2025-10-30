@@ -6,17 +6,31 @@ namespace bnscup2025::terrain {
 MapGenerator::Parameters MapGenerator::Generate(int level, bool is_game) {
 
   if (is_game) {
-    NodeGrid node_grid = CreateNodeGrid(Size { 100, 100 }, RandomUint64(), 2, 0.7, 10.0);
-    Terrain terrain = { node_grid, std::move(CreateSinhalitePositions(node_grid, 10)) };
-    const auto positions = CreatePlayerAndEnemyPosition(terrain);
-    return Parameters {
-    .terrain = std::move(terrain),
-    .player_position = positions.player_position,
-    .enemy_position = positions.enemy_position,
-    .exit_position = positions.exit_position,
-    .speaker_position = {},
-    .shop_position = {}
-    };
+    if (level == 0) {
+      NodeGrid node_grid = CreateTutorialNodeGrid();
+      Terrain terrain = { node_grid, std::move(CreateSinhalitePositions(node_grid, 0)) };
+      return Parameters {
+      .terrain = std::move(terrain),
+      .player_position = Vec2{9.5, 55.0},
+      .enemy_position = Vec2{-10.0, -10.0},
+      .exit_position = Vec2{9.5, 4.0},
+      .speaker_position = {},
+      .shop_position = {}
+      };
+    }
+    else {
+      NodeGrid node_grid = CreateNodeGrid(Size { 100, 100 }, RandomUint64(), 2, 0.8, 0.05);
+      Terrain terrain = { node_grid, std::move(CreateSinhalitePositions(node_grid, 10)) };
+      const auto positions = CreatePlayerAndEnemyPosition(terrain);
+      return Parameters {
+      .terrain = std::move(terrain),
+      .player_position = positions.player_position,
+      .enemy_position = positions.enemy_position,
+      .exit_position = positions.exit_position,
+      .speaker_position = {},
+      .shop_position = {}
+      };
+    }
   }
   else {
     NodeGrid node_grid = CreateShopNodeGrid(level);
@@ -30,8 +44,6 @@ MapGenerator::Parameters MapGenerator::Generate(int level, bool is_game) {
     .shop_position = {}
     };
   }
-
-
 
 }
 
@@ -49,8 +61,8 @@ NodeGrid MapGenerator::CreateNodeGrid(const Size& size, uint64 seed, int octaves
 
   // Perlinノイズに基づく地形生成
   for (const auto& p : step(size)) {
-    double nx = (double)p.x / size.x * scale;
-    double ny = (double)p.y / size.y * scale;
+    double nx = (double)p.x * scale;
+    double ny = (double)p.y * scale;
     double density = noise.octave2D0_1(nx, ny, octaves, persistence);
 
     density += 0.05;
@@ -90,6 +102,48 @@ NodeGrid MapGenerator::CreateShopNodeGrid(int level) {
       }
     );
   }
+
+  return grid;
+}
+
+NodeGrid MapGenerator::CreateTutorialNodeGrid() {
+  NodeGrid grid { Size {20, 60} };
+
+  for (const auto& p : step(grid.GetSize())) {
+    double density = 1.0;
+    MaterialEnum material = MaterialEnum::Normal;
+
+    // Circle
+    Circle circles_[] = {
+      Circle{Vec2{4.0, 45.0}, 8.0},
+      Circle{Vec2{13.0, 30.0}, 12.0},
+    };
+    for (const auto& c : circles_) {
+      const double dist_n = Point { p }.distanceFrom(c.center) / c.r;
+      if (dist_n < 1.0) density = dist_n;
+    }
+
+    // Box
+    if (p.x >= 1 && p.x <= 18 && p.y >= 10 && p.y <= 12) {
+      density = 0.4;
+    }
+
+    // Bounds
+    if (p.x == 0 || p.x == grid.GetSize().x - 1 || p.y == 0 || p.y == grid.GetSize().y - 1) {
+      density = 0.0;
+      material = MaterialEnum::Bounds;
+    }
+
+
+    grid.Set(
+      p,
+      NodeInfo {
+        .density = density,
+        .material = material
+      }
+    );
+  }
+
 
   return grid;
 }

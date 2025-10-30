@@ -5,27 +5,33 @@
 #include "render/blend_mode.hpp"
 
 #include "input/input.hpp"
+#include "screen/fade.hpp"
 
 namespace bnscup2025::scene {
 
 Title::Title(const InitData& init_data) :
   IScene(init_data) {
-  for (auto& noise : noises_) noise.reseed(RandomUint64());
+  screen::Fade::GetInstance().BeginFadeIn(kFadeDuration);
 }
 
 void Title::update() {
   const auto input_data = input::Input::GetInstance().GetData();
+  auto& fade = screen::Fade::GetInstance();
 
-  time_ += Scene::DeltaTime();
-
-  if (input_data.confirm_trigger) {
+  if (fade.CompletedFadeIn() && input_data.confirm_trigger) {
     getData() = CommonData {
       .next_level = 0,
-      .next_room = Room::Shop,
+      .next_room = Room::Game,
       .power_grade = player::PowerGrade{}
     };
+    fade.BeginFadeOut(kFadeDuration);
+  }
+
+  if (fade.CompletedFadeOut()) {
     changeScene(SceneEnum::Game, 0);
   }
+
+  fade.Update();
 }
 
 void Title::draw() const {
@@ -45,13 +51,14 @@ void Title::draw() const {
     for (int k = 0; k < 4; ++k) {
       FontAsset(U"Title")(texts[k]).drawAt(
         Scene::Center().movedBy(gryph_size * (-1.5 + k * 1.0), -Scene::Height() * 0.25),
-        colors[k]
+        colors[k].withA(0.7)
       );
     }
   }
 
   render::LightBloom::GetInstance().Apply(1.0, 0.0, 1.0);
 
+  screen::Fade::GetInstance().Render();
 }
 
 }

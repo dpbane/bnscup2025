@@ -29,6 +29,7 @@ void Main() {
 
   FontAsset::Register(U"Title", 256, U"example/font/DotGothic16/DotGothic16-Regular.ttf", FontStyle::Bitmap);
   FontAsset::Register(U"Speaker", 64, U"example/font/DotGothic16/DotGothic16-Regular.ttf", FontStyle::Bitmap);
+  FontAsset::Register(U"Tutorial", 64, U"example/font/DotGothic16/DotGothic16-Regular.ttf", FontStyle::Bitmap);
 
   System::Update();
   while (System::Update()) {

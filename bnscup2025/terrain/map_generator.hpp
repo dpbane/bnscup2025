@@ -50,6 +50,10 @@ private:
   /// @return ノードグリッド。
   static NodeGrid CreateShopNodeGrid(int level);
 
+  /// @brief チュートリアル用のノードグリッドを作成する。
+  /// @return ノードグリッド。
+  static NodeGrid CreateTutorialNodeGrid();
+
   /// @brief プレイヤーと敵の初期位置を作成する。
   /// @param terrain 地形クラス。
   /// @return プレイヤーと敵の初期位置。

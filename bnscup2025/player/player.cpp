@@ -25,9 +25,7 @@ Player::Player(const camera::Camera& camera, terrain::Terrain& terrain, Effect& 
 void Player::Update() {
   sound_position_.reset();
 
-  const auto input_data = input::Input::GetInstance().GetData();
-  direction_face_ = input_data.direction_face;
-
+  ProcessDirectionFace();
   ProcessMove();
 
   if (is_game_) {
@@ -46,13 +44,13 @@ void Player::Render() const {
     if (digging_position_) {
       {
         const auto t = camera_.CreateRenderTransformer();
-        Line { position_ + direction_face_ * 0.5, *digging_position_ }.draw(LineStyle::RoundDot, 0.10, ColorF { 0.6, 0.6, 0.0 });
+        Line { position_ + direction_face_ * kCharacterRadius * 1.2, *digging_position_ }.draw(LineStyle::RoundDot, 0.25, ColorF { 0.6, 0.6, 0.0 });
       }
       {
         const auto target = lightbloom.CreateRenderTarget();
         const auto blend = render::BlendMode::AlphaMax();
         const auto t = camera_.CreateRenderTransformer();
-        Circle { *digging_position_, 0.35 }.drawFrame(0.20, ColorF { 1.0, 1.0, 0.0 });
+        Circle { *digging_position_, 0.50 }.drawFrame(0.40, ColorF { 1.0, 1.0, 0.0 });
       }
       lightbloom.Apply(5.0, 5.0, 5.0);
 
@@ -60,8 +58,28 @@ void Player::Render() const {
     else {
       const auto t = camera_.CreateRenderTransformer();
       const Vec2 default_dig_pos = position_ + direction_face_ * kDigRange;
-      Line { position_ + direction_face_ * 0.5, default_dig_pos }.draw(LineStyle::RoundDot, 0.10, ColorF { 0.25, 0.25, 0.25 });
+      Line { position_ + direction_face_ * kCharacterRadius * 1.2, default_dig_pos }.draw(LineStyle::RoundDot, 0.25, ColorF { 0.25, 0.25, 0.25 });
     }
+  }
+}
+
+void Player::ProcessDirectionFace() {
+  const auto input_data = input::Input::GetInstance().GetData();
+  if (input_data.direction_face.isZero()) return;
+
+  const double angle_input = input_data.direction_face.getAngle();
+  const double angle_current = direction_face_.getAngle();
+  double angle_diff = angle_input - angle_current;
+  if (angle_diff > Math::Pi) angle_diff -= Math::TwoPi;
+  if (angle_diff < -Math::Pi) angle_diff += Math::TwoPi;
+
+  const double rotate_speed = 960_deg;  // per second
+  if (Abs(angle_diff) <= rotate_speed * Scene::DeltaTime()) {
+    direction_face_ = input_data.direction_face.normalized();
+  }
+  else {
+    const double angle_new = angle_current + Sign(angle_diff) * rotate_speed * Scene::DeltaTime();
+    direction_face_ = Vec2 { 0.0, -1.0 }.rotated(angle_new);
   }
 }
 
@@ -95,7 +113,10 @@ void Player::ProcessDigging() {
   digging_position_ = terrain_.CalcLineCollisionPoint(position_, direction_face_, kDigRange);
 
   if (input_data.dig && digging_position_ && dig_timer_ <= 0.0) {
-    terrain_.DigAt(*digging_position_, 2.0, 0.15, 0.01);
+    const double dig_radius = 3.0;
+    const double dig_might_center = 0.15;
+    const double dig_might_end = 0.01;
+    terrain_.DigAt(*digging_position_, dig_radius, dig_might_center, dig_might_end);
     dig_timer_ = 0.2;
     effect_.add<effect::Dig>(camera_, *digging_position_, direction_face_);
     sound_position_ = (*digging_position_ * 0.2 + position_ * 0.8);

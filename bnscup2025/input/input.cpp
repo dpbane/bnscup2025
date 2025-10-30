@@ -1,6 +1,8 @@
 ﻿#include "stdafx.h"
 #include "input.hpp"
 
+#include "screen/fade.hpp"
+
 namespace bnscup2025::input {
 
 InputData Input::GetData() {
@@ -9,7 +11,7 @@ InputData Input::GetData() {
   Vec2 center = Scene::CenterF();
   Vec2 mouse = Cursor::PosF();
   ret.direction_face = (mouse - center).normalized();
-  if (ret.direction_face.isZero()) ret.direction_face = Vec2(0.0, -1.0);
+  if (ret.direction_face.isZero()) ret.direction_face = Vec2(0.0, 0.0);
 
   ret.direction_move = Vec2 { 0.0, 0.0 };
   if (KeyW.pressed()) ret.direction_move.y -= 1.0;
@@ -23,6 +25,15 @@ InputData Input::GetData() {
   ret.action = MouseR.pressed();
   ret.confirm_trigger = (MouseL.down() || MouseR.down());
   ret.confirm_keep = (MouseL.pressed() || MouseR.pressed());
+
+  if (not screen::Fade::GetInstance().CompletedFadeIn()) {
+    ret.shift = false;
+    ret.dig = false;
+    ret.action = false;
+    ret.confirm_trigger = false;
+    ret.confirm_keep = false;
+    ret.direction_move = Vec2 { 0.0, 0.0 };
+  }
 
   return ret;
 }

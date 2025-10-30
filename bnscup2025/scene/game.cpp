@@ -1,6 +1,8 @@
 ﻿#include "stdafx.h"
 #include "game.hpp"
 
+#include "screen/fade.hpp"
+
 #include "render/blend_mode.hpp"
 
 #include "terrain/visibility.hpp"
@@ -39,30 +41,71 @@ Game::Game(const InitData& init_data) :
   exit_.emplace(*camera_, *player_, map_params.exit_position);
 
   if (is_game_) {
-    enemy_.emplace(*camera_, *terrain_, *player_, map_params.enemy_position, enemy_params);
+    if (level == 0) {
+      // チュートリアル
+      tutorial_text_.emplace(*player_);
+      tutorial_text_->AddEntry(
+        npc::TutorialText::Entry {
+          .area = RectF { 0.0, 45.0, 20.0, 15.0 },
+          .text = U"WASDキー / 左スティックで移動"
+        }
+      );
+      tutorial_text_->AddEntry(
+        npc::TutorialText::Entry {
+          .area = RectF { 0.0, 30.0, 20.0, 10.0 },
+          .text = U"マウスカーソル / 右スティックで周囲を見渡す"
+        }
+      );
+      tutorial_text_->AddEntry(
+        npc::TutorialText::Entry {
+          .area = RectF { 0.0, 15.0, 20.0, 10.0 },
+          .text = U"左クリック / LTで地形を掘る"
+        }
+      );
+      tutorial_text_->AddEntry(
+        npc::TutorialText::Entry {
+          .area = RectF { 0.0, 0.0, 20.0, 10.0 },
+          .text = U"出口に乗り続けると次のエリアへ"
+        }
+      );
+    }
+    else {
+      // 通常レベル
+      enemy_.emplace(*camera_, *terrain_, *player_, map_params.enemy_position, enemy_params);
+    }
   }
   else {
+    // 休憩エリア
     speaker_.emplace(
       *camera_,
       *player_,
       map_params.speaker_position,
       npc::SpeakerLines::Get(level),
-      level == 0 ? npc::SpeakerEnum::Orrange : npc::SpeakerEnum::Sky
+      (level == 0 || level >= 12) ? npc::SpeakerEnum::Orrange : npc::SpeakerEnum::Sky
     );
+
+    // TODO: shop_.emplace()
   }
 
   npc::TextWindow::GetInstance().Reset();
+
+  screen::Fade::GetInstance().BeginFadeIn(kFadeDuration);
+
 }
 
 void Game::update() {
-
+  auto& fade = screen::Fade::GetInstance();
   const auto input_data = input::Input::GetInstance().GetData();
 
   player_->Update();
-  if (exit_) exit_->Update();
+  if (fade.CompletedFadeIn()) {
+    if (exit_) exit_->Update();
 
-  if (enemy_) enemy_->Update();
-  if (speaker_) speaker_->Update();
+    if (enemy_) enemy_->Update();
+    if (speaker_) speaker_->Update();
+
+    if (tutorial_text_) tutorial_text_->Update();
+  }
 
   camera_->SetCenter(player_->GetPosition());
   terrain_->Update();
@@ -71,7 +114,7 @@ void Game::update() {
   );
   visibility_mask_.SetPosition(player_->GetShiftedPosition());
 
-  if (exit_ && exit_->ShouldExitGame()) {
+  if (exit_ && exit_->ShouldExitGame() && fade.CompletedFadeIn()) {
     if (getData().next_room == Room::Shop) {
       getData() = CommonData {
         .next_level = getData().next_level + 1,
@@ -86,10 +129,15 @@ void Game::update() {
         .power_grade = getData().power_grade
       };
     }
+    fade.BeginFadeOut(kFadeDuration);
+  }
+  if (fade.CompletedFadeOut()) {
     changeScene(SceneEnum::Game, 0);
   }
 
   npc::TextWindow::GetInstance().Update();
+
+  fade.Update();
 }
 
 void Game::draw() const {
@@ -100,7 +148,6 @@ void Game::draw() const {
   player_->Render();
   if (enemy_) enemy_->Render();
   if (speaker_) speaker_->Render();
-
 
   const auto lines = terrain_->CreateVisibleWallLines(*camera_);
   //Print << U"スクリーン上に描画されうる線分の数：" << lines.size();
@@ -114,7 +161,10 @@ void Game::draw() const {
     visibility_mask_.Render(*camera_, radius);
   }
 
+  if (tutorial_text_) tutorial_text_->Render();
+
   npc::TextWindow::GetInstance().Render();
+  screen::Fade::GetInstance().Render();
 }
 
 }

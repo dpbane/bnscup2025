@@ -30,6 +30,7 @@ void LightBloom::Apply(double x1, double x4, double x8) const {
     if (x1 > 0.0 || x4 > 0.0 || x8 > 0.0) {
       Shader::GaussianBlur(blur_x1_texture_, blur_x1_internal_texture_, blur_x1_texture_);
       blur_x1_texture_.resized(Scene::Size()).draw(ColorF { x1 });
+
     }
     // x4ブラー
     if (x4 > 0.0 || x8 > 0.0) {

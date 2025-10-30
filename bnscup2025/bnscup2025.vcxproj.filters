@@ -225,6 +225,12 @@
     <ClCompile Include="npc\text_window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="npc\tutorial_text.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="screen\fade.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="App\icon.ico">
@@ -984,6 +990,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="npc\text_window.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="npc\tutorial_text.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="exit\exit_ui.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="screen\fade.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

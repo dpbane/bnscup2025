@@ -20,6 +20,7 @@ public:
   const Optional<Vec2>& GetSoundPosition() const { return sound_position_; }
 
 private:
+  void ProcessDirectionFace();
   void ProcessMove();
   void ProcessShift();
   void ProcessDigging();
@@ -31,10 +32,10 @@ private:
   const bool is_game_;
 
   Vec2 position_;
-  Vec2 shift_amount_{ 0.0, 0.0 };
-  Vec2 direction_face_{ 0.0, -1.0 };
+  Vec2 shift_amount_ { 0.0, 0.0 };
+  Vec2 direction_face_ { 0.0, -1.0 };
 
-  double dig_timer_{ 0.0 };
+  double dig_timer_ { 0.0 };
   Optional<Vec2> digging_position_;
 
   Optional<Vec2> sound_position_;

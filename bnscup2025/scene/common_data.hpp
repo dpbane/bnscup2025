@@ -10,9 +10,9 @@ enum class Room : uint8 {
 };
 
 struct CommonData {
-  int next_level;
-  Room next_room;
-  player::PowerGrade power_grade;
+  int next_level { 0 };
+  Room next_room { Room::Game };
+  player::PowerGrade power_grade {};
 };
 
 }
