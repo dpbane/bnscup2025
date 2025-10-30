@@ -4,7 +4,7 @@
 #include "input/input.hpp"
 #include "render/chara_renderer.hpp"
 
-#include "text_window.hpp"
+#include "ui/text_window.hpp"
 
 namespace bnscup2025::npc {
 
@@ -22,16 +22,16 @@ void Speaker::Update() {
   const auto input_data = input::Input::GetInstance().GetData();
   const Vec2 player_pos = player_.GetPosition();
   const double distance = (player_pos - position_).length();
-  auto& text_window = TextWindow::GetInstance();
+  auto& text_window = ui::TextWindow::GetInstance();
 
   if (distance <= (kSpeakDistance)) {
-    TextWindow::GetInstance().SetText(texts_[current_text_index_]);
+    ui::TextWindow::GetInstance().SetText(texts_[current_text_index_]);
     text_window.SetActive();
 
-    if (TextWindow::GetInstance().IsFadeFinished() && current_text_index_ < texts_.size() - 1 && input_data.confirm_trigger) {
+    if (ui::TextWindow::GetInstance().IsFadeFinished() && current_text_index_ < texts_.size() - 1 && input_data.confirm_trigger) {
       ++current_text_index_;
     }
-    TextWindow::GetInstance().SetText(texts_[current_text_index_]);
+    ui::TextWindow::GetInstance().SetText(texts_[current_text_index_]);
   }
 }
 

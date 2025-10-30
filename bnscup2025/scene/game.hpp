@@ -11,9 +11,11 @@
 #include "exit/exit.hpp"
 #include "npc/speaker.hpp"
 #include "npc/shop.hpp"
-#include "npc/tutorial_text.hpp"
+#include "ui/tutorial_text.hpp"
+#include "ui/floor_text.hpp"
 
 #include "render/visibility_mask.hpp"
+
 
 namespace bnscup2025::scene {
 
@@ -41,7 +43,8 @@ private:
   Optional<exit::Exit> exit_;
   Optional<npc::Speaker> speaker_;
   Optional<npc::Shop> shop_;
-  Optional<npc::TutorialText> tutorial_text_;
+  Optional<ui::TutorialText> tutorial_text_;
+  Optional<ui::FloorText> floor_text_;
 
   render::VisibilityMask visibility_mask_;
 

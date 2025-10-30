@@ -20,6 +20,7 @@ public:
   const Vec2& GetDirectionFace() const { return direction_face_; }
 
   const Optional<Vec2>& GetSoundPosition() const { return sound_position_; }
+  const PowerGrade& GetPowerGrade() const { return power_grade_; }
 
 private:
   void ProcessDirectionFace();

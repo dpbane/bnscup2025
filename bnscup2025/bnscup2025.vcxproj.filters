@@ -222,16 +222,22 @@
     <ClCompile Include="npc\shop.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="npc\text_window.cpp">
+    <ClCompile Include="ui\text_window.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="npc\tutorial_text.cpp">
+    <ClCompile Include="ui\tutorial_text.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="screen\fade.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="scene\gameover.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\floor_text.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="scene\floor_name_factory.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -992,10 +998,10 @@
     <ClInclude Include="npc\shop.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="npc\text_window.hpp">
+    <ClInclude Include="ui\text_window.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="npc\tutorial_text.hpp">
+    <ClInclude Include="ui\tutorial_text.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="exit\exit_ui.hpp">
@@ -1005,6 +1011,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="scene\gameover.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ui\floor_text.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="scene\floor_name_factory.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

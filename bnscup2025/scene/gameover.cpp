@@ -40,7 +40,7 @@ void GameOver::draw() const {
 
   Scene::Rect().draw(ColorF(0.0));
   FontAsset(U"Tutorial")(U"シンでしまった…").drawAt(
-    Scene::Center().movedBy(0, -Scene::Height() / 6),
+    Scene::Center().movedBy(0, -Scene::Height() / 12),
     ColorF(1.0).withAlpha(alpha)
   );
 }

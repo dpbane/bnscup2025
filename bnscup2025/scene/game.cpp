@@ -11,7 +11,8 @@
 #include "input/input.hpp"
 #include "npc/speaker_lines.hpp"
 
-#include "npc/text_window.hpp"
+#include "ui/text_window.hpp"
+#include "floor_name_factory.hpp"
 
 namespace bnscup2025::scene {
 
@@ -47,25 +48,25 @@ Game::Game(const InitData& init_data) :
       // チュートリアル
       tutorial_text_.emplace(*player_);
       tutorial_text_->AddEntry(
-        npc::TutorialText::Entry {
+        ui::TutorialText::Entry {
           .area = RectF { 0.0, 45.0, 20.0, 15.0 },
           .text = U"WASDキー / 左スティックで移動"
         }
       );
       tutorial_text_->AddEntry(
-        npc::TutorialText::Entry {
+        ui::TutorialText::Entry {
           .area = RectF { 0.0, 30.0, 20.0, 10.0 },
           .text = U"マウスカーソル / 右スティックで周囲を見渡す"
         }
       );
       tutorial_text_->AddEntry(
-        npc::TutorialText::Entry {
+        ui::TutorialText::Entry {
           .area = RectF { 0.0, 15.0, 20.0, 10.0 },
           .text = U"左クリック / LTで地形を掘る"
         }
       );
       tutorial_text_->AddEntry(
-        npc::TutorialText::Entry {
+        ui::TutorialText::Entry {
           .area = RectF { 0.0, 0.0, 20.0, 10.0 },
           .text = U"出口に乗り続けると次のエリアへ"
         }
@@ -89,9 +90,11 @@ Game::Game(const InitData& init_data) :
     // TODO: shop_.emplace()
   }
 
-  npc::TextWindow::GetInstance().Reset();
+  ui::TextWindow::GetInstance().Reset();
 
   screen::Fade::GetInstance().BeginFadeIn(kFadeDuration);
+
+  floor_text_.emplace(FloorNameFactory::Create(level, is_game_));
 }
 
 void Game::update() {
@@ -138,7 +141,8 @@ void Game::update() {
     changeScene(SceneEnum::Game, 0);
   }
 
-  npc::TextWindow::GetInstance().Update();
+  ui::TextWindow::GetInstance().Update();
+  floor_text_->Update();
 
   fade.Update();
 }
@@ -166,8 +170,9 @@ void Game::draw() const {
 
   if (tutorial_text_) tutorial_text_->Render();
 
-  npc::TextWindow::GetInstance().Render();
+  ui::TextWindow::GetInstance().Render();
   screen::Fade::GetInstance().Render();
+  floor_text_->Render();
 
   Print << U"シンハライト: " << getData().sinhalite_amount;
 }

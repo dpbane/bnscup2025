@@ -31,7 +31,7 @@ void Main() {
   // Addon::Register(U"FrameRateLimit", std::make_unique<FrameRateLimitAddon>(60));
 
   FontAsset::Register(U"Title", 256, U"example/font/DotGothic16/DotGothic16-Regular.ttf", FontStyle::Bitmap);
-  FontAsset::Register(U"Speaker", 64, U"example/font/DotGothic16/DotGothic16-Regular.ttf", FontStyle::Bitmap);
+  FontAsset::Register(U"TextWindow", 64, U"example/font/DotGothic16/DotGothic16-Regular.ttf", FontStyle::Bitmap);
   FontAsset::Register(U"Tutorial", 64, U"example/font/DotGothic16/DotGothic16-Regular.ttf", FontStyle::Bitmap);
 
   System::Update();

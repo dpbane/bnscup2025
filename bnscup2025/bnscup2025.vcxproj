@@ -123,8 +123,10 @@
     <ClCompile Include="npc\shop.cpp" />
     <ClCompile Include="npc\speaker.cpp" />
     <ClCompile Include="npc\speaker_lines.cpp" />
-    <ClCompile Include="npc\text_window.cpp" />
-    <ClCompile Include="npc\tutorial_text.cpp" />
+    <ClCompile Include="ui\text_window.cpp" />
+    <ClCompile Include="scene\floor_name_factory.cpp" />
+    <ClCompile Include="ui\floor_text.cpp" />
+    <ClCompile Include="ui\tutorial_text.cpp" />
     <ClCompile Include="player\power_grade.cpp" />
     <ClCompile Include="render\chara_renderer.cpp" />
     <ClCompile Include="render\visibility_mask.cpp" />
@@ -365,8 +367,10 @@
     <ClInclude Include="npc\shop.hpp" />
     <ClInclude Include="npc\speaker.hpp" />
     <ClInclude Include="npc\speaker_lines.hpp" />
-    <ClInclude Include="npc\text_window.hpp" />
-    <ClInclude Include="npc\tutorial_text.hpp" />
+    <ClInclude Include="ui\text_window.hpp" />
+    <ClInclude Include="scene\floor_name_factory.hpp" />
+    <ClInclude Include="ui\floor_text.hpp" />
+    <ClInclude Include="ui\tutorial_text.hpp" />
     <ClInclude Include="render\chara_renderer.hpp" />
     <ClInclude Include="render\visibility_mask.hpp" />
     <ClInclude Include="scene\common_data.hpp" />
