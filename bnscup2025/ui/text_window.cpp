@@ -43,7 +43,8 @@ void TextWindow::Update() {
 void TextWindow::Render() const {
   Rect window { Point{0, Scene::Height() / 8}, Size{Scene::Width(), Scene::Height() / 4} };
   window.draw(ColorF { 0, 0, 0, text_window_alpha_ * 0.8 });
-  FontAsset(U"TextWindow")(current_text_).drawAt(window.center(), ColorF { 1, 1, 1, text_alpha_ });
+  const double font_size = double(Scene::Height()) / 1080.0 * 64;
+  FontAsset(U"Text")(current_text_).drawAt(font_size, window.center(), ColorF { 1, 1, 1, text_alpha_ });
 }
 
 

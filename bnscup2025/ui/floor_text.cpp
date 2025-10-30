@@ -27,8 +27,9 @@ void FloorText::Render() const {
     alpha = 1.0 - ((timer_ - 2.5) / 0.5);
   }
 
-  FontAsset(U"TextWindow")(text_)
-    .drawAt(Scene::Center().movedBy(0, Scene::Height() / 3), ColorF { 1.0, 1.0, 1.0, alpha });
+  const double font_size = double(Scene::Height()) / 1080 * 64;
+  FontAsset(U"Text")(text_)
+    .drawAt(font_size, Scene::Center().movedBy(0, Scene::Height() / 3), ColorF { 1.0, 1.0, 1.0, alpha });
 }
 
 }

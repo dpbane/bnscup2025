@@ -35,9 +35,13 @@ void TutorialText::Update() {
 }
 
 void TutorialText::Render() const {
-  FontAsset(U"Tutorial")(current_text_)
-    .drawAt(Scene::Center().movedBy(0, Scene::Height() * 0.4),
-      ColorF { 1.0, 1.0, 1.0, alpha_ });
+  const double font_size = double(Scene::Height()) / 1080 * 64;
+  FontAsset(U"Text")(current_text_)
+    .drawAt(
+      font_size,
+      Scene::Center().movedBy(0, Scene::Height() * 0.4),
+      ColorF { 1.0, 1.0, 1.0, alpha_ }
+    );
 }
 
 

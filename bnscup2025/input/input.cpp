@@ -27,12 +27,9 @@ InputData Input::GetData() {
   ret.confirm_keep = (MouseL.pressed() || MouseR.pressed());
 
   if (not screen::Fade::GetInstance().CompletedFadeIn()) {
-    ret.shift = false;
-    ret.dig = false;
-    ret.action = false;
-    ret.confirm_trigger = false;
-    ret.confirm_keep = false;
-    ret.direction_move = Vec2 { 0.0, 0.0 };
+    const Vec2 df = ret.direction_face;
+    ret = InputData {};
+    ret.direction_face = df;
   }
 
   return ret;

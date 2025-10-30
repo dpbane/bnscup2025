@@ -33,7 +33,8 @@ enum class PowerGradeItem : uint8 {
   Susumu,
   Tsutsu,
   Miru,
-  God
+  God,
+  Reroll
 };
 
 /// @brief プレイヤーの強化状態を管理するクラス。
@@ -45,7 +46,7 @@ public:
   const uint8& operator[](PowerGradeItem item) const;
 
 private:
-  std::array<uint8, static_cast<size_t>(PowerGradeItem::God) + 1> grade_levels_;
+  std::array<uint8, static_cast<size_t>(PowerGradeItem::Reroll) + 1> grade_levels_;
 };
 
 

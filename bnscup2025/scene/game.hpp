@@ -13,6 +13,7 @@
 #include "npc/shop.hpp"
 #include "ui/tutorial_text.hpp"
 #include "ui/floor_text.hpp"
+#include "ui/sinhalite_disp.hpp"
 
 #include "render/visibility_mask.hpp"
 
@@ -45,6 +46,7 @@ private:
   Optional<npc::Shop> shop_;
   Optional<ui::TutorialText> tutorial_text_;
   Optional<ui::FloorText> floor_text_;
+  Optional<ui::SinhaliteText> sinhalite_text_;
 
   render::VisibilityMask visibility_mask_;
 

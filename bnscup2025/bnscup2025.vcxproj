@@ -121,8 +121,13 @@
     <ClCompile Include="enemy\enemy.cpp" />
     <ClCompile Include="exit\exit.cpp" />
     <ClCompile Include="npc\shop.cpp" />
+    <ClCompile Include="npc\shop\item_info_factory.cpp" />
+    <ClCompile Include="npc\shop\shop_window_item.cpp" />
     <ClCompile Include="npc\speaker.cpp" />
     <ClCompile Include="npc\speaker_lines.cpp" />
+    <ClCompile Include="npc\shop\shop_window.cpp" />
+    <ClCompile Include="player\goshin\selector.cpp" />
+    <ClCompile Include="ui\sinhalite_disp.cpp" />
     <ClCompile Include="ui\text_window.cpp" />
     <ClCompile Include="scene\floor_name_factory.cpp" />
     <ClCompile Include="ui\floor_text.cpp" />
@@ -365,8 +370,13 @@
     <ClInclude Include="exit\exit_ui.hpp" />
     <ClInclude Include="fps_addon.hpp" />
     <ClInclude Include="npc\shop.hpp" />
+    <ClInclude Include="npc\shop\item_info_factory.hpp" />
+    <ClInclude Include="npc\shop\shop_window_item.hpp" />
     <ClInclude Include="npc\speaker.hpp" />
     <ClInclude Include="npc\speaker_lines.hpp" />
+    <ClInclude Include="npc\shop\shop_window.hpp" />
+    <ClInclude Include="player\goshin\selector.hpp" />
+    <ClInclude Include="ui\sinhalite_disp.hpp" />
     <ClInclude Include="ui\text_window.hpp" />
     <ClInclude Include="scene\floor_name_factory.hpp" />
     <ClInclude Include="ui\floor_text.hpp" />

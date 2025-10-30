@@ -86,8 +86,9 @@ Game::Game(const InitData& init_data) :
       npc::SpeakerLines::Get(level, getData().death_count, getData().clear_count),
       (level == 0 || level >= 12) ? npc::SpeakerEnum::Orrange : npc::SpeakerEnum::Sky
     );
-
-    // TODO: shop_.emplace()
+    if (level >= 1 && level <= 11) {
+      shop_.emplace(*camera_, *player_, getData().power_grade, map_params.shop_position, getData().sinhalite_amount);
+    }
   }
 
   ui::TextWindow::GetInstance().Reset();
@@ -95,6 +96,7 @@ Game::Game(const InitData& init_data) :
   screen::Fade::GetInstance().BeginFadeIn(kFadeDuration);
 
   floor_text_.emplace(FloorNameFactory::Create(level, is_game_));
+  sinhalite_text_.emplace(getData().sinhalite_amount);
 }
 
 void Game::update() {
@@ -107,6 +109,7 @@ void Game::update() {
 
     if (enemy_) enemy_->Update();
     if (speaker_) speaker_->Update();
+    if (shop_) shop_->Update();
 
     if (tutorial_text_) tutorial_text_->Update();
   }
@@ -143,8 +146,10 @@ void Game::update() {
 
   ui::TextWindow::GetInstance().Update();
   floor_text_->Update();
+  sinhalite_text_->Update();
 
   fade.Update();
+
 }
 
 void Game::draw() const {
@@ -155,6 +160,7 @@ void Game::draw() const {
   player_->Render();
   if (enemy_) enemy_->Render();
   if (speaker_) speaker_->Render();
+  if (shop_) shop_->Render();
 
   const auto lines = terrain_->CreateVisibleWallLines(*camera_);
   //Print << U"スクリーン上に描画されうる線分の数：" << lines.size();
@@ -171,8 +177,11 @@ void Game::draw() const {
   if (tutorial_text_) tutorial_text_->Render();
 
   ui::TextWindow::GetInstance().Render();
-  screen::Fade::GetInstance().Render();
   floor_text_->Render();
+  sinhalite_text_->Render();
+
+  screen::Fade::GetInstance().Render();
+
 
   Print << U"シンハライト: " << getData().sinhalite_amount;
 }

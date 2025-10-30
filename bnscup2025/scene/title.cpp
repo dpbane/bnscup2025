@@ -21,9 +21,17 @@ void Title::update() {
   if (fade.CompletedFadeIn() && input_data.confirm_trigger) {
     getData() = CommonData {
       .next_level = 1,
+      .next_room = Room::Shop,
+      .power_grade = player::PowerGrade{},
+      .sinhalite_amount = 20,
+      .death_count = 0,
+      .clear_count = 0
+    };
+    getData() = CommonData {
+      .next_level = 0,
       .next_room = Room::Game,
       .power_grade = player::PowerGrade{},
-      .sinhalite_amount = 0,
+      .sinhalite_amount = 20,
       .death_count = 0,
       .clear_count = 0
     };
@@ -53,6 +61,7 @@ void Title::draw() const {
 
     for (int k = 0; k < 4; ++k) {
       FontAsset(U"Title")(texts[k]).drawAt(
+        gryph_size,
         Scene::Center().movedBy(gryph_size * (-1.5 + k * 1.0), -Scene::Height() * 0.25),
         colors[k].withA(0.7)
       );
