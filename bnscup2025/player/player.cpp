@@ -20,6 +20,9 @@ Player::Player(const camera::Camera& camera, terrain::Terrain& terrain, Effect& 
   effect_(effect),
   position_(pos),
   is_game_(is_game) {
+
+  const auto input_data = input::Input::GetInstance().GetData();
+  direction_face_ = input_data.direction_face.isZero() ? Vec2 { 0.0, -1.0 } : input_data.direction_face.normalized();
 }
 
 void Player::Update() {
@@ -73,7 +76,7 @@ void Player::ProcessDirectionFace() {
   if (angle_diff > Math::Pi) angle_diff -= Math::TwoPi;
   if (angle_diff < -Math::Pi) angle_diff += Math::TwoPi;
 
-  const double rotate_speed = 960_deg;  // per second
+  const double rotate_speed = 720_deg;  // per second
   if (Abs(angle_diff) <= rotate_speed * Scene::DeltaTime()) {
     direction_face_ = input_data.direction_face.normalized();
   }

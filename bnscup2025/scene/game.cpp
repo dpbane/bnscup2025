@@ -80,7 +80,7 @@ Game::Game(const InitData& init_data) :
       *camera_,
       *player_,
       map_params.speaker_position,
-      npc::SpeakerLines::Get(level),
+      npc::SpeakerLines::Get(level, getData().death_count, getData().clear_count),
       (level == 0 || level >= 12) ? npc::SpeakerEnum::Orrange : npc::SpeakerEnum::Sky
     );
 
@@ -107,6 +107,10 @@ void Game::update() {
     if (tutorial_text_) tutorial_text_->Update();
   }
 
+  if (enemy_ && enemy_->IsPlayerCaught()) {
+    changeScene(SceneEnum::GameOver, 0);
+  };
+
   camera_->SetCenter(player_->GetPosition());
   terrain_->Update();
   visibility_mask_.SetTriangles(
@@ -119,14 +123,18 @@ void Game::update() {
       getData() = CommonData {
         .next_level = getData().next_level + 1,
         .next_room = Room::Game,
-        .power_grade = getData().power_grade
+        .power_grade = getData().power_grade,
+        .death_count = getData().death_count,
+        .clear_count = getData().clear_count,
       };
     }
     else {
       getData() = CommonData {
         .next_level = getData().next_level,
         .next_room = Room::Shop,
-        .power_grade = getData().power_grade
+        .power_grade = getData().power_grade,
+        .death_count = getData().death_count,
+        .clear_count = getData().clear_count
       };
     }
     fade.BeginFadeOut(kFadeDuration);

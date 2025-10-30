@@ -8,7 +8,7 @@ class SpeakerLines {
   SpeakerLines& operator=(const SpeakerLines&) = delete;
 
 public:
-  static Array<String> Get(int level);
+  static Array<String> Get(int level, int death_count, int clear_count);
 };
 
 }

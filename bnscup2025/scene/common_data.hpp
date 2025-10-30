@@ -13,6 +13,10 @@ struct CommonData {
   int next_level { 0 };
   Room next_room { Room::Game };
   player::PowerGrade power_grade {};
+
+  int death_count { 0 };
+  int clear_count { 0 };
+
 };
 
 }

@@ -34,6 +34,8 @@ public:
   void Update();
   void Render() const;
 
+  bool IsPlayerCaught() const;
+
 private:
   void OnProwlUpdate();
   void OnToSoundUpdate();

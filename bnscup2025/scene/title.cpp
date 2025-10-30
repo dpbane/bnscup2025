@@ -22,7 +22,9 @@ void Title::update() {
     getData() = CommonData {
       .next_level = 0,
       .next_room = Room::Game,
-      .power_grade = player::PowerGrade{}
+      .power_grade = player::PowerGrade{},
+      .death_count = 0,
+      .clear_count = 0
     };
     fade.BeginFadeOut(kFadeDuration);
   }

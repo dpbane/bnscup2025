@@ -135,6 +135,7 @@
     <ClCompile Include="player\player.cpp" />
     <ClCompile Include="render\blend_mode.cpp" />
     <ClCompile Include="render\lightbloom.cpp" />
+    <ClCompile Include="scene\gameover.cpp" />
     <ClCompile Include="scene\title.cpp" />
     <ClCompile Include="screen\fade.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -376,6 +377,7 @@
     <ClInclude Include="player\power_grade.hpp" />
     <ClInclude Include="render\blend_mode.hpp" />
     <ClInclude Include="render\lightbloom.hpp" />
+    <ClInclude Include="scene\gameover.hpp" />
     <ClInclude Include="scene\scene.hpp" />
     <ClInclude Include="scene\i_scene.hpp" />
     <ClInclude Include="scene\title.hpp" />

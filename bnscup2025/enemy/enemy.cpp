@@ -7,10 +7,10 @@
 namespace bnscup2025::enemy {
 
 Enemy::Enemy(const camera::Camera& camera,
-  const terrain::Terrain& terrain,
-  const player::Player& player,
-  const Vec2& pos,
-  const EnemyParameters& parameters) :
+             const terrain::Terrain& terrain,
+             const player::Player& player,
+             const Vec2& pos,
+             const EnemyParameters& parameters) :
   camera_(camera),
   terrain_(terrain),
   player_(player),
@@ -25,7 +25,7 @@ Enemy::~Enemy() {
 void Enemy::Update() {
 
   {
-    std::lock_guard lock { cost_map_mutex_ };
+    std::lock_guard lock{ cost_map_mutex_ };
     switch (state_) {
       case State::Prowl:
         OnProwlUpdate();
@@ -45,13 +45,13 @@ void Enemy::Update() {
 
   direction_face_ = velocity_.isZero() ? direction_face_ : velocity_.normalized();
   position_ += velocity_ * Scene::DeltaTime();
-  position_ = terrain_.PushbackService(Circle { position_, kCharacterRadius });
+  position_ = terrain_.PushbackService(Circle{ position_, kCharacterRadius });
 }
 
 void Enemy::Render() const {
   const auto& lightbloom = render::LightBloom::GetInstance();
-  const ColorF color_edge { 0.9, 0.2, 0.3 };
-  const ColorF color_body { 0.05, 0.01, 0.02 };
+  const ColorF color_edge{ 0.9, 0.2, 0.3 };
+  const ColorF color_body{ 0.05, 0.01, 0.02 };
   render::CharaRenderer::Render(camera_, position_, direction_face_, color_body, color_edge, 1.0, 2.0, 2.0);
 
   // デバッグ用：状態表示
@@ -61,6 +61,11 @@ void Enemy::Render() const {
     case State::Pursuit: Print << U"Pursuit"; break;
   }
 
+}
+
+bool Enemy::IsPlayerCaught() const {
+  const double catch_distance = kCharacterRadius * 1.9;
+  return position_.distanceFrom(player_.GetPosition()) < catch_distance;
 }
 
 void Enemy::OnProwlUpdate() {
@@ -109,7 +114,7 @@ void Enemy::OnProwlUpdate() {
     if (IsArrivedAtTarget()) cost_map_ = none;  // 目的地に到着したらクリア、再計算を促す
   }
   else {
-    velocity_ = Vec2 { 0.0, 0.0 };
+    velocity_ = Vec2{ 0.0, 0.0 };
   }
 }
 
@@ -147,7 +152,7 @@ void Enemy::OnToSoundUpdate() {
     if (IsArrivedAtTarget()) cost_map_ = none;  // 目的地に到着したらクリア
   }
   else {
-    velocity_ = Vec2 { 0.0, 0.0 };
+    velocity_ = Vec2{ 0.0, 0.0 };
   }
 
 }
@@ -197,13 +202,13 @@ void Enemy::OnPursuitUpdate() {
     }
   }
   else {
-    velocity_ = Vec2 { 0.0, 0.0 };
+    velocity_ = Vec2{ 0.0, 0.0 };
   }
 }
 
 void Enemy::AvoidWall() {
   // 壁にぶつかりにくくする調整
-  Vec2 test_position = terrain_.PushbackService(Circle { position_, kCharacterRadius * 2.0 });
+  Vec2 test_position = terrain_.PushbackService(Circle{ position_, kCharacterRadius * 2.0 });
   Vec2 test_direction = (test_position - position_).normalized();
   double speed = velocity_.length();
   velocity_ = (velocity_.normalized() + test_direction * 0.2).normalized() * speed;
@@ -239,8 +244,8 @@ Optional<Point> Enemy::CalcNearestValidPoint(const Vec2& pos) const {
 
 Vec2 Enemy::CalcDirectionFromPathMap() const {
   Optional<Point> current_point = CalcNearestValidPoint(position_);
-  if (not current_point) return Vec2 {};
-  if (not cost_map_) return Vec2 {};
+  if (not current_point) return Vec2{};
+  if (not cost_map_) return Vec2{};
 
   constexpr Point candidates[] = {
     {0, 0}, { 0, -1 }, { 1, 0 }, { 0, 1 }, { -1, 0 },
@@ -257,7 +262,7 @@ Vec2 Enemy::CalcDirectionFromPathMap() const {
       next_point = check_point;
     }
   }
-  return Vec2 { static_cast<double>(next_point.x - position_.x),
+  return Vec2{ static_cast<double>(next_point.x - position_.x),
                  static_cast<double>(next_point.y - position_.y) }.normalized();
 }
 
@@ -288,8 +293,8 @@ bool Enemy::CanSeePlayer(double range, double fov_cos) const {
   const auto point2 = terrain_.CalcLineCollisionPoint(position_, to_player.rotated(theta).normalized(), range);
   const auto point3 = terrain_.CalcLineCollisionPoint(position_, to_player.rotated(-theta).normalized(), range);
   if (point1 && point1->distanceFrom(position_) < length - kCharacterRadius &&
-    point2 && point2->distanceFrom(position_) < length - kCharacterRadius &&
-    point3 && point3->distanceFrom(position_) < length - kCharacterRadius) {
+      point2 && point2->distanceFrom(position_) < length - kCharacterRadius &&
+      point3 && point3->distanceFrom(position_) < length - kCharacterRadius) {
     return false;
   }
 
@@ -323,7 +328,7 @@ void Enemy::ThreadMain(Point target_point) {
       if (cost < cost_map.Get(point)) cost_map.Set(point, cost);
       que.insert(point);
     }
-  };
+    };
 
   auto Check = [&](const Point& point) {
     visited.insert(point);
@@ -339,12 +344,12 @@ void Enemy::ThreadMain(Point target_point) {
     Enqueue(direction.up_right, point.movedBy(1, -1), current_cost + Sqrt(2));
     Enqueue(direction.down_left, point.movedBy(-1, 1), current_cost + Sqrt(2));
     Enqueue(direction.down_right, point.movedBy(1, 1), current_cost + Sqrt(2));
-  };
+    };
 
   Check(target_point);
   while (thread_run_flag_ && not que.empty()) {
     // queのうち最小コストの点を探す
-    Point current_point {};
+    Point current_point{};
     double current_cost = std::numeric_limits<double>::infinity();
     for (const auto& point : que) {
       const double point_cost = cost_map.Get(point);
@@ -356,7 +361,7 @@ void Enemy::ThreadMain(Point target_point) {
     Check(current_point);
   }
   if (thread_run_flag_) {
-    std::lock_guard lock { cost_map_mutex_ };
+    std::lock_guard lock{ cost_map_mutex_ };
     cost_map_ = std::move(cost_map);
   }
   thread_run_flag_ = false;
