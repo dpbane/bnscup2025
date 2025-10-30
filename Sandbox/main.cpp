@@ -1,14 +1,22 @@
 ﻿# include <Siv3D.hpp>
 
 void Main() {
-  Window::Resize(1280, 720);
   Scene::SetBackground(ColorF { 0.6, 0.8, 0.7 });
 
-  Size size { 4, 4 };
-  for (const auto& point : step(size)) {
-    Print << (point);
-  }
+  Vec2 pos { 400, 300 };
 
   while (System::Update()) {
+    ClearPrint();
+
+    // マウスホイールのスクロール量
+    Print << Mouse::Wheel();
+
+    // マウスの水平ホイールのスクロール量
+    Print << Mouse::WheelH();
+
+    pos.y -= (Mouse::Wheel() * 10);
+    pos.x += (Mouse::WheelH() * 10);
+
+    RectF { Arg::center = pos, 100 }.draw(ColorF { 0.2 });
   }
 }

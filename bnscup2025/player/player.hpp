@@ -4,6 +4,7 @@
 #include "camera/camera.hpp"
 #include "power_grade.hpp"
 #include "grade_value_converter.hpp"
+#include "goshin/selector.hpp"
 
 namespace bnscup2025::player {
 
@@ -13,7 +14,7 @@ public:
 
   void Update();
   void Render() const;
-
+  void RenderUI() const;
 
   const Vec2& GetPosition() const { return position_; }
   const Vec2 GetShiftedPosition() const { return position_ + shift_amount_; }
@@ -35,6 +36,7 @@ private:
   const bool is_game_;
   const PowerGrade& power_grade_;
   const GradeValueConverter gvc_ { power_grade_ };
+  Selector selector_ { power_grade_ };
 
   Vec2 position_;
   Vec2 shift_amount_ { 0.0, 0.0 };
@@ -44,6 +46,8 @@ private:
   Optional<Vec2> digging_position_;
 
   Optional<Vec2> sound_position_;
+
+
 
 };
 

@@ -32,6 +32,8 @@ void Player::Update() {
   ProcessDirectionFace();
   ProcessMove();
 
+  selector_.Update();
+
   if (is_game_) {
     ProcessShift();
     ProcessDigging();
@@ -65,6 +67,11 @@ void Player::Render() const {
       Line { position_ + direction_face_ * kCharacterRadius * 1.2, default_dig_pos }.draw(LineStyle::RoundDot, 0.25, ColorF { 0.25, 0.25, 0.25 });
     }
   }
+
+}
+
+void Player::RenderUI() const {
+  selector_.Render();
 }
 
 void Player::ProcessDirectionFace() {

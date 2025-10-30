@@ -20,18 +20,24 @@ void Title::update() {
 
   if (fade.CompletedFadeIn() && input_data.confirm_trigger) {
     getData() = CommonData {
-      .next_level = 1,
-      .next_room = Room::Shop,
-      .power_grade = player::PowerGrade{},
-      .sinhalite_amount = 20,
-      .death_count = 0,
-      .clear_count = 0
-    };
-    getData() = CommonData {
       .next_level = 0,
       .next_room = Room::Game,
       .power_grade = player::PowerGrade{},
-      .sinhalite_amount = 20,
+      .sinhalite_amount = 0,
+      .death_count = 0,
+      .clear_count = 0
+    };
+    // デバッグ用
+    player::PowerGrade pg;
+    pg[player::PowerGradeItem::Nobiru] = 1;
+    pg[player::PowerGradeItem::Kokoro] = 1;
+    pg[player::PowerGradeItem::Susumu] = 1;
+    pg[player::PowerGradeItem::Tsutsu] = 1;
+    getData() = CommonData {
+      .next_level = 1,
+      .next_room = Room::Shop,
+      .power_grade = pg,
+      .sinhalite_amount = 200,
       .death_count = 0,
       .clear_count = 0
     };

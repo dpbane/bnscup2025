@@ -39,7 +39,7 @@ void TutorialText::Render() const {
   FontAsset(U"Text")(current_text_)
     .drawAt(
       font_size,
-      Scene::Center().movedBy(0, Scene::Height() * 0.4),
+      Scene::CenterF().movedBy(0.0, Scene::Height() * 0.4),
       ColorF { 1.0, 1.0, 1.0, alpha_ }
     );
 }

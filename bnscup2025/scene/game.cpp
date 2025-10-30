@@ -179,6 +179,7 @@ void Game::draw() const {
   ui::TextWindow::GetInstance().Render();
   floor_text_->Render();
   sinhalite_text_->Render();
+  player_->RenderUI();
 
   screen::Fade::GetInstance().Render();
 

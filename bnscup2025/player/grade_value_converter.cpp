@@ -13,37 +13,37 @@ double GradeValueConverter::GetMaxEnergy() const {
 
 double GradeValueConverter::GetEnergyRegen() const {
   uint8 level = power_grade_[PowerGradeItem::EnergyRegen];
-  double denominator = 50.0 - 5.0 * level;  // 満タンになるまでの秒数
+  double denominator = 50.0 - 8.0 * level;  // 満タンになるまでの秒数
   return 10000.0 / denominator;
 }
 
 double GradeValueConverter::GetDigCooldown() const {
   uint8 level = power_grade_[PowerGradeItem::DigSpeed];
   double base = 0.25;
-  return base - 0.02 * level;
+  return base - 0.03 * level;
 }
 
 double GradeValueConverter::GetDigRange() const {
   uint8 level = power_grade_[PowerGradeItem::DigMight];
   double base = 2.4;
-  return base + 0.4 * level;
+  return base + 0.8 * level;
 }
 
 double GradeValueConverter::GetViewAngle() const {
   uint8 level = power_grade_[PowerGradeItem::ViewAngle];
   double base = 90_deg;
-  return base + 10_deg * level;
+  return base + 20_deg * level;
 }
 
 double GradeValueConverter::GetMoveSpeed() const {
   uint8 level = power_grade_[PowerGradeItem::MoveSpeed];
   double base = 7.0;
-  return base + 0.7 * level;
+  return base + 1.0 * level;
 }
 
 double GradeValueConverter::GetNobiruShiftDistance() const {
   uint8 level = power_grade_[PowerGradeItem::Nobiru];
-  return 1.5 + 0.5 * level;
+  return 3.0 + 1.2 * level;
 }
 
 double GradeValueConverter::GetKokoroBeginCost() const {
