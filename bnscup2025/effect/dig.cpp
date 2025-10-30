@@ -12,7 +12,7 @@ Dig::Dig(const camera::Camera& cam, const Vec2& position, const Vec2& direction)
   const int particle_count = 10;
   particles_.reserve(particle_count);
   for (int k = 0; k < particle_count; ++k) {
-    const double speed = Random(15.0, 30.0);
+    const double speed = Random(40.0, 100.0);
     const double angle = (-direction).getAngle() + Random(-90.0_deg, 90.0_deg);
     Particle p {
       .previous_position = position,
@@ -38,8 +38,8 @@ bool Dig::update(double t) {
     const auto transformer = camera_.CreateRenderTransformer();
 
     for (const auto& p : particles_) {
-      if (p.velocity.lengthSq() < 4.0 * 4.0) continue;
-      Line { p.previous_position, p.position }.draw(0.10, ColorF { 0.2, 0.25, 0.4 });
+      if (p.velocity.lengthSq() < 10.0 * 10.0) continue;
+      Line { p.previous_position, p.position }.draw(0.30, ColorF { 0.10, 0.15, 0.30 });
       ret = true;
     }
   }

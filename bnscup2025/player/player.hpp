@@ -2,12 +2,14 @@
 
 #include "terrain/terrain.hpp"
 #include "camera/camera.hpp"
+#include "power_grade.hpp"
+#include "grade_value_converter.hpp"
 
 namespace bnscup2025::player {
 
 class Player {
 public:
-  Player(const camera::Camera& camera, terrain::Terrain& terrain, Effect& effect, Vec2 pos, bool is_game);
+  Player(const camera::Camera& camera, terrain::Terrain& terrain, Effect& effect, Vec2 pos, bool is_game, const PowerGrade& power_grade);
 
   void Update();
   void Render() const;
@@ -30,6 +32,8 @@ private:
   terrain::Terrain& terrain_;
   Effect& effect_;
   const bool is_game_;
+  const PowerGrade& power_grade_;
+  const GradeValueConverter gvc_ { power_grade_ };
 
   Vec2 position_;
   Vec2 shift_amount_ { 0.0, 0.0 };

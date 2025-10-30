@@ -56,7 +56,7 @@ public:
   /// @return アクセスマップ。
   const AccessMap& GetAccessMap() const { return access_map_; }
 
-  /// @brief このフレームに獲得したシンハライトの量を取得する。
+  /// @brief このフレームに獲得したシンハライトの量を取得する。Update()を読んだ時点でリセットされる。
   /// @return 獲得したシンハライトの量。
   int GetEarnedSinhalite() const { return earned_sinhalite_; }
 

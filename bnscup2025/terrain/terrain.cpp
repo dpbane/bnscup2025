@@ -20,11 +20,16 @@ Terrain::Terrain(NodeGrid node_grid, Array<Point>&& sinhalite_positions) :
   material_table_[MaterialEnum::Normal] = std::make_unique<Material<MaterialEnum::Normal>>();
   material_table_[MaterialEnum::Bounds] = std::make_unique<Material<MaterialEnum::Bounds>>();
   material_table_[MaterialEnum::HardRock] = std::make_unique<Material<MaterialEnum::HardRock>>();
+
+  EarnSinhalite();
+  Update();
 }
 
 void Terrain::Update() {
   marching_squares_.Update(node_grid_);
   access_map_.Update(node_grid_);
+
+  earned_sinhalite_ = 0;
 }
 
 void Terrain::Render(const camera::Camera& cam) const {
@@ -267,7 +272,7 @@ void Terrain::RenderGroundEdges(const Array<Point>& visible_cells, const camera:
       for (const auto& vec_array : edge_lines) {
         for (size_t i = 0; i < vec_array.size() - 1; ++i) {
           const Line line { vec_array[i], vec_array[i + 1] };
-          line.draw(LineStyle::RoundCap, 0.5, CalcEdgeColor(line.begin), CalcEdgeColor(line.end));
+          line.draw(LineStyle::RoundCap, 0.8, CalcEdgeColor(line.begin), CalcEdgeColor(line.end));
         }
       }
     }
@@ -298,7 +303,7 @@ ColorF Terrain::CalcEdgeColor(const Vec2& pos) const {
   const ColorF color_base = color_lt * coef_lt + color_rt * coef_rt + color_lb * coef_lb + color_rb * coef_rb;
 
   double sinhalite_intensity = 0.0;
-  constexpr double kSinhaliteEffectRadius = 8.0;
+  constexpr double kSinhaliteEffectRadius = 30.0;
   for (const auto& sinhalite_pos : sinhalite_positions_) {
     const double dist = pos.distanceFrom(sinhalite_pos);
     const double intensity = std::clamp(1.0 - dist / kSinhaliteEffectRadius, 0.0, 1.0);
@@ -310,8 +315,8 @@ ColorF Terrain::CalcEdgeColor(const Vec2& pos) const {
   const double int_rb = coef_rb * material_table_.at(node_grid_.Get(cell_pos.movedBy(1, 1)).material)->GetSinhaliteEffectiveness();
   const double sinhalite_effectiveness = int_lt + int_rt + int_lb + int_rb;
 
-  constexpr ColorF kSinhaliteColor { 0.3, 0.25, 0.01 };
-  return color_base.lerp(kSinhaliteColor, sinhalite_intensity * sinhalite_effectiveness);
+  constexpr ColorF kSinhaliteColor { 0.20, 0.15, 0.01 };
+  return color_base.lerp(kSinhaliteColor, EaseInCubic(sinhalite_intensity * sinhalite_effectiveness));
 }
 
 void Terrain::EarnSinhalite() {

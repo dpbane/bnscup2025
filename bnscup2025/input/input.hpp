@@ -8,6 +8,8 @@ struct InputData {
   bool shift;
   bool dig;
   bool action;
+  bool action_change_upright;
+  bool action_change_downleft;
   bool confirm_trigger;
   bool confirm_keep;
 };

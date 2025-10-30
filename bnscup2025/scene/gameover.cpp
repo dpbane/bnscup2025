@@ -14,7 +14,8 @@ void GameOver::update() {
     getData() = CommonData {
       .next_level = 0,
       .next_room = Room::Shop,
-      .power_grade = {},
+      .power_grade = player::PowerGrade{},
+      .sinhalite_amount = 0,
       .death_count = getData().death_count + 1,
       .clear_count = getData().clear_count
     };

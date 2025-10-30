@@ -14,6 +14,7 @@ struct CommonData {
   Room next_room { Room::Game };
   player::PowerGrade power_grade {};
 
+  int sinhalite_amount { 0 };
   int death_count { 0 };
   int clear_count { 0 };
 

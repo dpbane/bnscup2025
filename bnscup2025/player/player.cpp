@@ -14,12 +14,13 @@ namespace bnscup2025::player {
 
 const double kDigRange = 8.0;
 
-Player::Player(const camera::Camera& camera, terrain::Terrain& terrain, Effect& effect, Vec2 pos, bool is_game) :
+Player::Player(const camera::Camera& camera, terrain::Terrain& terrain, Effect& effect, Vec2 pos, bool is_game, const PowerGrade& power_grade) :
   camera_(camera),
   terrain_(terrain),
   effect_(effect),
   position_(pos),
-  is_game_(is_game) {
+  is_game_(is_game),
+  power_grade_(power_grade) {
 
   const auto input_data = input::Input::GetInstance().GetData();
   direction_face_ = input_data.direction_face.isZero() ? Vec2 { 0.0, -1.0 } : input_data.direction_face.normalized();
@@ -89,7 +90,7 @@ void Player::ProcessDirectionFace() {
 void Player::ProcessMove() {
   const auto input_data = input::Input::GetInstance().GetData();
 
-  const double speed = 7.0;
+  const double speed = gvc_.GetMoveSpeed();
   if (not input_data.shift) {
     position_ += input_data.direction_move.normalized() * speed * Scene::DeltaTime();
   }
@@ -116,11 +117,11 @@ void Player::ProcessDigging() {
   digging_position_ = terrain_.CalcLineCollisionPoint(position_, direction_face_, kDigRange);
 
   if (input_data.dig && digging_position_ && dig_timer_ <= 0.0) {
-    const double dig_radius = 3.0;
+    const double dig_radius = gvc_.GetDigRange();
     const double dig_might_center = 0.15;
     const double dig_might_end = 0.01;
     terrain_.DigAt(*digging_position_, dig_radius, dig_might_center, dig_might_end);
-    dig_timer_ = 0.2;
+    dig_timer_ = gvc_.GetDigCooldown();
     effect_.add<effect::Dig>(camera_, *digging_position_, direction_face_);
     sound_position_ = (*digging_position_ * 0.2 + position_ * 0.8);
 

@@ -20,9 +20,10 @@ void Title::update() {
 
   if (fade.CompletedFadeIn() && input_data.confirm_trigger) {
     getData() = CommonData {
-      .next_level = 0,
+      .next_level = 1,
       .next_room = Room::Game,
       .power_grade = player::PowerGrade{},
+      .sinhalite_amount = 0,
       .death_count = 0,
       .clear_count = 0
     };

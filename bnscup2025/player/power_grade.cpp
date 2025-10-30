@@ -3,8 +3,8 @@
 
 namespace bnscup2025::player {
 
-PowerGrade::PowerGrade() :
-  grade_levels_ { 0, 0, 0, 0, 0, 0, 0 } {
+PowerGrade::PowerGrade() {
+  grade_levels_.fill(0);
 }
 
 uint8& PowerGrade::operator[](PowerGradeItem item) {

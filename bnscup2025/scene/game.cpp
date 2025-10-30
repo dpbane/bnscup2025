@@ -15,6 +15,8 @@
 
 namespace bnscup2025::scene {
 
+constexpr double kCellsPerShorterSide = 54.0;
+
 Game::Game(const InitData& init_data) :
   IScene(init_data) {
 
@@ -26,7 +28,7 @@ Game::Game(const InitData& init_data) :
   visibility_.emplace(*terrain_);
 
   const double shorter_side = Min(Scene::Width(), Scene::Height());
-  const double cell_size = shorter_side / 54.0;
+  const double cell_size = shorter_side / kCellsPerShorterSide;
   camera_.emplace(Vec2 { 0.0, 0.0 }, SizeF { cell_size, cell_size });
 
   enemy::EnemyParameters enemy_params {
@@ -37,7 +39,7 @@ Game::Game(const InitData& init_data) :
     .pursuit_speed = 5.0
   };
 
-  player_.emplace(*camera_, *terrain_, effect_, map_params.player_position, is_game_);
+  player_.emplace(*camera_, *terrain_, effect_, map_params.player_position, is_game_, getData().power_grade);
   exit_.emplace(*camera_, *player_, map_params.exit_position);
 
   if (is_game_) {
@@ -90,7 +92,6 @@ Game::Game(const InitData& init_data) :
   npc::TextWindow::GetInstance().Reset();
 
   screen::Fade::GetInstance().BeginFadeIn(kFadeDuration);
-
 }
 
 void Game::update() {
@@ -112,30 +113,24 @@ void Game::update() {
   };
 
   camera_->SetCenter(player_->GetPosition());
+
+  getData().sinhalite_amount += terrain_->GetEarnedSinhalite();
   terrain_->Update();
+
+
+  const double fov = player::GradeValueConverter { getData().power_grade }.GetViewAngle();
   visibility_mask_.SetTriangles(
-    visibility_->CalcVisibilityTriangles(*camera_, player_->GetShiftedPosition(), player_->GetDirectionFace().normalized(), 120.0_deg, 100)
+    visibility_->CalcVisibilityTriangles(*camera_, player_->GetShiftedPosition(), player_->GetDirectionFace().normalized(), fov, kCellsPerShorterSide)
   );
   visibility_mask_.SetPosition(player_->GetShiftedPosition());
 
   if (exit_ && exit_->ShouldExitGame() && fade.CompletedFadeIn()) {
     if (getData().next_room == Room::Shop) {
-      getData() = CommonData {
-        .next_level = getData().next_level + 1,
-        .next_room = Room::Game,
-        .power_grade = getData().power_grade,
-        .death_count = getData().death_count,
-        .clear_count = getData().clear_count,
-      };
+      getData().next_level += 1;
+      getData().next_room = Room::Game;
     }
     else {
-      getData() = CommonData {
-        .next_level = getData().next_level,
-        .next_room = Room::Shop,
-        .power_grade = getData().power_grade,
-        .death_count = getData().death_count,
-        .clear_count = getData().clear_count
-      };
+      getData().next_room = Room::Shop;
     }
     fade.BeginFadeOut(kFadeDuration);
   }
@@ -173,6 +168,8 @@ void Game::draw() const {
 
   npc::TextWindow::GetInstance().Render();
   screen::Fade::GetInstance().Render();
+
+  Print << U"シンハライト: " << getData().sinhalite_amount;
 }
 
 }

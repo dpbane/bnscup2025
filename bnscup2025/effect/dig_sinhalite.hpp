@@ -22,6 +22,8 @@ private:
   const camera::Camera& camera_;
   Array<Particle> particles_;
 
+  double rect_alpha = 1.0;
+
 };
 
 }
