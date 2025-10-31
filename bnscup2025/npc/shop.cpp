@@ -12,7 +12,7 @@ Shop::Shop(const camera::Camera& camera, const player::Player& player, player::P
   camera_(camera),
   player_(player),
   position_(position),
-  shop_window_ { power_grade, sinhalite_amount } {
+  shop_window_ { power_grade, sinhalite_amount, player } {
 }
 
 void Shop::Update() {

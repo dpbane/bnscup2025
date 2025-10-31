@@ -6,7 +6,7 @@ namespace bnscup2025::npc {
 
 class ShopWindow {
 public:
-  ShopWindow(player::PowerGrade& power_grade, int& sinhalite);
+  ShopWindow(player::PowerGrade& power_grade, int& sinhalite, const player::Player& player);
 
   void Update();
   void Render() const;
@@ -19,6 +19,7 @@ private:
 
 private:
   player::PowerGrade& power_grade_;
+  const player::Player& player_;
   int& sinhalite_;
   std::array<Optional<ShopWindowItem>, 4> items_;
 

@@ -11,19 +11,19 @@ Selector::Selector(const PowerGrade& power_grade) :
 }
 
 void Selector::Update() {
-  const auto input_data = input::Input::GetInstance().GetData();
+  const auto& input_data = input::Input::GetInstance().GetData();
 
   UpdateItem();
 
   // 右上方向切替
   if (input_data.action_change_upright && not input_data.action_change_downleft) {
-    selected_item_ = right_item_;
+    selected_item_ = left_item_;
     disp_offset_ = 1.0;
     UpdateItem();
   };
   // 左下方向切替
   if (input_data.action_change_downleft && not input_data.action_change_upright) {
-    selected_item_ = left_item_;
+    selected_item_ = right_item_;
     disp_offset_ = -1.0;
     UpdateItem();
   }
@@ -50,8 +50,8 @@ void Selector::Render() const {
     GetItemName(*selected_item_),
     main_font_size,
     Vec2(Scene::Width() * 0.90, Scene::Height() * 0.75),
-    Scene::Height() * 0.02,
-    Scene::Height() * 0.005
+    Scene::Height() * 0.10,
+    Scene::Height() * 0.010
   );
 
   // サブ文字
@@ -61,8 +61,8 @@ void Selector::Render() const {
       GetItemName(*right_item_),
       sub_font_size,
       Vec2(Scene::Width() * 0.95, Scene::Height() * 0.70),
-      Scene::Height() * 0.01,
-      Scene::Height() * 0.0025
+      Scene::Height() * 0.060,
+      Scene::Height() * 0.0050
     );
   }
   if (left_item_) {
@@ -70,8 +70,8 @@ void Selector::Render() const {
       GetItemName(*left_item_),
       sub_font_size,
       Vec2(Scene::Width() * 0.85, Scene::Height() * 0.80),
-      Scene::Height() * 0.01,
-      Scene::Height() * 0.0025
+      Scene::Height() * 0.060,
+      Scene::Height() * 0.0050
     );
   }
 

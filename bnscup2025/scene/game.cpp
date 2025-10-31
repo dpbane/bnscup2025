@@ -62,7 +62,7 @@ Game::Game(const InitData& init_data) :
       tutorial_text_->AddEntry(
         ui::TutorialText::Entry {
           .area = RectF { 0.0, 15.0, 20.0, 10.0 },
-          .text = U"左クリック / LTで地形を掘る"
+          .text = U"左クリック / RBで地形を掘る"
         }
       );
       tutorial_text_->AddEntry(

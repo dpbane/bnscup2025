@@ -5,9 +5,10 @@
 
 namespace bnscup2025::npc {
 
-ShopWindow::ShopWindow(player::PowerGrade& power_grade, int& sinhalite) :
+ShopWindow::ShopWindow(player::PowerGrade& power_grade, int& sinhalite, const player::Player& player) :
   power_grade_(power_grade),
-  sinhalite_(sinhalite) {
+  sinhalite_(sinhalite),
+  player_(player) {
 
   ReRollItems();
 }
@@ -48,10 +49,10 @@ void ShopWindow::SetActive(bool active) {
 
 void ShopWindow::ReRollItems() {
   const auto selected_items = SelectRandomItems();
-  items_[0].emplace(power_grade_, sinhalite_, Vec2 { Scene::Width() * 0.25, Scene::Height() * 0.50 }, Vec2 { -1.0, 0.0 }, selected_items[0]);
-  items_[1].emplace(power_grade_, sinhalite_, Vec2 { Scene::Width() * 0.50, Scene::Height() * 0.25 }, Vec2 { 0.0, -1.0 }, selected_items[1]);
-  items_[2].emplace(power_grade_, sinhalite_, Vec2 { Scene::Width() * 0.75, Scene::Height() * 0.50 }, Vec2 { 1.0, 0.0 }, selected_items[2]);
-  items_[3].emplace(power_grade_, sinhalite_, Vec2 { Scene::Width() * 0.50, Scene::Height() * 0.75 }, Vec2 { 0.0, 1.0 }, selected_items[3]);
+  items_[0].emplace(power_grade_, sinhalite_, Vec2 { Scene::Width() * 0.25, Scene::Height() * 0.50 }, Vec2 { -1.0, 0.0 }, selected_items[0], player_);
+  items_[1].emplace(power_grade_, sinhalite_, Vec2 { Scene::Width() * 0.50, Scene::Height() * 0.25 }, Vec2 { 0.0, -1.0 }, selected_items[1], player_);
+  items_[2].emplace(power_grade_, sinhalite_, Vec2 { Scene::Width() * 0.75, Scene::Height() * 0.50 }, Vec2 { 1.0, 0.0 }, selected_items[2], player_);
+  items_[3].emplace(power_grade_, sinhalite_, Vec2 { Scene::Width() * 0.50, Scene::Height() * 0.75 }, Vec2 { 0.0, 1.0 }, selected_items[3], player_);
 }
 
 std::array<player::PowerGradeItem, 4> ShopWindow::SelectRandomItems() const {

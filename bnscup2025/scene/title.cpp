@@ -15,7 +15,7 @@ Title::Title(const InitData& init_data) :
 }
 
 void Title::update() {
-  const auto input_data = input::Input::GetInstance().GetData();
+  const auto& input_data = input::Input::GetInstance().GetData();
   auto& fade = screen::Fade::GetInstance();
 
   if (fade.CompletedFadeIn() && input_data.confirm_trigger) {

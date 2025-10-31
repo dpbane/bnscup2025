@@ -10,6 +10,13 @@ GameOver::GameOver(const InitData& init_data) :
 void GameOver::update() {
   timer_ += Scene::DeltaTime();
 
+  if (timer_ < 0.1) {
+    XInput(0).setVibration({ 1.0, 1.0 });
+  }
+  else {
+    XInput(0).setVibration({ 0.0, 0.0 });
+  }
+
   if (timer_ >= 4.0) {
     getData() = CommonData {
       .next_level = 0,

@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "player/power_grade.hpp"
+#include "player/player.hpp"
 
 namespace bnscup2025::npc {
 
@@ -9,7 +10,7 @@ public:
 
 
 public:
-  ShopWindowItem(const player::PowerGrade& power_grade, const int& sinhalite_amount, const Vec2& position, const Vec2& direction, player::PowerGradeItem pg_item);
+  ShopWindowItem(const player::PowerGrade& power_grade, const int& sinhalite_amount, const Vec2& position, const Vec2& direction, player::PowerGradeItem pg_item, const player::Player& player);
 
   void Update();
   void Render() const;
@@ -34,14 +35,15 @@ private:
   const int& sinhalite_amount_;
   const Vec2 position_;
   const Vec2 direction_;
+  const player::Player& player_;
 
-  bool is_active_ { false };
-  bool selected_ { false };
-  double alpha_ { 0.0 };
-  double focus_ { 0.0 };
-  double buy_timer_ { 0.0 };
+  bool is_active_{ false };
+  bool selected_{ false };
+  double alpha_{ 0.0 };
+  double focus_{ 0.0 };
+  double buy_timer_{ 0.0 };
 
-  bool just_bought_ { false };
+  bool just_bought_{ false };
 
 };
 

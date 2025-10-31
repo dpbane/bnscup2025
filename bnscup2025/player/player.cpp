@@ -22,7 +22,7 @@ Player::Player(const camera::Camera& camera, terrain::Terrain& terrain, Effect& 
   is_game_(is_game),
   power_grade_(power_grade) {
 
-  const auto input_data = input::Input::GetInstance().GetData();
+  const auto& input_data = input::Input::GetInstance().GetData();
   direction_face_ = input_data.direction_face.isZero() ? Vec2 { 0.0, -1.0 } : input_data.direction_face.normalized();
 }
 
@@ -35,7 +35,7 @@ void Player::Update() {
   selector_.Update();
 
   if (is_game_) {
-    ProcessShift();
+    //ProcessShift();
     ProcessDigging();
   }
 }
@@ -75,7 +75,7 @@ void Player::RenderUI() const {
 }
 
 void Player::ProcessDirectionFace() {
-  const auto input_data = input::Input::GetInstance().GetData();
+  const auto& input_data = input::Input::GetInstance().GetData();
   if (input_data.direction_face.isZero()) return;
 
   const double angle_input = input_data.direction_face.getAngle();
@@ -95,29 +95,25 @@ void Player::ProcessDirectionFace() {
 }
 
 void Player::ProcessMove() {
-  const auto input_data = input::Input::GetInstance().GetData();
+  const auto& input_data = input::Input::GetInstance().GetData();
 
   const double speed = gvc_.GetMoveSpeed();
-  if (not input_data.shift) {
-    position_ += input_data.direction_move.normalized() * speed * Scene::DeltaTime();
-  }
+  position_ += input_data.direction_move.normalized() * speed * Scene::DeltaTime();
   position_ = terrain_.PushbackService(Circle { position_, kCharacterRadius });
 }
 
 void Player::ProcessShift() {
-  const auto input_data = input::Input::GetInstance().GetData();
+  const auto& input_data = input::Input::GetInstance().GetData();
 
   const double shift_speed = 20.0;
-  if (input_data.shift) {
-    shift_amount_ += input_data.direction_move.normalized() * shift_speed * Scene::DeltaTime();
-  }
+  shift_amount_ += input_data.direction_move.normalized() * shift_speed * Scene::DeltaTime();
   const double alpha = Pow(0.3, Scene::DeltaTime() * 10);
   shift_amount_ = shift_amount_ * alpha;
   shift_amount_ = terrain_.PushbackService(Circle { GetShiftedPosition(), 0.45 }) - position_;
 }
 
 void Player::ProcessDigging() {
-  const auto input_data = input::Input::GetInstance().GetData();
+  const auto& input_data = input::Input::GetInstance().GetData();
 
 
   dig_timer_ = std::max(0.0, dig_timer_ - Scene::DeltaTime());

@@ -6,6 +6,8 @@
 
 #include "fps_addon.hpp"
 
+#include "input/input.hpp"
+
 using namespace bnscup2025;
 
 void Main() {
@@ -36,6 +38,7 @@ void Main() {
   System::Update();
   while (System::Update()) {
     ClearPrint();
+    input::Input::GetInstance().Update();
     if (not manager.update()) {
       break;
     }
