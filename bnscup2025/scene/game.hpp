@@ -32,6 +32,7 @@ public:
 
 private:
   bool is_game_;
+  inline static Optional<MSRenderTexture> render_texture_;
 
   Optional<terrain::Terrain> terrain_;
   Optional<terrain::Visibility> visibility_;

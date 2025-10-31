@@ -19,7 +19,7 @@ Speaker::Speaker(const camera::Camera& camera, const player::Player& player, con
 }
 
 void Speaker::Update() {
-  const auto input_data = input::Input::GetInstance().GetData();
+  const auto& input_data = input::Input::GetInstance().GetData();
   const Vec2 player_pos = player_.GetPosition();
   const double distance = (player_pos - position_).length();
   auto& text_window = ui::TextWindow::GetInstance();
@@ -38,16 +38,16 @@ void Speaker::Update() {
 void Speaker::Render() const {
 
   const Vec2 direction = (player_.GetPosition() - position_).normalized();
-  ColorF color_body {};
-  ColorF color_edge {};
+  ColorF color_body{};
+  ColorF color_edge{};
   switch (speaker_enum_) {
     case SpeakerEnum::Orrange:
-      color_body = ColorF { 0.05, 0.03, 0.01 };
-      color_edge = ColorF { 0.9, 0.4, 0.1 };
+      color_body = ColorF{ 0.05, 0.03, 0.01 };
+      color_edge = ColorF{ 0.9, 0.4, 0.1 };
       break;
     case SpeakerEnum::Sky:
-      color_body = ColorF { 0.01, 0.03, 0.05 };
-      color_edge = ColorF { 0.1, 0.4, 0.9 };
+      color_body = ColorF{ 0.01, 0.03, 0.05 };
+      color_edge = ColorF{ 0.1, 0.4, 0.9 };
       break;
   }
 

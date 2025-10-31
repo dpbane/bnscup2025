@@ -21,6 +21,8 @@ constexpr double kCellsPerShorterSide = 54.0;
 Game::Game(const InitData& init_data) :
   IScene(init_data) {
 
+  if (not render_texture_) render_texture_.emplace(Scene::Size());
+
   const int level = getData().next_level;
   is_game_ = (getData().next_room == Room::Game);
 
@@ -101,7 +103,6 @@ Game::Game(const InitData& init_data) :
 
 void Game::update() {
   auto& fade = screen::Fade::GetInstance();
-  const auto input_data = input::Input::GetInstance().GetData();
 
   player_->Update();
   if (fade.CompletedFadeIn()) {
@@ -154,24 +155,42 @@ void Game::update() {
 
 void Game::draw() const {
 
-  terrain_->Render(*camera_);
-  if (exit_) exit_->Render();
+  {
+    const ScopedRenderTarget2D target { render_texture_->clear(ColorF{0.0}) };
 
-  player_->Render();
-  if (enemy_) enemy_->Render();
-  if (speaker_) speaker_->Render();
-  if (shop_) shop_->Render();
+    terrain_->Render(*camera_);
+    if (exit_) exit_->Render();
 
-  const auto lines = terrain_->CreateVisibleWallLines(*camera_);
-  //Print << U"スクリーン上に描画されうる線分の数：" << lines.size();
-  //Print << U"可視範囲の三角形の数：" << visibility_triangles_.size();
+    player_->Render();
+    if (enemy_) enemy_->Render();
+    if (speaker_) speaker_->Render();
+    if (shop_) shop_->Render();
 
-  effect_.update();
+    const auto lines = terrain_->CreateVisibleWallLines(*camera_);
+    //Print << U"スクリーン上に描画されうる線分の数：" << lines.size();
+    //Print << U"可視範囲の三角形の数：" << visibility_triangles_.size();
+
+    effect_.update();
+  }
+  Graphics2D::Flush();
+  render_texture_->resolve();
+  render_texture_->draw();
+
+  {
+    const ScopedRenderTarget2D target { render_texture_->clear(ColorF{0.0}) };
+    render_texture_->draw(ColorF { 0.1, 1.0, 0.2 });
+  }
+  Graphics2D::Flush();
+  render_texture_->resolve();
 
   // 視界制限
+  const double visible_radius = 24.0;
   if (is_game_) {
-    const double radius = 24.0;
-    visibility_mask_.Render(*camera_, radius);
+    visibility_mask_.Render(*camera_, visible_radius);
+  }
+
+  if (player_->GetKokoroAlpha() > 0.0) {
+    render_texture_->draw(ColorF { 1.0, player_->GetKokoroAlpha() });
   }
 
   if (tutorial_text_) tutorial_text_->Render();
@@ -179,12 +198,17 @@ void Game::draw() const {
   ui::TextWindow::GetInstance().Render();
   floor_text_->Render();
   sinhalite_text_->Render();
-  player_->RenderUI();
+
+  const double shorter_side = Min(Scene::Width(), Scene::Height());
+  player_->RenderUI(visible_radius * shorter_side / kCellsPerShorterSide);
 
   screen::Fade::GetInstance().Render();
 
-
   Print << U"シンハライト: " << getData().sinhalite_amount;
+
+
+
+
 }
 
 }

@@ -255,6 +255,9 @@
     <ClCompile Include="player\goshin\selector.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="player\energy_ui.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="App\icon.ico">
@@ -1047,6 +1050,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="player\goshin\selector.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="player\energy_ui.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -41,7 +41,7 @@ public:
   double GetViewAngle() const;
 
   /// @brief 移動速度を取得する。
-  double GetMoveSpeed() const;
+  double GetMoveSpeedRate() const;
 
   /// @brief 護身術【伸】のシフト距離を取得する。
   double GetNobiruShiftDistance() const;
@@ -53,7 +53,7 @@ public:
   double GetKokoroMaintainCost() const;
 
   /// @brief 護身術【進】の移動速度を取得する。
-  double GetSususmuSpeed() const;
+  double GetSususmuSpeedRate() const;
 
   /// @brief 護身術【慎】の発動コストを取得する。
   double GetTsutsuStartCost() const;

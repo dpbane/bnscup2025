@@ -126,6 +126,7 @@
     <ClCompile Include="npc\speaker.cpp" />
     <ClCompile Include="npc\speaker_lines.cpp" />
     <ClCompile Include="npc\shop\shop_window.cpp" />
+    <ClCompile Include="player\energy_ui.cpp" />
     <ClCompile Include="player\goshin\selector.cpp" />
     <ClCompile Include="ui\sinhalite_disp.cpp" />
     <ClCompile Include="ui\text_window.cpp" />
@@ -375,6 +376,7 @@
     <ClInclude Include="npc\speaker.hpp" />
     <ClInclude Include="npc\speaker_lines.hpp" />
     <ClInclude Include="npc\shop\shop_window.hpp" />
+    <ClInclude Include="player\energy_ui.hpp" />
     <ClInclude Include="player\goshin\selector.hpp" />
     <ClInclude Include="ui\sinhalite_disp.hpp" />
     <ClInclude Include="ui\text_window.hpp" />

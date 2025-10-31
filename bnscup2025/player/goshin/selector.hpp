@@ -9,7 +9,7 @@ class Selector {
 public:
   Selector(const PowerGrade& power_grade);
 
-  void Update();
+  void Update(bool can_change);
   void Render() const;
 
   Optional<PowerGradeItem> GetSelectedItem() const { return selected_item_; }

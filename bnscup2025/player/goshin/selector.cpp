@@ -10,25 +10,27 @@ Selector::Selector(const PowerGrade& power_grade) :
   power_grade_(power_grade) {
 }
 
-void Selector::Update() {
+void Selector::Update(bool can_change) {
   const auto& input_data = input::Input::GetInstance().GetData();
 
   UpdateItem();
 
-  // 右上方向切替
-  if (input_data.action_change_upright && not input_data.action_change_downleft) {
-    selected_item_ = left_item_;
-    disp_offset_ = 1.0;
-    UpdateItem();
-  };
-  // 左下方向切替
-  if (input_data.action_change_downleft && not input_data.action_change_upright) {
-    selected_item_ = right_item_;
-    disp_offset_ = -1.0;
-    UpdateItem();
+  if (can_change) {
+    // 右上方向切替
+    if (input_data.action_change_upright && not input_data.action_change_downleft) {
+      selected_item_ = left_item_;
+      disp_offset_ = 1.0;
+      UpdateItem();
+    };
+    // 左下方向切替
+    if (input_data.action_change_downleft && not input_data.action_change_upright) {
+      selected_item_ = right_item_;
+      disp_offset_ = -1.0;
+      UpdateItem();
+    }
   }
 
-  disp_offset_ *= Pow(0.05, Scene::DeltaTime() * 10);
+  disp_offset_ *= Pow(0.03, Scene::DeltaTime() * 10);
 }
 
 void Selector::Render() const {

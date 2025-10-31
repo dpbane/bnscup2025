@@ -31,17 +31,21 @@ void Player::Update() {
 
   ProcessDirectionFace();
   ProcessMove();
-
-  selector_.Update();
+  ProcessSkill();
+  ProcessEnergy();
 
   if (is_game_) {
     //ProcessShift();
     ProcessDigging();
   }
+
+  energy_ui_.Update();
 }
 
 void Player::Render() const {
-  render::CharaRenderer::Render(camera_, position_, direction_face_, ColorF { 0.01, 0.00, 0.02 }, ColorF { 0.2, 0.9, 0.3 }, 1.0, 1.0, 1.0);
+  const ColorF body_color = IsBurnout() ? ColorF { 0.01, 0.01, 0.01 } : ColorF { 0.01, 0.00, 0.02 };
+  const ColorF edge_color = IsBurnout() ? ColorF { 0.2, 0.2, 0.2 } : ColorF { 0.2, 0.9, 0.3 };
+  render::CharaRenderer::Render(camera_, position_, direction_face_, body_color, edge_color, 1.0, 1.0, 1.0);
 
   const auto& lightbloom = render::LightBloom::GetInstance();
 
@@ -70,8 +74,14 @@ void Player::Render() const {
 
 }
 
-void Player::RenderUI() const {
+void Player::RenderUI(double energy_radius) const {
   selector_.Render();
+
+  if (is_game_) {
+    Optional<double> burnout_rate;
+    if (IsBurnout()) burnout_rate = burnout_timer_ / burnout_duration_;
+    energy_ui_.Render(burnout_rate, energy_radius);
+  }
 }
 
 void Player::ProcessDirectionFace() {
@@ -84,7 +94,7 @@ void Player::ProcessDirectionFace() {
   if (angle_diff > Math::Pi) angle_diff -= Math::TwoPi;
   if (angle_diff < -Math::Pi) angle_diff += Math::TwoPi;
 
-  const double rotate_speed = 720_deg;  // per second
+  constexpr double rotate_speed = 720_deg;  // per second
   if (Abs(angle_diff) <= rotate_speed * Scene::DeltaTime()) {
     direction_face_ = input_data.direction_face.normalized();
   }
@@ -94,22 +104,59 @@ void Player::ProcessDirectionFace() {
   }
 }
 
+void Player::ProcessSkill() {
+  const auto& input_data = input::Input::GetInstance().GetData();
+
+  move_speed_rate_ = 1.0;
+  can_change_skill_ = true;
+
+  ProcessNobiru();
+  ProcessKokoro();
+  ProcessSusumu();
+  ProcessTsutsu();
+
+  selector_.Update(can_change_skill_);
+}
+
+void Player::ProcessEnergy() {
+  if (burnout_timer_ == 0.0) {
+    // バーンアウト中でなければ
+
+    // エネルギー回復タイマーを更新
+    if (energy_regen_timer_ > 0.0) {
+      energy_regen_timer_ = std::max(0.0, energy_regen_timer_ - Scene::DeltaTime());
+    }
+    else {
+      energy_ += gvc_.GetEnergyRegen() * Scene::DeltaTime();
+    }
+
+  }
+  else {
+    // バーンアウト中ならタイマーを更新
+    burnout_timer_ -= Scene::DeltaTime();
+
+    // バーンアウト復帰
+    if (burnout_timer_ < 0.0) {
+      burnout_timer_ = 0.0;
+      energy_ = gvc_.GetMaxEnergy();
+    }
+  }
+
+  // バーンアウト判定
+  if (energy_ < 0.0) {
+    energy_ = 0.0;
+    burnout_timer_ = burnout_duration_;
+  }
+
+  energy_ = std::min(energy_, gvc_.GetMaxEnergy());
+}
+
 void Player::ProcessMove() {
   const auto& input_data = input::Input::GetInstance().GetData();
 
-  const double speed = gvc_.GetMoveSpeed();
+  const double speed = 7.0 * gvc_.GetMoveSpeedRate() * move_speed_rate_;
   position_ += input_data.direction_move.normalized() * speed * Scene::DeltaTime();
   position_ = terrain_.PushbackService(Circle { position_, kCharacterRadius });
-}
-
-void Player::ProcessShift() {
-  const auto& input_data = input::Input::GetInstance().GetData();
-
-  const double shift_speed = 20.0;
-  shift_amount_ += input_data.direction_move.normalized() * shift_speed * Scene::DeltaTime();
-  const double alpha = Pow(0.3, Scene::DeltaTime() * 10);
-  shift_amount_ = shift_amount_ * alpha;
-  shift_amount_ = terrain_.PushbackService(Circle { GetShiftedPosition(), 0.45 }) - position_;
 }
 
 void Player::ProcessDigging() {
@@ -132,6 +179,121 @@ void Player::ProcessDigging() {
       effect_.add<effect::DigSinhalite>(camera_, *digging_position_, direction_face_);
     }
   }
+}
+
+void Player::ProcessNobiru() {
+  const auto& input_data = input::Input::GetInstance().GetData();
+
+  const double shift_distance = gvc_.GetNobiruShiftDistance();
+  const auto item = selector_.GetSelectedItem();
+  if (is_game_ && input_data.action && burnout_timer_ == 0.0 && item && *item == PowerGradeItem::Nobiru) {
+    // 使用時効果：シフト目標値をセットする
+    shift_target_ = input_data.direction_move.normalized() * shift_distance;
+    if (not input_data.direction_move.isZero()) {
+      if (const auto endpoint_opt = terrain_.CalcLineCollisionPoint(position_, input_data.direction_move.normalized(), shift_distance)) {
+        shift_target_ = input_data.direction_move.normalized() * (endpoint_opt->distanceFrom(position_)) * 0.99;
+        shift_amount_ = shift_target_;
+      }
+    }
+
+    // 不随効果
+    can_change_skill_ = false;
+    move_speed_rate_ = 0.0;
+    energy_regen_timer_ = 2.0;
+  }
+  else {
+    shift_target_ = Vec2 { 0.0, 0.0 };
+  }
+
+  // 常時効果：シフト目標値にシフト量を近づける
+  const double shift_speed = 20.0;
+  const double shift_alpha = Pow(0.3, Scene::DeltaTime() * 10);
+  shift_amount_ = shift_amount_ * shift_alpha + shift_target_ * (1.0 - shift_alpha);
+
+}
+
+void Player::ProcessKokoro() {
+  const auto& input_data = input::Input::GetInstance().GetData();
+
+  kokoro_minimum_timer_ = Max(kokoro_minimum_timer_ - Scene::DeltaTime(), 0.0);
+
+  const auto item = selector_.GetSelectedItem();
+  if (is_game_ && input_data.action && burnout_timer_ == 0.0 && item && *item == PowerGradeItem::Kokoro) {
+    // 使用時効果：心発動
+    is_kokoro_active_ = true;
+
+    // 不随効果
+    energy_regen_timer_ = 2.0;
+    if (not prev_kokoro_active_) {
+      // 発動時コスト
+      energy_ -= gvc_.GetKokoroBeginCost();
+      kokoro_minimum_timer_ = 0.5;  // 最低維持時間
+    }
+    else if (kokoro_minimum_timer_ == 0.0) {
+      // 継続コスト
+      energy_ -= gvc_.GetKokoroMaintainCost() * Scene::DeltaTime();
+    }
+  }
+  else {
+    is_kokoro_active_ = false;
+  }
+
+  // 描画エフェクト用アルファ値更新
+  if (is_kokoro_active_ || kokoro_minimum_timer_) {
+    kokoro_alpha_ += Scene::DeltaTime() * 5.0;
+  }
+  else {
+    kokoro_alpha_ -= Scene::DeltaTime() * 5.0;
+  }
+  kokoro_alpha_ = Clamp(kokoro_alpha_, 0.0, 1.0);
+
+  can_change_skill_ = kokoro_alpha_ == 0.0;
+  prev_kokoro_active_ = is_kokoro_active_;
+}
+
+void Player::ProcessSusumu() {
+  const auto& input_data = input::Input::GetInstance().GetData();
+
+  const auto item = selector_.GetSelectedItem();
+  if (is_game_ && input_data.action && burnout_timer_ == 0.0 && item && *item == PowerGradeItem::Susumu) {
+    // 使用時効果：進発動
+    move_speed_rate_ = gvc_.GetSususmuSpeedRate();
+
+    // 不随効果
+    can_change_skill_ = false;
+    energy_regen_timer_ = 2.0;
+    energy_ -= 1500.0 * Scene::DeltaTime();
+  }
+  else {
+  }
+}
+
+void Player::ProcessTsutsu() {
+  const auto& input_data = input::Input::GetInstance().GetData();
+
+  const auto item = selector_.GetSelectedItem();
+  if (is_game_ && input_data.action && burnout_timer_ == 0.0 && item && *item == PowerGradeItem::Tsutsu) {
+    // 使用時効果：慎発動
+    is_tsutsu_active_ = true;
+
+    // 不随効果
+    can_change_skill_ = false;
+    move_speed_rate_ = 0.20;
+    energy_regen_timer_ = 2.0;
+    if (not prev_tsutsu_active_) {
+      // 発動時コスト
+      energy_ -= gvc_.GetTsutsuStartCost();
+    }
+    else {
+      // 継続コスト
+      energy_ -= gvc_.GetTsutsuMaintainCost() * Scene::DeltaTime();
+    }
+  }
+  else {
+    is_tsutsu_active_ = false;
+  }
+
+  prev_tsutsu_active_ = is_tsutsu_active_;
 }
 
 }

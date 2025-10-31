@@ -22,6 +22,8 @@ void Main() {
   Window::Resize(window_size.x, window_size.y);
   Window::SetPos(0, 0);
 
+  Scene::SetMaxDeltaTime(1.0 / 30);
+
 
   scene::App manager;
   manager.add<scene::Title>(scene::SceneEnum::Title);

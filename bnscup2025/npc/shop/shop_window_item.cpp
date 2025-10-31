@@ -121,7 +121,7 @@ void ShopWindowItem::UpdateFocus() {
 }
 
 void ShopWindowItem::UpdateBuy() {
-  const auto input_data = input::Input::GetInstance().GetData();
+  const auto& input_data = input::Input::GetInstance().GetData();
 
   just_bought_ = false;
   if (not selected_ || not is_active_ || not CanBuy()) {
@@ -147,8 +147,9 @@ void ShopWindowItem::UpdateBuy() {
 
 bool ShopWindowItem::CanBuy() const {
   const ItemInfo item_info = ItemInfoFactory::Get(pg_item_);
-  const int cost = item_info.costs[power_grade_[pg_item_]];
   if (power_grade_[pg_item_] >= item_info.costs.size()) return false;
+
+  const int cost = item_info.costs[power_grade_[pg_item_]];
   if (sinhalite_amount_ < cost) return false;
   return true;
 }

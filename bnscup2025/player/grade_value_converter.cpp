@@ -35,15 +35,15 @@ double GradeValueConverter::GetViewAngle() const {
   return base + 20_deg * level;
 }
 
-double GradeValueConverter::GetMoveSpeed() const {
+double GradeValueConverter::GetMoveSpeedRate() const {
   uint8 level = power_grade_[PowerGradeItem::MoveSpeed];
-  double base = 7.0;
-  return base + 1.0 * level;
+  double base = 1.0;
+  return base + 0.10 * level;
 }
 
 double GradeValueConverter::GetNobiruShiftDistance() const {
   uint8 level = power_grade_[PowerGradeItem::Nobiru];
-  return 3.0 + 1.2 * level;
+  return 5.0 + 1.8 * level;
 }
 
 double GradeValueConverter::GetKokoroBeginCost() const {
@@ -56,9 +56,10 @@ double GradeValueConverter::GetKokoroMaintainCost() const {
   return 3300.0 - 200.0 * level;
 }
 
-double GradeValueConverter::GetSususmuSpeed() const {
+double GradeValueConverter::GetSususmuSpeedRate() const {
   uint8 level = power_grade_[PowerGradeItem::Susumu];
-  return 7.5 + 0.75 * level;
+  const double base = 1.8;
+  return base + level * 0.25;
 }
 
 double GradeValueConverter::GetTsutsuStartCost() const {
