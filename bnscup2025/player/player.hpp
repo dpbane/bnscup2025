@@ -27,6 +27,7 @@ public:
 
   double GetKokoroAlpha() const { return kokoro_alpha_; }
   bool IsTsutsuActive() const { return is_tsutsu_active_; }
+  bool IsMiruActive() const { return gvc_.HasMiru(); }
   bool IsBurnout() const { return burnout_timer_ > 0.0; }
 
 private:

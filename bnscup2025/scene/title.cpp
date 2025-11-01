@@ -33,6 +33,7 @@ void Title::update() {
     pg[player::PowerGradeItem::Kokoro] = 1;
     pg[player::PowerGradeItem::Susumu] = 1;
     pg[player::PowerGradeItem::Tsutsu] = 1;
+    pg[player::PowerGradeItem::Miru] = 1;
     getData() = CommonData {
       .next_level = 1,
       .next_room = Room::Shop,

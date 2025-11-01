@@ -6,8 +6,7 @@ namespace bnscup2025::player {
 
 double GradeValueConverter::GetMaxEnergy() const {
   uint8 level = power_grade_[PowerGradeItem::MaxEnergy];
-  int base = 10000;
-  if (HasMiru()) base = -5000;
+  int base = HasMiru() ? 5000 : 10000;
   return base + 500 * level;
 }
 
@@ -65,7 +64,7 @@ double GradeValueConverter::GetKokoroBeginCost() const {
 
 double GradeValueConverter::GetKokoroMaintainCost() const {
   uint8 level = power_grade_[PowerGradeItem::Kokoro];
-  return 3300.0 - 200.0 * level;
+  return 2300.0 - 230.0 * level;
 }
 
 double GradeValueConverter::GetSususmuSpeedRate() const {

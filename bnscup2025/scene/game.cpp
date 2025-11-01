@@ -213,6 +213,7 @@ void Game::draw() const {
 
   const double shorter_side = Min(Scene::Width(), Scene::Height());
   player_->RenderUI(visible_radius * shorter_side / view_distance);
+  if (enemy_) enemy_->RenderUI();
 
   screen::Fade::GetInstance().Render();
 

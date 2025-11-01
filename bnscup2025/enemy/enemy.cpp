@@ -4,6 +4,8 @@
 #include "render/lightbloom.hpp"
 #include "render/chara_renderer.hpp"
 
+#include "screen/fade.hpp"
+
 namespace bnscup2025::enemy {
 
 Enemy::Enemy(const camera::Camera& camera,
@@ -46,6 +48,14 @@ void Enemy::Update() {
   direction_face_ = velocity_.isZero() ? direction_face_ : velocity_.normalized();
   position_ += velocity_ * Scene::DeltaTime();
   position_ = terrain_.PushbackService(Circle { position_, kCharacterRadius });
+
+  if (screen::Fade::GetInstance().CompletedFadeIn()) {
+    ui_alpha_ += Scene::DeltaTime() * 2.0;
+  }
+  else {
+    ui_alpha_ -= Scene::DeltaTime() * 2.0;
+  }
+  ui_alpha_ = Clamp(ui_alpha_, 0.0, 1.0);
 }
 
 void Enemy::Render() const {
@@ -61,6 +71,30 @@ void Enemy::Render() const {
     case State::Pursuit: Print << U"Pursuit"; break;
   }
 
+}
+
+void Enemy::RenderUI() const {
+  if (not player_.IsMiruActive()) return;
+
+  Vec2 text_position = Vec2 { 20, 940 } *Scene::Height() / 1080;
+  double font_size = 32.0 * Scene::Height() / 1080;
+  String str {};
+  ColorF color {};
+  switch (state_) {
+    case State::Prowl:
+      str = U"鬼はこちらに気づいていないようだ。";
+      color = ColorF { 0.5, 1.0, 0.6 };
+      break;
+    case State::ToSound:
+      str = U"鬼は音を聞いたようだ。";
+      color = ColorF { 0.9, 0.85, 0.5 };
+      break;
+    case State::Pursuit:
+      str = U"鬼に発見された。";
+      color = ColorF { 1.0, 0.2, 0.2 };
+      break;
+  }
+  FontAsset(U"Text")(str).draw(font_size, text_position, color.withA(ui_alpha_));
 }
 
 bool Enemy::IsPlayerCaught() const {

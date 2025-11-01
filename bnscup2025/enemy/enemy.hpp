@@ -33,6 +33,7 @@ public:
 
   void Update();
   void Render() const;
+  void RenderUI() const;
 
   bool IsPlayerCaught() const;
 
@@ -81,6 +82,7 @@ private:
 
   double await_timer_ { 0.0 };
 
+  double ui_alpha_ { 0.0 };
 
 
 };
