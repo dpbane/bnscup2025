@@ -24,7 +24,7 @@ Terrain::Terrain(NodeGrid node_grid, Array<Point>&& sinhalite_positions) :
   material_table_[MaterialEnum::Bounds] = std::make_unique<Material<MaterialEnum::Bounds>>();
   material_table_[MaterialEnum::HardRock] = std::make_unique<Material<MaterialEnum::HardRock>>();
 
-  updated_node_.Fill(false);
+  updated_node_.Fill(true);
   EarnSinhalite();
   Update();
 }
@@ -40,7 +40,7 @@ Terrain::Terrain(Terrain&& terrain) noexcept :
   material_table_[MaterialEnum::Bounds] = std::make_unique<Material<MaterialEnum::Bounds>>();
   material_table_[MaterialEnum::HardRock] = std::make_unique<Material<MaterialEnum::HardRock>>();
 
-  updated_node_.Fill(false);
+  updated_node_.Fill(true);
   EarnSinhalite();
   Update();
 }
@@ -222,7 +222,6 @@ void Terrain::RenderGround(const Array<Point>& visible_cells, const camera::Came
 
         }
       }
-
 
     }
   }

@@ -379,6 +379,7 @@
     <ClInclude Include="npc\shop\shop_window.hpp" />
     <ClInclude Include="player\energy_ui.hpp" />
     <ClInclude Include="player\goshin\selector.hpp" />
+    <ClInclude Include="debug_var.hpp" />
     <ClInclude Include="terrain\pushback_service.hpp" />
     <ClInclude Include="ui\sinhalite_disp.hpp" />
     <ClInclude Include="ui\text_window.hpp" />

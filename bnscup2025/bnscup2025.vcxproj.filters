@@ -1061,5 +1061,8 @@
     <ClInclude Include="terrain\pushback_service.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="debug_var.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

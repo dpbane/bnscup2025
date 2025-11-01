@@ -32,11 +32,8 @@ public:
   const InputData& GetData() const;
 
 private:
-  InputData GetKeyboardAndMouseData() const;
-  InputData GetGamepadData() const;
-
-private:
   InputData input_data_;
+  bool mouse_visible_ { true };
 
 };
 

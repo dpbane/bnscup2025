@@ -9,6 +9,7 @@ namespace bnscup2025::enemy {
 struct EnemyParameters {
   double sound_hear_radius;
   double view_radius;
+  double view_fov_cos;
   double prowl_speed;
   double to_sound_speed;
   double pursuit_speed;
@@ -42,13 +43,15 @@ private:
   void OnToSoundUpdate();
   void OnPursuitUpdate();
 
-  void AvoidWall();
-
   Optional<Point> CalcNearestValidPoint(const Vec2& pos) const;
   Vec2 CalcDirectionFromPathMap() const;
   bool IsArrivedAtTarget() const;
   bool HasHeardSound() const;
   bool CanSeePlayer(double range, double fov_cos) const;
+
+private:
+  bool CanPassThrough(const Vec2& from, const Vec2& to) const;
+  Point GetNextPointFromPathMap(const Point& current_point) const;
 
 private:
   void BeginThread(Point target_point);

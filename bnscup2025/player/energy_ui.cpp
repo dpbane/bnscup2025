@@ -31,9 +31,9 @@ void EnergyUI::Update() {
 void EnergyUI::Render(Optional<double> burnout_rate, double radius) const {
   const double max_inner_rate = Min(1.0, gvc_.GetMaxEnergy() / 10000.0);
   const double max_outer_rate = Max((gvc_.GetMaxEnergy() - 10000.0) / 10000.0, 0.0);
-  const double inner_thickness = Scene::Height() / 1080.0 * 10.0;
+  const double inner_thickness = Scene::Height() / 1080.0 * 20.0;
   const double outer_thickness = inner_thickness * 0.5;
-  const ColorF background_color { 0.5, 0.5, 0.5, alpha_ };
+  const ColorF background_color { 0.3, 0.3, 0.3, alpha_ };
   const ColorF foreground_color { 0.0, 1.0, 1.0, alpha_ };
   const ColorF burnout_color { 1.0, 1.0, 1.0, alpha_ };
 

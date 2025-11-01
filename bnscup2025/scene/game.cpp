@@ -33,11 +33,11 @@ Game::Game(const InitData& init_data) :
   camera_.emplace(Vec2 { 0.0, 0.0 }, SizeF { cell_size, cell_size });
 
   enemy::EnemyParameters enemy_params {
-    .sound_hear_radius = 10.0,
+    .sound_hear_radius = 25.0,
     .view_radius = 20.0,
-    .prowl_speed = 4.0,
-    .to_sound_speed = 4.5,
-    .pursuit_speed = 5.0
+    .prowl_speed = 3.2,
+    .to_sound_speed = 4.0,
+    .pursuit_speed = 4.5
   };
 
   player_.emplace(*camera_, *terrain_, effect_, map_params.player_position, is_game_, getData().power_grade);

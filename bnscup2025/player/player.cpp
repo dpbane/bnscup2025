@@ -193,8 +193,12 @@ void Player::ProcessNobiru() {
     shift_target_ = input_data.direction_move.normalized() * shift_distance;
     if (not input_data.direction_move.isZero()) {
       if (const auto endpoint_opt = terrain_.CalcLineCollisionPoint(position_, input_data.direction_move.normalized(), shift_distance)) {
-        shift_target_ = input_data.direction_move.normalized() * (endpoint_opt->distanceFrom(position_)) * 0.99;
-        shift_amount_ = shift_target_;
+        const double distance = endpoint_opt->distanceFrom(position_) * 0.99;
+        shift_target_ = input_data.direction_move.normalized() * distance;
+
+        if (shift_amount_.length() > distance) {
+          shift_amount_ = shift_amount_.normalized() * distance;
+        }
       }
     }
 

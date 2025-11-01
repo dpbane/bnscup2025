@@ -129,83 +129,59 @@ void AccessMap::UpdateDirection(Point point) {
   direction.left = accessable_map_.Get(point.movedBy(-1, 0));
   direction.right = accessable_map_.Get(point.movedBy(1, 0));
 
-  // 斜め判定用の関数
-  auto CanAccessDiagonal = [this](const Point& from, const Point& to, const Point& ext1, const Point& ext2) -> bool {
-    // 移動可能性で大雑把な判定
-    if (accessable_map_.Get(to) == false) return false;
-    if (accessable_map_.Get(ext1) || accessable_map_.Get(ext2)) return true;
+  // 斜めを確認
+  const bool ul = accessable_map_.Get(point.movedBy(-1, -1));
+  const bool ur = accessable_map_.Get(point.movedBy(1, -1));
+  const bool dl = accessable_map_.Get(point.movedBy(-1, 1));
+  const bool dr = accessable_map_.Get(point.movedBy(1, 1));
+  direction.up_left = ul && (direction.up || direction.left);
+  direction.up_right = ur && (direction.up || direction.right);
+  direction.down_left = dl && (direction.down || direction.left);
+  direction.down_right = dr && (direction.down || direction.right);
 
-    // この時点で鞍点であることが確定するので、分離型かを判定
-    const double v_from = node_grid_.Get(from).density;
-    const double v_to = node_grid_.Get(to).density;
-    const double v_ext1 = node_grid_.Get(ext1).density;
-    const double v_ext2 = node_grid_.Get(ext2).density;
-    const double mean = (v_from + v_to + v_ext1 + v_ext2) / 4;
-    if (mean <= threshold_) return false;  // 分離型でないならアクセス不可
-
-    // 分離型鞍点であることが確定したので、対角線における壁の幅を計算
-
-    // 媒介変数tを求める関数
-    auto CalcT = [this](double v1, double v2) -> double {
-      if (v1 == v2) return 0.5;
-      return (threshold_ - v1) / (v2 - v1);
-    };
-
-    const double p_ext1 = CalcT(mean, v_ext1);
-    const double p_ext2 = CalcT(mean, v_ext2);
-    if (p_ext1 + p_ext2 < kCharacterRadius * 2.0) return false;
-
-    return true;
-  };
-
-  // 斜め方向を確認
-  if (not direction.up_left) direction.up_left = CanAccessDiagonal(point, point.movedBy(-1, -1), point.movedBy(-1, 0), point.movedBy(0, -1));
-  if (not direction.up_right) direction.up_right = CanAccessDiagonal(point, point.movedBy(1, -1), point.movedBy(1, 0), point.movedBy(0, -1));
-  if (not direction.down_left) direction.down_left = CanAccessDiagonal(point, point.movedBy(-1, 1), point.movedBy(-1, 0), point.movedBy(0, 1));
-  if (not direction.down_right) direction.down_right = CanAccessDiagonal(point, point.movedBy(1, 1), point.movedBy(1, 0), point.movedBy(0, 1));
+  // 隣接ノードの逆方向も設定
   direction_map_.Set(point, direction);
-
-  // 相手側の方向情報も更新
-  if (direction.up) {
+  if (direction.up && accessable_map_.Get(point.movedBy(0, -1))) {
     auto temp = direction_map_.Get(point.movedBy(0, -1));
     temp.down = true;
     direction_map_.Set(point.movedBy(0, -1), temp);
   }
-  if (direction.down) {
+  if (direction.down && accessable_map_.Get(point.movedBy(0, 1))) {
     auto temp = direction_map_.Get(point.movedBy(0, 1));
     temp.up = true;
     direction_map_.Set(point.movedBy(0, 1), temp);
   }
-  if (direction.left) {
+  if (direction.left && accessable_map_.Get(point.movedBy(-1, 0))) {
     auto temp = direction_map_.Get(point.movedBy(-1, 0));
     temp.right = true;
     direction_map_.Set(point.movedBy(-1, 0), temp);
   }
-  if (direction.right) {
+  if (direction.right && accessable_map_.Get(point.movedBy(1, 0))) {
     auto temp = direction_map_.Get(point.movedBy(1, 0));
     temp.left = true;
     direction_map_.Set(point.movedBy(1, 0), temp);
   }
-  if (direction.up_left) {
+  if (direction.up_left && accessable_map_.Get(point.movedBy(-1, -1))) {
     auto temp = direction_map_.Get(point.movedBy(-1, -1));
     temp.down_right = true;
     direction_map_.Set(point.movedBy(-1, -1), temp);
   }
-  if (direction.up_right) {
+  if (direction.up_right && accessable_map_.Get(point.movedBy(1, -1))) {
     auto temp = direction_map_.Get(point.movedBy(1, -1));
     temp.down_left = true;
     direction_map_.Set(point.movedBy(1, -1), temp);
   }
-  if (direction.down_left) {
+  if (direction.down_left && accessable_map_.Get(point.movedBy(-1, 1))) {
     auto temp = direction_map_.Get(point.movedBy(-1, 1));
     temp.up_right = true;
     direction_map_.Set(point.movedBy(-1, 1), temp);
   }
-  if (direction.down_right) {
+  if (direction.down_right && accessable_map_.Get(point.movedBy(1, 1))) {
     auto temp = direction_map_.Get(point.movedBy(1, 1));
     temp.up_left = true;
     direction_map_.Set(point.movedBy(1, 1), temp);
   }
+
 }
 
 }

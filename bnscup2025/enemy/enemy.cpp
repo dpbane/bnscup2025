@@ -43,8 +43,6 @@ void Enemy::Update() {
     }
   }
 
-  AvoidWall();
-
   direction_face_ = velocity_.isZero() ? direction_face_ : velocity_.normalized();
   position_ += velocity_ * Scene::DeltaTime();
   position_ = terrain_.Pushback(Circle { position_, kCharacterRadius });
@@ -64,10 +62,28 @@ void Enemy::Render() const {
   render::CharaRenderer::Render(camera_, position_, direction_face_, color_body, color_edge, 1.0, 2.0, 2.0);
 
   // デバッグ用：状態表示
-  switch (state_) {
-    case State::Prowl: Print << U"Prowl"; break;
-    case State::ToSound: Print << U"ToSound"; break;
-    case State::Pursuit: Print << U"Pursuit"; break;
+  if (false) {
+    switch (state_) {
+      case State::Prowl: Print << U"Prowl"; break;
+      case State::ToSound: Print << U"ToSound"; break;
+      case State::Pursuit: Print << U"Pursuit"; break;
+    }
+    if (cost_map_) {
+      const auto target = camera_.CreateRenderTransformer();
+
+      for (const auto& pos : step(cost_map_->GetSize())) {
+        double cost_raw = cost_map_->Get(pos);
+        if (cost_raw == Inf<double>) continue;
+        int cost = (int)cost_raw;
+        if (abs(cost) > 100) continue;
+
+        FontAsset(U"Text")(U"{:}"_fmt(cost)).drawAt(
+          0.7,
+          pos,
+          ColorF { 1.0, 1.0, 0.5 }
+        );
+      }
+    }
   }
 
 }
@@ -81,7 +97,7 @@ void Enemy::RenderUI() const {
   ColorF color {};
   switch (state_) {
     case State::Prowl:
-      str = U"鬼はこちらに気づいていないようだ。";
+      str = U"鬼はこちらに気づいていない。";
       color = ColorF { 0.5, 1.0, 0.6 };
       break;
     case State::ToSound:
@@ -103,7 +119,7 @@ bool Enemy::IsPlayerCaught() const {
 
 void Enemy::OnProwlUpdate() {
   // 目視したら追跡モードに遷移
-  if (not player_.IsTsutsuActive() && CanSeePlayer(parameters_.view_radius, 0.5)) {
+  if (not player_.IsTsutsuActive() && CanSeePlayer(parameters_.view_radius, parameters_.view_fov_cos)) {
     state_ = State::Pursuit;
     return;
   }
@@ -153,7 +169,7 @@ void Enemy::OnProwlUpdate() {
 
 void Enemy::OnToSoundUpdate() {
   // 目視したら追跡モードに遷移
-  if (not player_.IsTsutsuActive() && CanSeePlayer(parameters_.view_radius, 0.5)) {
+  if (not player_.IsTsutsuActive() && CanSeePlayer(parameters_.view_radius, parameters_.view_fov_cos)) {
     state_ = State::Pursuit;
     return;
   }
@@ -194,16 +210,11 @@ void Enemy::OnPursuitUpdate() {
   Print << last_saw_position_;
   Print << cost_map_.has_value();
   if (CanSeePlayer(parameters_.view_radius, -1.0)) {
-    // プレイヤーが見えている場合、直接向かう
-    const Vec2 to_player = (player_.GetPosition() - position_).normalized();
-    velocity_ = to_player * parameters_.pursuit_speed;
     last_saw_position_ = player_.GetPosition();
-    cost_map_.reset();
+    if (not IsCalculatingPath()) BeginThread(*CalcNearestValidPoint(*last_saw_position_));
     await_timer_ = 0.0;
-    return;
   }
-
-  if (HasHeardSound()) {
+  else if (HasHeardSound()) {
     if (const auto sound_position = CalcNearestValidPoint(*player_.GetSoundPosition())) {
       last_saw_position_.reset();
       BeginThread(*sound_position);
@@ -239,14 +250,6 @@ void Enemy::OnPursuitUpdate() {
   }
 }
 
-void Enemy::AvoidWall() {
-  // 壁にぶつかりにくくする調整
-  Vec2 test_position = terrain_.Pushback(Circle { position_, kCharacterRadius * 2.0 });
-  Vec2 test_direction = (test_position - position_).normalized();
-  double speed = velocity_.length();
-  velocity_ = (velocity_.normalized() + test_direction * 0.2).normalized() * speed;
-}
-
 Optional<Point> Enemy::CalcNearestValidPoint(const Vec2& pos) const {
   const auto& accessable_map = terrain_.GetAccessMap().GetAccessableMap();
   const Point point_nearest = {
@@ -276,27 +279,21 @@ Optional<Point> Enemy::CalcNearestValidPoint(const Vec2& pos) const {
 }
 
 Vec2 Enemy::CalcDirectionFromPathMap() const {
+  // TODO: 最適化
   Optional<Point> current_point = CalcNearestValidPoint(position_);
   if (not current_point) return Vec2 {};
   if (not cost_map_) return Vec2 {};
 
-  constexpr Point candidates[] = {
-    {0, 0}, { 0, -1 }, { 1, 0 }, { 0, 1 }, { -1, 0 },
-    { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 }
-  };
-
-  double min_cost = std::numeric_limits<double>::infinity();
-  Point next_point = *current_point;
-  for (const auto& candidate : candidates) {
-    const Point check_point = *current_point + candidate;
-    const double check_cost = cost_map_->Get(check_point);
-    if (check_cost < min_cost) {
-      min_cost = check_cost;
-      next_point = check_point;
+  Point test_point = GetNextPointFromPathMap(*current_point);
+  while (true) {
+    const Point next_point = GetNextPointFromPathMap(test_point);
+    if (next_point == test_point) break;
+    if (not CanPassThrough(position_, next_point)) {
+      return (test_point - position_).normalized();
     }
+    test_point = next_point;
   }
-  return Vec2 { static_cast<double>(next_point.x - position_.x),
-                 static_cast<double>(next_point.y - position_.y) }.normalized();
+  return (test_point - position_).normalized();
 }
 
 bool Enemy::IsArrivedAtTarget() const {
@@ -332,6 +329,35 @@ bool Enemy::CanSeePlayer(double range, double fov_cos) const {
   }
 
   return to_player.normalized().dot(direction_face_) >= fov_cos;
+}
+
+bool Enemy::CanPassThrough(const Vec2& from, const Vec2& to) const {
+  Vec2 direction = (to - from).normalized();
+  double distance = from.distanceFrom(to);
+  Vec2 normal = Vec2 { -direction.y, direction.x };
+
+  const auto result1 = terrain_.CalcLineCollisionPoint(from, direction, distance);
+  const auto result2 = terrain_.CalcLineCollisionPoint(from + normal * kCharacterRadius, direction, distance);
+  const auto result3 = terrain_.CalcLineCollisionPoint(from - normal * kCharacterRadius, direction, distance);
+
+  return (not result1) && (not result2) && (not result3);
+}
+
+Point Enemy::GetNextPointFromPathMap(const Point& current_point) const {
+  constexpr Point candidates[] = { { 0, -1 }, { 1, 0 }, { 0, 1 }, { -1, 0 }, { -1, -1 }, { 1, -1 }, { 1, 1 }, { -1, 1 } };
+
+  double min_cost = cost_map_->Get(current_point);
+  Point next_point = current_point;
+  for (const auto& candidate : candidates) {
+    const Point check_point = current_point + candidate;
+    const double check_cost = cost_map_->Get(check_point);
+    if (check_cost < min_cost) {
+      min_cost = check_cost;
+      next_point = check_point;
+    }
+  }
+
+  return next_point;
 }
 
 void Enemy::BeginThread(Point target_point) {

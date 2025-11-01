@@ -12,6 +12,7 @@ using namespace bnscup2025;
 
 void Main() {
   constexpr Size scene_size { 1920, 1080 };
+  //constexpr Size scene_size { 2560, 1440 };
   constexpr Size window_size = scene_size;
 
   Scene::SetBackground(Color { 0x10, 0x10, 0x10 });
@@ -24,6 +25,10 @@ void Main() {
 
   Scene::SetMaxDeltaTime(1.0 / 30);
 
+  // 一部の特殊キーを無効化する
+  System::SetTerminationTriggers(UserAction::CloseButtonClicked);
+  ScreenCapture::SetShortcutKeys({ KeyPrintScreen });
+  LicenseManager::DisableDefaultTrigger();
 
   scene::App manager;
   manager.add<scene::Title>(scene::SceneEnum::Title);
@@ -32,7 +37,7 @@ void Main() {
 
   manager.init(scene::SceneEnum::Title, 0);
 
-  // Addon::Register(U"FrameRateLimit", std::make_unique<FrameRateLimitAddon>(60));
+  //Addon::Register(U"FrameRateLimit", std::make_unique<FrameRateLimitAddon>(60));
 
   FontAsset::Register(U"Title", 256, U"example/font/DotGothic16/DotGothic16-Regular.ttf", FontStyle::Bitmap);
   FontAsset::Register(U"Text", 64, U"example/font/DotGothic16/DotGothic16-Regular.ttf", FontStyle::Bitmap);
