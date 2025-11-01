@@ -29,9 +29,15 @@ double GradeValueConverter::GetDigRange() const {
   return base + 0.8 * level;
 }
 
+double GradeValueConverter::GetDigDistance() const {
+  uint8 level = power_grade_[PowerGradeItem::DigDistance];
+  double base = 8.0;
+  return base + 3.0 * level;
+}
+
 double GradeValueConverter::GetViewAngle() const {
   uint8 level = power_grade_[PowerGradeItem::ViewAngle];
-  double base = 90_deg;
+  constexpr double base = 90_deg;
   return base + 20_deg * level;
 }
 

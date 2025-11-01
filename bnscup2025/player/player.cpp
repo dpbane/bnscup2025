@@ -12,8 +12,6 @@
 
 namespace bnscup2025::player {
 
-const double kDigRange = 8.0;
-
 Player::Player(const camera::Camera& camera, terrain::Terrain& terrain, Effect& effect, Vec2 pos, bool is_game, const PowerGrade& power_grade) :
   camera_(camera),
   terrain_(terrain),
@@ -43,8 +41,12 @@ void Player::Update() {
 }
 
 void Player::Render() const {
-  const ColorF body_color = IsBurnout() ? ColorF { 0.01, 0.01, 0.01 } : ColorF { 0.01, 0.00, 0.02 };
-  const ColorF edge_color = IsBurnout() ? ColorF { 0.2, 0.2, 0.2 } : ColorF { 0.2, 0.9, 0.3 };
+  const double alpha = 1.0 - tsutsu_alpha_ * 0.8;
+  const ColorF tsutsu_color = ColorF { 0.5, 0.8, 1.0, alpha };
+  const ColorF body_color_base = IsBurnout() ? ColorF { 0.01, 0.01, 0.01 } : ColorF { 0.01, 0.00, 0.02, alpha };
+  const ColorF edge_color_base = IsBurnout() ? ColorF { 0.2, 0.2, 0.2 } : ColorF { 0.2, 0.9, 0.3, alpha };
+  const ColorF body_color = body_color_base.lerp(tsutsu_color, tsutsu_alpha_ * 0.9);
+  const ColorF edge_color = edge_color_base.lerp(tsutsu_color, tsutsu_alpha_ * 0.9);
   render::CharaRenderer::Render(camera_, position_, direction_face_, body_color, edge_color, 1.0, 1.0, 1.0);
 
   const auto& lightbloom = render::LightBloom::GetInstance();
@@ -67,7 +69,8 @@ void Player::Render() const {
     }
     else {
       const auto t = camera_.CreateRenderTransformer();
-      const Vec2 default_dig_pos = position_ + direction_face_ * kDigRange;
+      const double dig_distance = gvc_.GetDigDistance();
+      const Vec2 default_dig_pos = position_ + direction_face_ * dig_distance;
       Line { position_ + direction_face_ * kCharacterRadius * 1.2, default_dig_pos }.draw(LineStyle::RoundDot, 0.25, ColorF { 0.25, 0.25, 0.25 });
     }
   }
@@ -164,7 +167,8 @@ void Player::ProcessDigging() {
 
 
   dig_timer_ = std::max(0.0, dig_timer_ - Scene::DeltaTime());
-  digging_position_ = terrain_.CalcLineCollisionPoint(position_, direction_face_, kDigRange);
+  const double dig_distance = gvc_.GetDigDistance();
+  digging_position_ = terrain_.CalcLineCollisionPoint(position_, direction_face_, dig_distance);
 
   if (input_data.dig && digging_position_ && dig_timer_ <= 0.0) {
     const double dig_radius = gvc_.GetDigRange();
@@ -292,6 +296,14 @@ void Player::ProcessTsutsu() {
   else {
     is_tsutsu_active_ = false;
   }
+
+  if (is_tsutsu_active_) {
+    tsutsu_alpha_ += Scene::DeltaTime() * 3.0;
+  }
+  else {
+    tsutsu_alpha_ -= Scene::DeltaTime() * 3.0;
+  }
+  tsutsu_alpha_ = Clamp(tsutsu_alpha_, 0.0, 1.0);
 
   prev_tsutsu_active_ = is_tsutsu_active_;
 }

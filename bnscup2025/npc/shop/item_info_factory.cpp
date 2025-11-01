@@ -8,14 +8,14 @@ ItemInfo ItemInfoFactory::Get(player::PowerGradeItem item) {
     case player::PowerGradeItem::MaxEnergy:
       return ItemInfo {
         U"意気軒昂",
-        U"エネルギーの最大値が増加する。",
+        U"エネルギーの最大値が増加する。\nエネルギーはゴシン術使用時に消費される。",
         Array<int> { 3, 4, 5, 6, 7, 8, 9, 10 }
       };
 
     case player::PowerGradeItem::EnergyRegen:
       return ItemInfo {
         U"高速回復",
-        U"何もしていないときのエネルギー回復速度が増加する。\n疲労状態の回復速度には影響しない。",
+        U"エネルギー回復速度が増加する。\n疲労状態の回復速度には影響しない。",
         Array<int> { 7, 10, 13 }
       };
 
@@ -31,6 +31,13 @@ ItemInfo ItemInfoFactory::Get(player::PowerGradeItem item) {
         U"広域掘削",
         U"一度の採掘で影響を与える範囲が広くなる。",
         Array<int> { 5, 7, 9 }
+      };
+
+    case player::PowerGradeItem::DigDistance:
+      return ItemInfo {
+        U"遠距離掘削",
+        U"掘削可能な距離が伸びる。",
+        Array<int> { 6, 7, 9 }
       };
 
     case player::PowerGradeItem::ViewAngle:

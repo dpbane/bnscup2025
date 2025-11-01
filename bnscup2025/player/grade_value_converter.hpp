@@ -37,6 +37,9 @@ public:
   /// @brief 採掘範囲を取得する。
   double GetDigRange() const;
 
+  /// @brief 掘削距離を取得する。
+  double GetDigDistance() const;
+
   /// @brief 視界角度を取得する。
   double GetViewAngle() const;
 
