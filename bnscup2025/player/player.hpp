@@ -12,7 +12,7 @@ namespace bnscup2025::player {
 
 class Player {
 public:
-  Player(const camera::Camera& camera, terrain::Terrain& terrain, Effect& effect, Vec2 pos, bool is_game, const PowerGrade& power_grade);
+  Player(const camera::Camera& camera, terrain::Terrain& terrain, Effect& effect, Vec2 pos, bool is_game, const PowerGrade& power_grade, Optional<PowerGradeItem> initial);
 
   void Update();
   void Render() const;
@@ -24,11 +24,14 @@ public:
 
   const Optional<Vec2>& GetSoundPosition() const { return sound_position_; }
   const PowerGrade& GetPowerGrade() const { return power_grade_; }
+  Optional<PowerGradeItem> GetSelectedGoshinItem() const { return selector_.GetSelectedItem(); }
 
   double GetKokoroAlpha() const { return kokoro_alpha_; }
   bool IsTsutsuActive() const { return is_tsutsu_active_; }
   bool IsMiruActive() const { return gvc_.HasMiru(); }
   bool IsBurnout() const { return burnout_timer_ > 0.0; }
+
+  bool IsGod() const { return gvc_.HasGod(); }
 
 private:
   void ProcessDirectionFace();
@@ -50,12 +53,12 @@ private:
   const bool is_game_;
   const PowerGrade& power_grade_;
   const GradeValueConverter gvc_ { power_grade_ };
-  Selector selector_ { power_grade_ };
+  Selector selector_;
 
   Vec2 position_;
   Vec2 direction_face_ { 0.0, -1.0 };
 
-  double energy_ { 10000.0 };  // エネルギー残量
+  double energy_;
   double move_speed_rate_ { 1.0 };  // 移動速度倍率
   double energy_regen_timer_ { 0.0 };  // エネルギーが回復可能になるまでのタイマー
   double burnout_timer_ { 0.0 };  // バーンアウトが回復するまでのタイマー

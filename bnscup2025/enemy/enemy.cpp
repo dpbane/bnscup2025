@@ -50,10 +50,10 @@ void Enemy::Update() {
   position_ = terrain_.Pushback(Circle { position_, kCharacterRadius });
 
   if (screen::Fade::GetInstance().CompletedFadeIn()) {
-    ui_alpha_ += Scene::DeltaTime() * 2.0;
+    ui_alpha_ += Scene::DeltaTime() * 5.0;
   }
   else {
-    ui_alpha_ -= Scene::DeltaTime() * 2.0;
+    ui_alpha_ -= Scene::DeltaTime() * 5.0;
   }
   ui_alpha_ = Clamp(ui_alpha_, 0.0, 1.0);
 }
@@ -117,14 +117,14 @@ bool Enemy::IsPlayerCaught() const {
 
 void Enemy::OnProwlUpdate() {
   // 目視したら追跡モードに遷移
-  if (not player_.IsTsutsuActive() && CanSeePlayer(parameters_.view_radius, parameters_.view_fov_cos)) {
+  if (not player_.IsGod() && not player_.IsTsutsuActive() && CanSeePlayer(parameters_.view_radius, parameters_.view_fov_cos)) {
     state_ = State::Pursuit;
     return;
   }
 
 
   // 音を聞いたら計算とともに遷移
-  if (HasHeardSound()) {
+  if (not player_.IsGod() && HasHeardSound()) {
     if (const auto sound_position = CalcNearestValidPoint(*player_.GetSoundPosition())) {
       BeginThread(*sound_position);
       state_ = State::ToSound;

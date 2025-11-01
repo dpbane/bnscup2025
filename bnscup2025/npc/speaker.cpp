@@ -38,16 +38,16 @@ void Speaker::Update() {
 void Speaker::Render() const {
 
   const Vec2 direction = (player_.GetPosition() - position_).normalized();
-  ColorF color_body{};
-  ColorF color_edge{};
+  ColorF color_body {};
+  ColorF color_edge {};
   switch (speaker_enum_) {
     case SpeakerEnum::Orrange:
-      color_body = ColorF{ 0.05, 0.03, 0.01 };
-      color_edge = ColorF{ 0.9, 0.4, 0.1 };
+      color_body = ColorF { 0.05, 0.03, 0.01 };
+      color_edge = ColorF { 0.9, 0.4, 0.1 };
       break;
     case SpeakerEnum::Sky:
-      color_body = ColorF{ 0.01, 0.03, 0.05 };
-      color_edge = ColorF{ 0.1, 0.4, 0.9 };
+      color_body = ColorF { 0.01, 0.03, 0.05 };
+      color_edge = ColorF { 0.1, 0.4, 0.9 };
       break;
   }
 
@@ -55,6 +55,9 @@ void Speaker::Render() const {
 
 }
 
+bool Speaker::IsFinished() const {
+  return current_text_index_ >= texts_.size() - 1;
+}
 
 
 

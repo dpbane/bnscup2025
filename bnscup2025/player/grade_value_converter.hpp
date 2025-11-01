@@ -61,6 +61,9 @@ public:
   /// @brief 護身術【進】の移動速度を取得する。
   double GetSususmuSpeedRate() const;
 
+  /// @brief 護身術【進】の維持コスト（秒あたり）を取得する。
+  double GetSusumuCostRate() const;
+
   /// @brief 護身術【慎】の発動コストを取得する。
   double GetTsutsuStartCost() const;
 

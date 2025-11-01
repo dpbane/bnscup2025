@@ -57,16 +57,37 @@ void ShopWindow::ReRollItems() {
 
 std::array<player::PowerGradeItem, 4> ShopWindow::SelectRandomItems() const {
   Array<player::PowerGradeItem> all_items;
+  Array<player::PowerGradeItem> candidate;
   for (int k = 0; k < std::to_underlying<player::PowerGradeItem>(player::PowerGradeItem::Reroll); ++k) {
     const auto item = static_cast<player::PowerGradeItem>(k);
     all_items.push_back(item);
+    if (power_grade_[item] >= ItemInfoFactory::Get(item).costs.size()) continue;
+    candidate.push_back(item);
   };
-  const auto candidate_items = all_items.choice(3);
+
+  Array<player::PowerGradeItem> choosen_items;
+  if (candidate.size() >= 3) {
+    choosen_items = candidate.choice(3);
+  }
+  else {
+    choosen_items = candidate;
+    const auto needed_items = 3 - candidate.size();
+    Array<player::PowerGradeItem> rest_items;
+    for (const auto& item : all_items) {
+      if (not candidate.contains(item)) {
+        rest_items.push_back(item);
+      }
+    }
+    const auto added_items = rest_items.choice(needed_items);
+    for (const auto& item : added_items) {
+      choosen_items.push_back(item);
+    }
+  }
 
   return std::array<player::PowerGradeItem, 4> {
-    candidate_items[0],
-      candidate_items[1],
-      candidate_items[2],
+    choosen_items[0],
+      choosen_items[1],
+      choosen_items[2],
       player::PowerGradeItem::Reroll
   };
 }

@@ -119,6 +119,7 @@
     <ClCompile Include="effect\dig.cpp" />
     <ClCompile Include="effect\dig_sinhalite.cpp" />
     <ClCompile Include="enemy\enemy.cpp" />
+    <ClCompile Include="enemy\enemy_level_designer.cpp" />
     <ClCompile Include="exit\exit.cpp" />
     <ClCompile Include="npc\shop.cpp" />
     <ClCompile Include="npc\shop\item_info_factory.cpp" />
@@ -128,6 +129,7 @@
     <ClCompile Include="npc\shop\shop_window.cpp" />
     <ClCompile Include="player\energy_ui.cpp" />
     <ClCompile Include="player\goshin\selector.cpp" />
+    <ClCompile Include="scene\ending.cpp" />
     <ClCompile Include="terrain\generator\lifegame.cpp" />
     <ClCompile Include="terrain\generator\level_designer.cpp" />
     <ClCompile Include="terrain\pushback_service.cpp" />
@@ -383,6 +385,7 @@
     <ClInclude Include="player\energy_ui.hpp" />
     <ClInclude Include="player\goshin\selector.hpp" />
     <ClInclude Include="debug_var.hpp" />
+    <ClInclude Include="scene\ending.hpp" />
     <ClInclude Include="terrain\generator\lifegame.hpp" />
     <ClInclude Include="terrain\generator\level_designer.hpp" />
     <ClInclude Include="terrain\pushback_service.hpp" />

@@ -37,6 +37,7 @@ void Title::update() {
       pg[player::PowerGradeItem::Susumu] = 1;
       pg[player::PowerGradeItem::Tsutsu] = 1;
       pg[player::PowerGradeItem::Miru] = 1;
+      //pg[player::PowerGradeItem::God] = 1;
       pg[player::PowerGradeItem::ViewDistance] = 3;
       getData() = CommonData {
         .next_level = 1,
@@ -74,7 +75,7 @@ void Title::draw() const {
     for (int k = 0; k < 4; ++k) {
       FontAsset(U"Title")(texts[k]).drawAt(
         gryph_size,
-        Scene::Center().movedBy(gryph_size * (-1.5 + k * 1.0), -Scene::Height() * 0.25),
+        Scene::CenterF().movedBy(gryph_size * (-1.5 + k * 1.0), -Scene::Height() * 0.25),
         colors[k].withA(0.7)
       );
     }

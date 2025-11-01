@@ -14,6 +14,7 @@
 
 #include "ui/text_window.hpp"
 #include "floor_name_factory.hpp"
+#include "enemy/enemy_level_designer.hpp"
 
 namespace bnscup2025::scene {
 
@@ -33,15 +34,7 @@ Game::Game(const InitData& init_data) :
   const double cell_size = shorter_side / player::GradeValueConverter { getData().power_grade }.GetViewDistance();
   camera_.emplace(Vec2 { 0.0, 0.0 }, SizeF { cell_size, cell_size });
 
-  enemy::EnemyParameters enemy_params {
-    .sound_hear_radius = 25.0,
-    .view_radius = 20.0,
-    .prowl_speed = 3.2,
-    .to_sound_speed = 4.0,
-    .pursuit_speed = 4.5
-  };
-
-  player_.emplace(*camera_, *terrain_, effect_, map_params.player_position, is_game_, getData().power_grade);
+  player_.emplace(*camera_, *terrain_, effect_, map_params.player_position, is_game_, getData().power_grade, getData().initial_goshin_item);
   exit_.emplace(*camera_, *player_, map_params.exit_position);
 
   if (is_game_) {
@@ -75,7 +68,7 @@ Game::Game(const InitData& init_data) :
     }
     else {
       // 通常レベル
-      enemy_.emplace(*camera_, *terrain_, *player_, map_params.enemy_position, enemy_params);
+      enemy_.emplace(*camera_, *terrain_, *player_, map_params.enemy_position, enemy::EnemyLevelDesigner::MakeParameters(level));
     }
   }
   else {
@@ -135,6 +128,7 @@ void Game::update() {
   );
   visibility_mask_.SetPosition(player_->GetShiftedPosition());
 
+
   if (exit_ && exit_->ShouldExitGame() && fade.CompletedFadeIn()) {
     if (getData().next_room == Room::Shop) {
       getData().next_level += 1;
@@ -142,11 +136,32 @@ void Game::update() {
     }
     else {
       getData().next_room = Room::Shop;
+      if (getData().next_level == 12) {
+        if (getData().sinhalite_amount >= 60) {
+          getData().next_level = 13;
+        }
+        if (getData().power_grade[player::PowerGradeItem::God] >= 1) {
+          getData().next_level = 14;
+        }
+      }
     }
     fade.BeginFadeOut(kFadeDuration);
   }
   if (fade.CompletedFadeOut()) {
-    changeScene(SceneEnum::Game, 0);
+    getData().initial_goshin_item = player_->GetSelectedGoshinItem();
+    if (getData().next_room == Room::End) {
+      changeScene(SceneEnum::Ending, 0);
+    }
+    else {
+      changeScene(SceneEnum::Game, 0);
+    }
+  }
+
+  if (getData().next_level >= 12 && getData().next_room == Room::Shop) {
+    if (speaker_ && speaker_->IsFinished() && not fade.IsFadingOut()) {
+      fade.BeginFadeOut(kFadeDuration);
+      getData().next_room = Room::End;
+    }
   }
 
   ui::TextWindow::GetInstance().Update();
@@ -190,7 +205,7 @@ void Game::draw() const {
   // 視界制限
   const double view_distance = player::GradeValueConverter { getData().power_grade }.GetViewDistance();
   const double visible_radius = 24.0 * view_distance / 54.0;
-  if (is_game_ && not DebugVar::GetInstance().disable_visibility_mask_) {
+  if (is_game_ && getData().power_grade[player::PowerGradeItem::God] == 0 && not DebugVar::GetInstance().disable_visibility_mask_) {
     visibility_mask_.Render(*camera_, visible_radius);
   }
 
@@ -200,7 +215,7 @@ void Game::draw() const {
   }
 
   // 視界制限（円）
-  if (is_game_ && not DebugVar::GetInstance().disable_visibility_mask_) {
+  if (is_game_ && getData().power_grade[player::PowerGradeItem::God] == 0 && not DebugVar::GetInstance().disable_visibility_mask_) {
     visibility_mask_.RenderCircle(*camera_, visible_radius);
   }
 

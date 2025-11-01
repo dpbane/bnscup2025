@@ -7,7 +7,7 @@ namespace bnscup2025::player {
 
 class Selector {
 public:
-  Selector(const PowerGrade& power_grade);
+  Selector(const PowerGrade& power_grade, Optional<PowerGradeItem> initial = none);
 
   void Update(bool can_change);
   void Render() const;
@@ -30,6 +30,7 @@ private:
   Optional<PowerGradeItem> left_item_;
 
   double disp_offset_ { 0.0 };
+  double alpha_ { 0.0 };
 
 };
 

@@ -19,7 +19,7 @@ double GradeValueConverter::GetEnergyRegen() const {
 double GradeValueConverter::GetDigCooldown() const {
   uint8 level = power_grade_[PowerGradeItem::DigSpeed];
   double base = 0.25;
-  return base - 0.03 * level;
+  return base - 0.04 * level;
 }
 
 double GradeValueConverter::GetDigRange() const {
@@ -31,7 +31,7 @@ double GradeValueConverter::GetDigRange() const {
 double GradeValueConverter::GetDigDistance() const {
   uint8 level = power_grade_[PowerGradeItem::DigDistance];
   double base = 8.0;
-  return base + 3.0 * level;
+  return base + 2.4 * level;
 }
 
 double GradeValueConverter::GetViewAngle() const {
@@ -42,35 +42,39 @@ double GradeValueConverter::GetViewAngle() const {
 
 double GradeValueConverter::GetViewDistance() const {
   uint8 level = power_grade_[PowerGradeItem::ViewDistance];
-  double base = 54.0;
+  double base = 52.0;
   return base + 7.0 * level;
 }
 
 double GradeValueConverter::GetMoveSpeedRate() const {
   uint8 level = power_grade_[PowerGradeItem::MoveSpeed];
   double base = 1.0;
-  return base + 0.10 * level;
+  return base + 0.12 * level;
 }
 
 double GradeValueConverter::GetNobiruShiftDistance() const {
   uint8 level = power_grade_[PowerGradeItem::Nobiru];
-  return 5.0 + 1.8 * level;
+  return 4.0 + 1.8 * level;
 }
 
 double GradeValueConverter::GetKokoroBeginCost() const {
   uint8 level = power_grade_[PowerGradeItem::Kokoro];
-  return 3400.0 - 300.0 * level;
+  return 3400.0 - 340.0 * level;
 }
 
 double GradeValueConverter::GetKokoroMaintainCost() const {
   uint8 level = power_grade_[PowerGradeItem::Kokoro];
-  return 2300.0 - 230.0 * level;
+  return 1300.0 - 130.0 * level;
 }
 
 double GradeValueConverter::GetSususmuSpeedRate() const {
   uint8 level = power_grade_[PowerGradeItem::Susumu];
-  const double base = 1.8;
-  return base + level * 0.25;
+  const double base = 1.4;
+  return base + level * 0.20;
+}
+
+double GradeValueConverter::GetSusumuCostRate() const {
+  return 3500.0;
 }
 
 double GradeValueConverter::GetTsutsuStartCost() const {
@@ -80,7 +84,7 @@ double GradeValueConverter::GetTsutsuStartCost() const {
 
 double GradeValueConverter::GetTsutsuMaintainCost() const {
   uint8 level = power_grade_[PowerGradeItem::Tsutsu];
-  return 750.0 - 75.0 * level;
+  return 500.0 - 50.0 * level;
 }
 
 bool GradeValueConverter::HasNobiru() const {

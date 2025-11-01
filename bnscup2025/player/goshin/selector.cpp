@@ -2,12 +2,14 @@
 #include "selector.hpp"
 
 #include "input/input.hpp"
+#include "screen/fade.hpp"
 #include "player/grade_value_converter.hpp"
 
 namespace bnscup2025::player {
 
-Selector::Selector(const PowerGrade& power_grade) :
-  power_grade_(power_grade) {
+Selector::Selector(const PowerGrade& power_grade, Optional<PowerGradeItem> initial) :
+  power_grade_(power_grade),
+  selected_item_(initial) {
 }
 
 void Selector::Update(bool can_change) {
@@ -15,7 +17,7 @@ void Selector::Update(bool can_change) {
 
   UpdateItem();
 
-  if (can_change) {
+  if (can_change && (right_item_ || left_item_)) {
     // 右上方向切替
     if (input_data.action_change_upright && not input_data.action_change_downleft) {
       selected_item_ = left_item_;
@@ -31,6 +33,14 @@ void Selector::Update(bool can_change) {
   }
 
   disp_offset_ *= Pow(0.03, Scene::DeltaTime() * 10);
+
+  if (screen::Fade::GetInstance().CompletedFadeIn()) {
+    alpha_ += Scene::DeltaTime() * 5.0;
+  }
+  else {
+    alpha_ -= Scene::DeltaTime() * 5.0;
+  }
+  alpha_ = Clamp(alpha_, 0.0, 1.0);
 }
 
 void Selector::Render() const {
@@ -41,9 +51,9 @@ void Selector::Render() const {
   // 色ズレエフェクト描画ラムダ
   auto DrawWithColorOffset = [&](const String& text, double size, const Vec2& center_pos, double main_offset_rate, double color_offset_rate) {
     const ScopedRenderStates2D blend { BlendState::Additive };
-    FontAsset(U"Text")(text).drawAt(size, center_pos + offset_pos * (main_offset_rate + color_offset_rate), ColorF { 1, 0, 0 });
-    FontAsset(U"Text")(text).drawAt(size, center_pos + offset_pos * (main_offset_rate + 0), ColorF { 0, 1, 0 });
-    FontAsset(U"Text")(text).drawAt(size, center_pos + offset_pos * (main_offset_rate - color_offset_rate), ColorF { 0, 0, 1 });
+    FontAsset(U"Text")(text).drawAt(size, center_pos + offset_pos * (main_offset_rate + color_offset_rate), ColorF { 1, 0, 0, alpha_ });
+    FontAsset(U"Text")(text).drawAt(size, center_pos + offset_pos * (main_offset_rate + 0), ColorF { 0, 1, 0, alpha_ });
+    FontAsset(U"Text")(text).drawAt(size, center_pos + offset_pos * (main_offset_rate - color_offset_rate), ColorF { 0, 0, 1, alpha_ });
   };
 
   // メイン文字

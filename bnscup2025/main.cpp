@@ -3,6 +3,7 @@
 #include "scene/title.hpp"
 #include "scene/game.hpp"
 #include "scene/gameover.hpp"
+#include "scene/ending.hpp"
 
 #include "fps_addon.hpp"
 
@@ -36,6 +37,7 @@ void Main() {
   manager.add<scene::Title>(scene::SceneEnum::Title);
   manager.add<scene::Game>(scene::SceneEnum::Game);
   manager.add<scene::GameOver>(scene::SceneEnum::GameOver);
+  manager.add<scene::Ending>(scene::SceneEnum::Ending);
   manager.init(scene::SceneEnum::Title, 0);
 
   //Addon::Register(U"FrameRateLimit", std::make_unique<FrameRateLimitAddon>(60));
@@ -48,12 +50,15 @@ void Main() {
     ClearPrint();
     input::Input::GetInstance().Update();
 
+    /*
     if (KeyF1.down()) DebugVar::GetInstance().disable_visibility_mask_ = not DebugVar::GetInstance().disable_visibility_mask_;
     if (KeyF2.down()) DebugVar::GetInstance().invincible_mode_ = true;
     if (KeyF3.down()) DebugVar::GetInstance().invincible_mode_ = false;
     if (KeyF4.down()) DebugVar::GetInstance().full_goshin_on_ = true;
     if (KeyF5.down()) DebugVar::GetInstance().visible_enemy_cost_map_ = not DebugVar::GetInstance().visible_enemy_cost_map_;
     if (KeyF6.down()) manager.changeScene(scene::SceneEnum::Game, 0);
+    */
+
     if (not manager.update()) {
       break;
     }

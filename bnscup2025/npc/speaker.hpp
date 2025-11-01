@@ -17,6 +17,8 @@ public:
   void Update();
   void Render() const;
 
+  bool IsFinished() const;
+
 private:
   const camera::Camera& camera_;
   const player::Player& player_;

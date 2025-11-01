@@ -29,6 +29,8 @@ void FloorText::Render() const {
 
   const double font_size = double(Scene::Height()) / 1080 * 64;
   FontAsset(U"Text")(text_)
+    .drawAt(font_size, Scene::Center().movedBy(0 + 4, Scene::Height() / 3 + 4), ColorF { 0.0, 0.0, 0.0, alpha });
+  FontAsset(U"Text")(text_)
     .drawAt(font_size, Scene::Center().movedBy(0, Scene::Height() / 3), ColorF { 1.0, 1.0, 1.0, alpha });
 }
 

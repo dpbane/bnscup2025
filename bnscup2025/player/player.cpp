@@ -12,14 +12,16 @@
 
 namespace bnscup2025::player {
 
-Player::Player(const camera::Camera& camera, terrain::Terrain& terrain, Effect& effect, Vec2 pos, bool is_game, const PowerGrade& power_grade) :
+Player::Player(const camera::Camera& camera, terrain::Terrain& terrain, Effect& effect, Vec2 pos, bool is_game, const PowerGrade& power_grade, Optional<PowerGradeItem> initial) :
   camera_(camera),
   terrain_(terrain),
   effect_(effect),
   position_(pos),
   is_game_(is_game),
-  power_grade_(power_grade) {
+  power_grade_(power_grade),
+  selector_(power_grade_, initial) {
 
+  energy_ = gvc_.GetMaxEnergy();
   const auto& input_data = input::Input::GetInstance().GetData();
   direction_face_ = input_data.direction_face.isZero() ? Vec2 { 0.0, -1.0 } : input_data.direction_face.normalized();
 }
@@ -33,7 +35,6 @@ void Player::Update() {
   ProcessEnergy();
 
   if (is_game_) {
-    //ProcessShift();
     ProcessDigging();
   }
 
@@ -136,6 +137,9 @@ void Player::ProcessEnergy() {
     // バーンアウト中ならタイマーを更新
     burnout_timer_ -= Scene::DeltaTime();
 
+    // 足が遅くなる
+    move_speed_rate_ = 0.8;
+
     // バーンアウト復帰
     if (burnout_timer_ < 0.0) {
       burnout_timer_ = 0.0;
@@ -175,7 +179,7 @@ void Player::ProcessDigging() {
     terrain_.DigAt(*digging_position_, dig_radius, dig_might_center, dig_might_end);
     dig_timer_ = gvc_.GetDigCooldown();
     effect_.add<effect::Dig>(camera_, *digging_position_, direction_face_);
-    sound_position_ = (*digging_position_ * 0.2 + position_ * 0.8);
+    sound_position_ = position_;
 
     if (terrain_.GetEarnedSinhalite() > 0) {
       effect_.add<effect::DigSinhalite>(camera_, *digging_position_, direction_face_);
@@ -267,7 +271,8 @@ void Player::ProcessSusumu() {
     // 不随効果
     can_change_skill_ = false;
     energy_regen_timer_ = 2.0;
-    energy_ -= 1500.0 * Scene::DeltaTime();
+    energy_ -= gvc_.GetSusumuCostRate() * Scene::DeltaTime();
+    sound_position_ = position_;
   }
   else {
   }
@@ -283,7 +288,7 @@ void Player::ProcessTsutsu() {
 
     // 不随効果
     can_change_skill_ = false;
-    move_speed_rate_ = 0.20;
+    move_speed_rate_ = 0.35;
     energy_regen_timer_ = 2.0;
     if (not prev_tsutsu_active_) {
       // 発動時コスト

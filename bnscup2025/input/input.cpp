@@ -28,7 +28,6 @@ void Input::Update() {
   // 向き入力
   if (Cursor::PreviousPosF() != mouse) {
     // マウスが動いていたらマウス優先
-    ret.direction_face = (mouse - center).normalized();
     mouse_visible_ = true;
   }
   else {
@@ -38,6 +37,11 @@ void Input::Update() {
       mouse_visible_ = false;
     }
   }
+  // マウスが動いていない間もマウス位置を反映させるために条件の書き方がこうなっている
+  if (mouse_visible_) {
+    ret.direction_face = (mouse - center).normalized();
+  }
+
   if (not mouse_visible_) Cursor::RequestStyle(CursorStyle::Hidden);
 
   // 移動入力

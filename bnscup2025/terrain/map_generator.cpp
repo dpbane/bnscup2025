@@ -62,7 +62,7 @@ MapGenerator::Parameters MapGenerator::Generate(int level, bool is_game) {
     .player_position = Vec2{14.5, 20},
     .enemy_position = Vec2{},
     .exit_position = level < 12 ? Vec2{14.5, 3} : Vec2{-100000, -100000},
-    .speaker_position = level == 0 ? Vec2{ 18, 11.5 } : Vec2 { 24, 11.5 },
+    .speaker_position = level == 0 ? Vec2{ 16, 11.5 } : Vec2 { 21, 11.5 },
     .shop_position = Vec2 { 5, 11.5 }
     };
   }
