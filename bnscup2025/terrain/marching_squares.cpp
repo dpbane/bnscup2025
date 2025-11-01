@@ -18,30 +18,23 @@ MarchingSquares::MarchingSquares(const NodeGrid& node_grid, double threshold) :
   UpdateCell(update_grid);
 }
 
-void MarchingSquares::Update(const NodeGrid& node_grid) {
-  const GridPoints<bool> update_grid = CreateUpdateGrid(node_grid);
-  node_grid_ = node_grid;
-  UpdateCell(update_grid);
-}
+void MarchingSquares::Update(const GridPoints<bool>& update_node) {
 
-GridPoints<bool> MarchingSquares::CreateUpdateGrid(const NodeGrid& node_grid) {
-  GridPoints<bool> ret(node_grid.GetSize() - Size(1, 1));
-
-  for (const auto& point : step(node_grid.GetSize())) {
-    const double prev_value = node_grid_.Get(point).density;
-    const double curr_value = node_grid.Get(point).density;
-    if (prev_value != curr_value) {
-      ret.Set(point.movedBy(0, 0), true);
-      ret.Set(point.movedBy(0, -1), true);
-      ret.Set(point.movedBy(-1, 0), true);
-      ret.Set(point.movedBy(-1, -1), true);
+  // 更新が必要な"ノード"から"セル"に変換する
+  GridPoints<bool> update_cell(update_node.GetSize() - Size(1, 1));
+  update_cell.Fill(false);
+  for (const auto& point : step(update_node.GetSize())) {
+    if (update_node.Get(point)) {
+      update_cell.Set(point.movedBy(-1, -1), true);
+      update_cell.Set(point.movedBy(0, -1), true);
+      update_cell.Set(point.movedBy(-1, 0), true);
+      update_cell.Set(point.movedBy(0, 0), true);
     }
   }
-
-  return ret;
+  UpdateCell(update_cell);
 }
 
-void MarchingSquares::UpdateCell(const GridPoints<bool>& update_grid) {
+void MarchingSquares::UpdateCell(const GridPoints<bool>& update_cell) {
 
   /// @brief 指定した位置のセルのケースを更新する。
   auto UpdateCase = [this](const Point& pos) {
@@ -56,10 +49,9 @@ void MarchingSquares::UpdateCell(const GridPoints<bool>& update_grid) {
     polygon_grid_.Set(pos, polygons);
   };
 
-
   // 更新が必要なすべてのセルを更新する。
   for (const auto& point : step(case_grid_.GetSize())) {
-    if (not update_grid.Get(point)) continue;
+    if (not update_cell.Get(point)) continue;
 
     UpdateCase(point);
     UpdateEdgeLinesAndPolygons(point);

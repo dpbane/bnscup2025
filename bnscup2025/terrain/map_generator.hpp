@@ -65,12 +65,6 @@ private:
   /// @return シンハライトの位置の配列。
   static Array<Point> CreateSinhalitePositions(const NodeGrid& node_grid, int count);
 
-  /// @brief 連続する領域のうち最も大きいものを取得する。
-  /// @param node_grid ノードグリッド。
-  /// @return 最も大きい領域を構成するノードの位置の配列。
-  static Array<Point> GetBiggestArea(const NodeGrid& node_grid);
-
-
 private:
 
 };

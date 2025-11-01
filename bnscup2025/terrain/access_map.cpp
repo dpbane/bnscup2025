@@ -1,9 +1,12 @@
 ﻿#include "access_map.hpp"
 
+#include "pushback_service.hpp"
+
 namespace bnscup2025::terrain {
 
-AccessMap::AccessMap(const NodeGrid& node_grid, double threshold) :
+AccessMap::AccessMap(const NodeGrid& node_grid, const MarchingSquares& marching_squares, double threshold) :
   node_grid_(node_grid),
+  marching_squares_(marching_squares),
   threshold_(threshold),
   accessable_map_(node_grid.GetSize()),
   direction_map_(node_grid.GetSize()) {
@@ -16,16 +19,13 @@ AccessMap::AccessMap(const NodeGrid& node_grid, double threshold) :
   }
 }
 
-void AccessMap::Update(const NodeGrid& node_grid) {
-  const auto updatable_map = CreateUpdatableMap(node_grid);
-  node_grid_ = node_grid;
-
+void AccessMap::Update(const GridPoints<bool>& update_node) {
   for (const auto& point : step(node_grid_.GetSize())) {
-    if (not updatable_map.Get(point)) continue;
+    if (not update_node.Get(point)) continue;
     UpdateAccessable(point);
   }
   for (const auto& point : step(node_grid_.GetSize())) {
-    if (not updatable_map.Get(point)) continue;
+    if (not update_node.Get(point)) continue;
     UpdateDirection(point);
   }
 }
@@ -90,22 +90,10 @@ Array<Point> AccessMap::CreateAreaFrom(Point start_point) const {
   return area;
 }
 
-GridPoints<bool> AccessMap::CreateUpdatableMap(const NodeGrid& node_grid) const {
-  GridPoints<bool> ret(node_grid_.GetSize());
-  for (const auto& point : step(node_grid_.GetSize())) {
-    ret.Set(point, node_grid_.Get(point).density != node_grid.Get(point).density);
-  }
-  return ret;
-}
-
 void AccessMap::UpdateAccessable(Point point) {
   if (accessable_map_.Get(point)) return;  // 既にアクセス可能なら更新不要
 
-  const double t = node_grid_.Get(point.movedBy(0, -1)).density;
-  const double l = node_grid_.Get(point.movedBy(-1, 0)).density;
   const double c = node_grid_.Get(point).density;
-  const double r = node_grid_.Get(point.movedBy(1, 0)).density;
-  const double b = node_grid_.Get(point.movedBy(0, 1)).density;
 
   // 自身が壁の中だったらアクセス不可
   if (c <= threshold_) {
@@ -113,24 +101,16 @@ void AccessMap::UpdateAccessable(Point point) {
     return;
   }
 
-  // 媒介変数tを求める関数
-  auto CalcT = [this](double v1, double v2) -> double {
-    if (v1 == v2) return 0.5;
-    return (threshold_ - v1) / (v2 - v1);
-  };
-
-  // 格子点付近に壁がある場合はアクセス不可
-  const double p_top = t <= threshold_ ? CalcT(c, t) : 1.0;
-  const double p_bottom = b <= threshold_ ? CalcT(c, b) : 1.0;
-  const double p_left = l <= threshold_ ? CalcT(c, l) : 1.0;
-  const double p_right = r <= threshold_ ? CalcT(c, r) : 1.0;
-  if ((p_top + p_bottom < kCharacterRadius * 2.0) ||
-    (p_left + p_right < kCharacterRadius * 2.0)) {
+  // 配置してみる
+  Circle circle { point, kCharacterRadius };
+  Vec2 pushbacked_pos = PushbackService::Exec(marching_squares_, circle);
+  int x = static_cast<int>(std::round(pushbacked_pos.x));
+  int y = static_cast<int>(std::round(pushbacked_pos.y));
+  Point pushed_point { x, y };
+  if (pushed_point != point) {
     accessable_map_.Set(point, false);
     return;
   }
-
-  // いずれでもない場合はアクセス可能
   accessable_map_.Set(point, true);
 }
 

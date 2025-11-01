@@ -6,6 +6,8 @@
 #include "render/blend_mode.hpp"
 #include "render/lightbloom.hpp"
 
+#include "pushback_service.hpp"
+
 namespace bnscup2025::terrain {
 
 constexpr int kBlurRate = 4;
@@ -15,21 +17,40 @@ Terrain::Terrain(NodeGrid node_grid, Array<Point>&& sinhalite_positions) :
   node_grid_(node_grid),
   sinhalite_positions_(std::move(sinhalite_positions)),
   marching_squares_(node_grid_, kThreshold),
-  access_map_(node_grid_, kThreshold) {
+  access_map_(node_grid_, marching_squares_, kThreshold),
+  updated_node_(node_grid_.GetSize()) {
 
   material_table_[MaterialEnum::Normal] = std::make_unique<Material<MaterialEnum::Normal>>();
   material_table_[MaterialEnum::Bounds] = std::make_unique<Material<MaterialEnum::Bounds>>();
   material_table_[MaterialEnum::HardRock] = std::make_unique<Material<MaterialEnum::HardRock>>();
 
+  updated_node_.Fill(false);
+  EarnSinhalite();
+  Update();
+}
+
+Terrain::Terrain(Terrain&& terrain) noexcept :
+  node_grid_(std::move(terrain.node_grid_)),
+  sinhalite_positions_(std::move(terrain.sinhalite_positions_)),
+  marching_squares_(node_grid_, kThreshold),
+  access_map_(node_grid_, marching_squares_, kThreshold),
+  updated_node_(node_grid_.GetSize()) {
+
+  material_table_[MaterialEnum::Normal] = std::make_unique<Material<MaterialEnum::Normal>>();
+  material_table_[MaterialEnum::Bounds] = std::make_unique<Material<MaterialEnum::Bounds>>();
+  material_table_[MaterialEnum::HardRock] = std::make_unique<Material<MaterialEnum::HardRock>>();
+
+  updated_node_.Fill(false);
   EarnSinhalite();
   Update();
 }
 
 void Terrain::Update() {
-  marching_squares_.Update(node_grid_);
-  access_map_.Update(node_grid_);
+  marching_squares_.Update(updated_node_);
+  access_map_.Update(updated_node_);
 
   earned_sinhalite_ = 0;
+  updated_node_.Fill(false);
 }
 
 void Terrain::Render(const camera::Camera& cam) const {
@@ -73,63 +94,8 @@ Array<Line> Terrain::CreateVisibleWallLines(const camera::Camera& cam) const {
   return ret;
 }
 
-Vec2 Terrain::PushbackService(const Circle& circle) const {
-  const auto rect = circle.boundingRect();
-  const int x_min = static_cast<int>(std::floor(rect.leftX()));
-  const int x_max = static_cast<int>(std::ceil(rect.rightX()));
-  const int y_min = static_cast<int>(std::floor(rect.topY()));
-  const int y_max = static_cast<int>(std::ceil(rect.bottomY()));
-
-  Circle current_circle = circle;
-
-  for (int y = y_min; y <= y_max; ++y) {
-    for (int x = x_min; x <= x_max; ++x) {
-      const Point cell_pos { x, y };
-      const auto lines = marching_squares_.GetEdgeLines().Get(cell_pos);
-
-      for (const auto& line_array : lines) {
-        for (size_t i = 0; i < line_array.size() - 1; ++i) {
-          const Line line { line_array[i], line_array[i + 1] };
-
-          // Step 1: 円と線分が交差するかを確認し、領域の内外を判定する。
-          // 線分は領域を反時計回りに囲むように配置されているので、外積で判定できる。
-          if (not current_circle.intersects(line)) continue;
-          const Vec2 line_dir = line.end - line.begin;
-          const Vec2 to_circle_center = current_circle.center - line.begin;
-          if (line_dir.cross(to_circle_center) < 0.0) continue;
-
-          // Step 2: 円の中心を線分に投影したときの媒介変数tdを求める。
-          // https://zenn.dev/boiledorange73/articles/0037-js-distance-pt-seg
-          const auto& p1 = line.begin;
-          const auto& p2 = line.end;
-          const auto& p0 = current_circle.center;
-          const double td = -(p2 - p1).dot(p1 - p0);
-
-          // Step 3: 円の中心に最も近い線分上の点を求める。
-          Vec2 nearest_point {};
-          if (td <= 0.0) {
-            nearest_point = p1;
-          }
-          else if (td >= (p2 - p1).lengthSq()) {
-            nearest_point = p2;
-          }
-          else {
-            const double t = td / (p2 - p1).lengthSq();
-            nearest_point = p1 + (p2 - p1) * t;
-          }
-
-          // Step 4: 押し戻すためのベクトルを求める。
-          const Vec2 pushback_vector = current_circle.center - nearest_point;
-          const double pushback_distance = current_circle.r - pushback_vector.length();
-
-          // Step 5: 押し戻した後の位置を返す。
-          current_circle.center += pushback_vector.normalized() * pushback_distance;
-        }
-      }
-    }
-  }
-
-  return current_circle.center;
+Vec2 Terrain::Pushback(const Circle& circle) const {
+  return PushbackService::Exec(marching_squares_, circle);
 }
 
 Optional<Vec2> Terrain::CalcLineCollisionPoint(const Vec2& from, const Vec2& direction, double max_distance) const {
@@ -216,6 +182,11 @@ void Terrain::DigAt(const Vec2& center, double radius, double center_might, doub
       current_value = std::clamp(current_value, 0.0, 1.0);
       node_grid_.Set(node_pos, NodeInfo { .density = current_value, .material = node_grid_.Get(node_pos).material });
 
+      updated_node_.Set(node_pos, true);
+      updated_node_.Set(node_pos.movedBy(-1, 0), true);
+      updated_node_.Set(node_pos.movedBy(1, 0), true);
+      updated_node_.Set(node_pos.movedBy(0, -1), true);
+      updated_node_.Set(node_pos.movedBy(0, 1), true);
     }
   }
   EarnSinhalite();

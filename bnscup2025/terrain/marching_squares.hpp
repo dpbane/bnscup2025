@@ -34,8 +34,8 @@ public:
   MarchingSquares(const NodeGrid& node_grid, double threshold = 0.5);
 
   /// @brief 頂点グリッドの変更に応じてセルを更新する。
-  /// @param node_grid 最新の頂点グリッド。
-  void Update(const NodeGrid& node_grid);
+  /// @param update_node 更新が必要なセルはtrue、それ以外はfalseのグリッド。
+  void Update(const GridPoints<bool>& update_node);
 
   /// @brief 各セルに対応するケースのグリッドを取得する。
   /// @return ケースのグリッド。
@@ -50,14 +50,9 @@ public:
   const GridPoints<Array<Polygon>>& GetPolygons() const { return polygon_grid_; }
 
 private:
-  /// @brief セルの更新が必要かどうかのグリッドを作成する。
-  /// @param node_grid 頂点グリッド
-  /// @return 更新が必要なセルはtrue、それ以外はfalseのグリッド。
-  GridPoints<bool> CreateUpdateGrid(const NodeGrid& node_grid);
-
   /// @brief セルを更新する。
-  /// @param update_grid 更新が必要なセルはtrue、それ以外はfalseのグリッド。
-  void UpdateCell(const GridPoints<bool>& update_grid);
+  /// @param update_node 更新が必要なセルはtrue、それ以外はfalseのグリッド。
+  void UpdateCell(const GridPoints<bool>& update_cell);
 
 private:
   /// @brief あるセルのケースを取得する。
@@ -71,7 +66,7 @@ private:
   std::pair<Array<Array<Vec2>>, Array<Polygon>> CalcEdgeLinesAndPolygons(const Point& pos);
 
 private:
-  NodeGrid node_grid_;
+  const NodeGrid& node_grid_;
   GridPoints<Case> case_grid_;
   GridPoints<Array<Array<Vec2>>> edge_line_grid_;
   GridPoints<Array<Polygon>> polygon_grid_;

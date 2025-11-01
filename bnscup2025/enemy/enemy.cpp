@@ -47,7 +47,7 @@ void Enemy::Update() {
 
   direction_face_ = velocity_.isZero() ? direction_face_ : velocity_.normalized();
   position_ += velocity_ * Scene::DeltaTime();
-  position_ = terrain_.PushbackService(Circle { position_, kCharacterRadius });
+  position_ = terrain_.Pushback(Circle { position_, kCharacterRadius });
 
   if (screen::Fade::GetInstance().CompletedFadeIn()) {
     ui_alpha_ += Scene::DeltaTime() * 2.0;
@@ -59,7 +59,6 @@ void Enemy::Update() {
 }
 
 void Enemy::Render() const {
-  const auto& lightbloom = render::LightBloom::GetInstance();
   const ColorF color_edge { 0.9, 0.2, 0.3 };
   const ColorF color_body { 0.05, 0.01, 0.02 };
   render::CharaRenderer::Render(camera_, position_, direction_face_, color_body, color_edge, 1.0, 2.0, 2.0);
@@ -242,7 +241,7 @@ void Enemy::OnPursuitUpdate() {
 
 void Enemy::AvoidWall() {
   // 壁にぶつかりにくくする調整
-  Vec2 test_position = terrain_.PushbackService(Circle { position_, kCharacterRadius * 2.0 });
+  Vec2 test_position = terrain_.Pushback(Circle { position_, kCharacterRadius * 2.0 });
   Vec2 test_direction = (test_position - position_).normalized();
   double speed = velocity_.length();
   velocity_ = (velocity_.normalized() + test_direction * 0.2).normalized() * speed;

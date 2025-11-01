@@ -128,6 +128,7 @@
     <ClCompile Include="npc\shop\shop_window.cpp" />
     <ClCompile Include="player\energy_ui.cpp" />
     <ClCompile Include="player\goshin\selector.cpp" />
+    <ClCompile Include="terrain\pushback_service.cpp" />
     <ClCompile Include="ui\sinhalite_disp.cpp" />
     <ClCompile Include="ui\text_window.cpp" />
     <ClCompile Include="scene\floor_name_factory.cpp" />
@@ -378,6 +379,7 @@
     <ClInclude Include="npc\shop\shop_window.hpp" />
     <ClInclude Include="player\energy_ui.hpp" />
     <ClInclude Include="player\goshin\selector.hpp" />
+    <ClInclude Include="terrain\pushback_service.hpp" />
     <ClInclude Include="ui\sinhalite_disp.hpp" />
     <ClInclude Include="ui\text_window.hpp" />
     <ClInclude Include="scene\floor_name_factory.hpp" />

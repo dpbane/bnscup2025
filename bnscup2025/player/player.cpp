@@ -108,8 +108,6 @@ void Player::ProcessDirectionFace() {
 }
 
 void Player::ProcessSkill() {
-  const auto& input_data = input::Input::GetInstance().GetData();
-
   move_speed_rate_ = 1.0;
   can_change_skill_ = true;
 
@@ -159,7 +157,7 @@ void Player::ProcessMove() {
 
   const double speed = 7.0 * gvc_.GetMoveSpeedRate() * move_speed_rate_;
   position_ += input_data.direction_move.normalized() * speed * Scene::DeltaTime();
-  position_ = terrain_.PushbackService(Circle { position_, kCharacterRadius });
+  position_ = terrain_.Pushback(Circle { position_, kCharacterRadius });
 }
 
 void Player::ProcessDigging() {
@@ -210,7 +208,6 @@ void Player::ProcessNobiru() {
   }
 
   // 常時効果：シフト目標値にシフト量を近づける
-  const double shift_speed = 20.0;
   const double shift_alpha = Pow(0.3, Scene::DeltaTime() * 10);
   shift_amount_ = shift_amount_ * shift_alpha + shift_target_ * (1.0 - shift_alpha);
 

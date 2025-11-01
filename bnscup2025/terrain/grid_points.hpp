@@ -41,6 +41,10 @@ public:
     values_[*index] = value;
   }
 
+  void Fill(T value) {
+    std::fill(values_.begin(), values_.end(), value);
+  }
+
   GridPoints<T>& operator=(const GridPoints<T>& other);
 
 private:

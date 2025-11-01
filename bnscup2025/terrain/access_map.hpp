@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include "node_grid.hpp"
+#include "marching_squares.hpp"
 
 namespace bnscup2025::terrain {
 
@@ -22,11 +23,11 @@ public:
   /// @brief コンストラクタ。
   /// @param node_grid ノードグリッド。
   /// @param threshold 閾値。
-  AccessMap(const NodeGrid& node_grid, double threshold);
+  AccessMap(const NodeGrid& node_grid, const MarchingSquares& marching_squares, double threshold);
 
   /// @brief ノードグリッドの変更に応じてマップを更新する。
-  /// @param node_grid 更新後のノードグリッド。
-  void Update(const NodeGrid& node_grid);
+  /// @param update_node 更新が必要なノードはtrue、それ以外はfalseのグリッド。
+  void Update(const GridPoints<bool>& update_node);
 
   /// @brief 連続する領域の配列を取得する。
   /// @return 連続する領域の配列。
@@ -46,11 +47,6 @@ public:
   GridPoints<AccessableDirection> GetDirectionMap() const { return direction_map_; }
 
 private:
-  /// @brief ノードグリッドの変更に応じて更新が必要な箇所を示すマップを作成する。
-  /// @param node_grid 更新後のノードグリッド。
-  /// @return 更新が必要な箇所を示すマップ。
-  GridPoints<bool> CreateUpdatableMap(const NodeGrid& node_grid) const;
-
   /// @brief 指定した位置のアクセス可能情報を更新する。
   /// @param point 更新する位置。
   void UpdateAccessable(Point point);
@@ -60,7 +56,8 @@ private:
   void UpdateDirection(Point point);
 
 private:
-  NodeGrid node_grid_;
+  const NodeGrid& node_grid_;
+  const MarchingSquares& marching_squares_;
   const double threshold_;
 
   GridPoints<bool> accessable_map_;

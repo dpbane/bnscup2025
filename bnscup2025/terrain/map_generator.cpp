@@ -229,8 +229,4 @@ Array<Point> MapGenerator::CreateSinhalitePositions(const NodeGrid& node_grid, i
   return ret;
 }
 
-Array<Point> MapGenerator::GetBiggestArea(const NodeGrid& node_grid) {
-  return Array<Point>();
-}
-
 }

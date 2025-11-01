@@ -10,6 +10,9 @@ namespace bnscup2025::terrain {
 class Terrain {
 public:
   Terrain(NodeGrid node_grid, Array<Point>&& sinhalite_positions);
+  Terrain(Terrain&& terrain) noexcept;
+
+public:
 
   /// @brief 地形を更新する。
   void Update();
@@ -39,7 +42,7 @@ public:
   /// @brief プレイヤーや敵が壁にめり込まないための押し戻し量を計算する。
   /// @param circle 押し戻しを適用する円。
   /// @return 押し戻しを適用した後の中心位置。
-  Vec2 PushbackService(const Circle& circle) const;
+  Vec2 Pushback(const Circle& circle) const;
 
   /// @brief ある地点から直線を伸ばしたとき、最初に壁に衝突する位置を計算する。
   /// @return 衝突位置。衝突しない場合は無効値を返す。
@@ -87,6 +90,7 @@ private:
 
 private:
   NodeGrid node_grid_;
+  GridPoints<bool> updated_node_;
   MarchingSquares marching_squares_;
   AccessMap access_map_;
 
