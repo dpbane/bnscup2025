@@ -3,7 +3,7 @@
 namespace bnscup2025 {
 
 class DebugVar {
-  DebugVar();
+  DebugVar() = default;
   DebugVar(const DebugVar&) = delete;
   DebugVar& operator=(const DebugVar&) = delete;
 
@@ -11,10 +11,11 @@ public:
   static DebugVar& GetInstance() {
     static DebugVar instance;
     return instance;
-  }
+  };
 
-private:
-
+public:
+  bool invincible_mode_ { false };
+  bool disable_visibility_mask_ { false };
 
 };
 

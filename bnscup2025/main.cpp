@@ -6,6 +6,7 @@
 
 #include "fps_addon.hpp"
 
+#include "debug_var.hpp"
 #include "input/input.hpp"
 
 using namespace bnscup2025;
@@ -23,9 +24,10 @@ void Main() {
   Window::Resize(window_size.x, window_size.y);
   Window::SetPos(0, 0);
 
+  // 最低FPSは30（時間ベースのため低すぎると壁抜けなどが起こり得る）
   Scene::SetMaxDeltaTime(1.0 / 30);
 
-  // 一部の特殊キーを無効化する
+  // 一部の特殊キーを無効化
   System::SetTerminationTriggers(UserAction::CloseButtonClicked);
   ScreenCapture::SetShortcutKeys({ KeyPrintScreen });
   LicenseManager::DisableDefaultTrigger();
@@ -34,7 +36,6 @@ void Main() {
   manager.add<scene::Title>(scene::SceneEnum::Title);
   manager.add<scene::Game>(scene::SceneEnum::Game);
   manager.add<scene::GameOver>(scene::SceneEnum::GameOver);
-
   manager.init(scene::SceneEnum::Title, 0);
 
   //Addon::Register(U"FrameRateLimit", std::make_unique<FrameRateLimitAddon>(60));
@@ -46,6 +47,10 @@ void Main() {
   while (System::Update()) {
     ClearPrint();
     input::Input::GetInstance().Update();
+
+    if (KeyF1.down()) DebugVar::GetInstance().disable_visibility_mask_ = not DebugVar::GetInstance().disable_visibility_mask_;
+    if (KeyF2.down()) DebugVar::GetInstance().invincible_mode_ = true;
+    if (KeyF3.down()) DebugVar::GetInstance().invincible_mode_ = false;
     if (not manager.update()) {
       break;
     }

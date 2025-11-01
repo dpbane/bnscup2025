@@ -1,5 +1,7 @@
 ﻿#include "enemy.hpp"
 
+#include "debug_var.hpp"
+
 #include "render/blend_mode.hpp"
 #include "render/lightbloom.hpp"
 #include "render/chara_renderer.hpp"
@@ -61,13 +63,8 @@ void Enemy::Render() const {
   const ColorF color_body { 0.05, 0.01, 0.02 };
   render::CharaRenderer::Render(camera_, position_, direction_face_, color_body, color_edge, 1.0, 2.0, 2.0);
 
-  // デバッグ用：状態表示
+  // デバッグ用
   if (false) {
-    switch (state_) {
-      case State::Prowl: Print << U"Prowl"; break;
-      case State::ToSound: Print << U"ToSound"; break;
-      case State::Pursuit: Print << U"Pursuit"; break;
-    }
     if (cost_map_) {
       const auto target = camera_.CreateRenderTransformer();
 
@@ -114,6 +111,7 @@ void Enemy::RenderUI() const {
 
 bool Enemy::IsPlayerCaught() const {
   const double catch_distance = kCharacterRadius * 1.9;
+  if (DebugVar::GetInstance().invincible_mode_) return false;
   return position_.distanceFrom(player_.GetPosition()) < catch_distance;
 }
 
@@ -207,8 +205,6 @@ void Enemy::OnToSoundUpdate() {
 }
 
 void Enemy::OnPursuitUpdate() {
-  Print << last_saw_position_;
-  Print << cost_map_.has_value();
   if (CanSeePlayer(parameters_.view_radius, -1.0)) {
     last_saw_position_ = player_.GetPosition();
     if (not IsCalculatingPath()) BeginThread(*CalcNearestValidPoint(*last_saw_position_));

@@ -1,6 +1,7 @@
 ﻿#include "stdafx.h"
 #include "game.hpp"
 
+#include "debug_var.hpp"
 #include "screen/fade.hpp"
 
 #include "render/blend_mode.hpp"
@@ -189,11 +190,9 @@ void Game::draw() const {
   // 視界制限
   const double view_distance = player::GradeValueConverter { getData().power_grade }.GetViewDistance();
   const double visible_radius = 24.0 * view_distance / 54.0;
-  if (is_game_) {
+  if (is_game_ && not DebugVar::GetInstance().disable_visibility_mask_) {
     visibility_mask_.Render(*camera_, visible_radius);
   }
-
-  Print << visible_radius;
 
   // 心
   if (player_->GetKokoroAlpha() > 0.0) {
@@ -201,7 +200,7 @@ void Game::draw() const {
   }
 
   // 視界制限（円）
-  if (is_game_) {
+  if (is_game_ && not DebugVar::GetInstance().disable_visibility_mask_) {
     visibility_mask_.RenderCircle(*camera_, visible_radius);
   }
 
@@ -216,11 +215,6 @@ void Game::draw() const {
   if (enemy_) enemy_->RenderUI();
 
   screen::Fade::GetInstance().Render();
-
-  Print << U"シンハライト: " << getData().sinhalite_amount;
-
-
-
 
 }
 
