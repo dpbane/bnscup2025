@@ -28,7 +28,7 @@ void Main() {
   Scene::SetMaxDeltaTime(1.0 / 30);
 
   // 一部の特殊キーを無効化
-  System::SetTerminationTriggers(UserAction::CloseButtonClicked);
+  //System::SetTerminationTriggers(UserAction::CloseButtonClicked);
   ScreenCapture::SetShortcutKeys({ KeyPrintScreen });
   LicenseManager::DisableDefaultTrigger();
 
@@ -51,6 +51,9 @@ void Main() {
     if (KeyF1.down()) DebugVar::GetInstance().disable_visibility_mask_ = not DebugVar::GetInstance().disable_visibility_mask_;
     if (KeyF2.down()) DebugVar::GetInstance().invincible_mode_ = true;
     if (KeyF3.down()) DebugVar::GetInstance().invincible_mode_ = false;
+    if (KeyF4.down()) DebugVar::GetInstance().full_goshin_on_ = true;
+    if (KeyF5.down()) DebugVar::GetInstance().visible_enemy_cost_map_ = not DebugVar::GetInstance().visible_enemy_cost_map_;
+    if (KeyF6.down()) manager.changeScene(scene::SceneEnum::Game, 0);
     if (not manager.update()) {
       break;
     }

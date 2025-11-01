@@ -9,7 +9,7 @@ namespace bnscup2025::terrain {
 
 class Terrain {
 public:
-  Terrain(NodeGrid node_grid, Array<Point>&& sinhalite_positions);
+  Terrain(NodeGrid node_grid);
   Terrain(Terrain&& terrain) noexcept;
 
 public:
@@ -20,6 +20,10 @@ public:
   /// @brief 地形を描画する。
   /// @param cam カメラ。
   void Render(const camera::Camera& cam) const;
+
+  /// @brief シンハライトの位置を設定する。
+  /// @param positions シンハライトの位置の配列。
+  void SetSinhalitePositions(Array<Point>&& positions);
 
   /// @brief ノードグリッドのサイズを取得する。
   /// @return ノードグリッドのサイズ

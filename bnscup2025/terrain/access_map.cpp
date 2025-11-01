@@ -48,6 +48,15 @@ Array<Array<Point>> AccessMap::CreateAreasArray() const {
     ret.push_back(area);
   }
 
+  // サイズが大きい順にソート
+  std::sort(
+    ret.begin(),
+    ret.end(),
+    [](const Array<Point>& a, const Array<Point>& b) {
+    return a.size() > b.size();
+  }
+  );
+
   return ret;
 }
 
@@ -120,24 +129,27 @@ void AccessMap::UpdateDirection(Point point) {
     direction_map_.Set(point, AccessableDirection {});
     return;
   }
+  AccessableDirection direction = direction_map_.Get(point);
 
-  auto direction = direction_map_.Get(point);
+  auto Check = [&](const Point& offset) -> bool {
+    if (not accessable_map_.Get(point.movedBy(offset))) return false;
 
-  // 上下左右を確認
-  direction.up = accessable_map_.Get(point.movedBy(0, -1));
-  direction.down = accessable_map_.Get(point.movedBy(0, 1));
-  direction.left = accessable_map_.Get(point.movedBy(-1, 0));
-  direction.right = accessable_map_.Get(point.movedBy(1, 0));
+    Vec2 check_pos = point.movedBy(offset * 0.5);
+    Vec2 tested_pos = PushbackService::Exec(marching_squares_, Circle { check_pos, kCharacterRadius });
+    Vec2 dp = tested_pos - check_pos;
+    if (abs(dp.dot(Vec2 { offset }.normalized())) > 0.1) return false;
 
-  // 斜めを確認
-  const bool ul = accessable_map_.Get(point.movedBy(-1, -1));
-  const bool ur = accessable_map_.Get(point.movedBy(1, -1));
-  const bool dl = accessable_map_.Get(point.movedBy(-1, 1));
-  const bool dr = accessable_map_.Get(point.movedBy(1, 1));
-  direction.up_left = ul && (direction.up || direction.left);
-  direction.up_right = ur && (direction.up || direction.right);
-  direction.down_left = dl && (direction.down || direction.left);
-  direction.down_right = dr && (direction.down || direction.right);
+    return true;
+  };
+
+  direction.up = Check(Point { 0, -1 });
+  direction.down = Check(Point { 0, 1 });
+  direction.left = Check(Point { -1, 0 });
+  direction.right = Check(Point { 1, 0 });
+  direction.up_left = Check(Point { -1, -1 });
+  direction.up_right = Check(Point { 1, -1 });
+  direction.down_left = Check(Point { -1, 1 });
+  direction.down_right = Check(Point { 1, 1 });
 
   // 隣接ノードの逆方向も設定
   direction_map_.Set(point, direction);

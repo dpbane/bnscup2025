@@ -261,6 +261,12 @@
     <ClCompile Include="terrain\pushback_service.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="terrain\generator\level_designer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="terrain\generator\lifegame.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Image Include="App\icon.ico">
@@ -1062,6 +1068,15 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="debug_var.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="terrain\generator\level_designer.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="terrain\generator\lifegame.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="enemy\enemy_level_designer.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

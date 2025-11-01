@@ -16,7 +16,8 @@ public:
 public:
   bool invincible_mode_ { false };
   bool disable_visibility_mask_ { false };
-
+  bool full_goshin_on_ { false };
+  bool visible_enemy_cost_map_ { false };
 };
 
 }

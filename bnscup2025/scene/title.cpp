@@ -1,6 +1,8 @@
 ﻿#include "stdafx.h"
 #include "title.hpp"
 
+#include "debug_var.hpp"
+
 #include "render/lightbloom.hpp"
 #include "render/blend_mode.hpp"
 
@@ -27,21 +29,24 @@ void Title::update() {
       .death_count = 0,
       .clear_count = 0
     };
-    // デバッグ用
-    player::PowerGrade pg;
-    pg[player::PowerGradeItem::Nobiru] = 1;
-    pg[player::PowerGradeItem::Kokoro] = 1;
-    pg[player::PowerGradeItem::Susumu] = 1;
-    pg[player::PowerGradeItem::Tsutsu] = 1;
-    pg[player::PowerGradeItem::Miru] = 1;
-    getData() = CommonData {
-      .next_level = 1,
-      .next_room = Room::Shop,
-      .power_grade = pg,
-      .sinhalite_amount = 200,
-      .death_count = 0,
-      .clear_count = 0
-    };
+    if (DebugVar::GetInstance().full_goshin_on_) {
+      // デバッグ用
+      player::PowerGrade pg;
+      pg[player::PowerGradeItem::Nobiru] = 1;
+      pg[player::PowerGradeItem::Kokoro] = 1;
+      pg[player::PowerGradeItem::Susumu] = 1;
+      pg[player::PowerGradeItem::Tsutsu] = 1;
+      pg[player::PowerGradeItem::Miru] = 1;
+      pg[player::PowerGradeItem::ViewDistance] = 3;
+      getData() = CommonData {
+        .next_level = 1,
+        .next_room = Room::Game,
+        .power_grade = pg,
+        .sinhalite_amount = 200,
+        .death_count = 0,
+        .clear_count = 0
+      };
+    }
     fade.BeginFadeOut(kFadeDuration);
   }
 

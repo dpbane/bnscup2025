@@ -39,12 +39,8 @@ private:
 
   /// @brief 地形の元となるノードグリッドを作成する。
   /// @param size グリッドサイズ。
-  /// @param seed シード値。
-  /// @param octaves ノイズの設定値その1。何オクターブまで使用するか。
-  /// @param persistence ノイズの設定値その2。大まかな波の形状を決める。
-  /// @param scale スケール値。大きいとより狭い範囲で変化が起こる。
   /// @return ノードグリッド。
-  static NodeGrid CreateNodeGrid(const Size& size, uint64 seed, int octaves, double persistence, double scale);
+  static NodeGrid CreateNodeGrid(const Size& size);
 
   /// @brief 店用のノードグリッドを作成する。
   /// @return ノードグリッド。
@@ -56,14 +52,15 @@ private:
 
   /// @brief プレイヤーと敵の初期位置を作成する。
   /// @param terrain 地形クラス。
+  /// @param enemy_distance プレイヤーと敵の最低距離。
   /// @return プレイヤーと敵の初期位置。
-  static Positions CreatePlayerAndEnemyPosition(const Terrain& terrain);
+  static Optional<Positions> CreatePlayerAndEnemyPosition(const Terrain& terrain, double enemy_distance);
 
   /// @brief シンハライトの位置を作成する。
   /// @param node_grid ノードグリッド。
   /// @param count シンハライトの数。
   /// @return シンハライトの位置の配列。
-  static Array<Point> CreateSinhalitePositions(const NodeGrid& node_grid, int count);
+  static Array<Point> CreateSinhalitePositions(const Terrain& terrain, int count);
 
 private:
 

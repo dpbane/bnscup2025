@@ -35,7 +35,7 @@ void TutorialText::Update() {
 }
 
 void TutorialText::Render() const {
-  const double font_size = double(Scene::Height()) / 1080 * 64;
+  const double font_size = double(Scene::Height()) / 1080 * 54;
   FontAsset(U"Text")(current_text_)
     .drawAt(
       font_size,

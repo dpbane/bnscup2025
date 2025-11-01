@@ -29,13 +29,13 @@ public:
     return true;
   }
 
-  T Get(Point pos) const {
+  T Get(const Point& pos) const {
     const auto index = GetIndex(pos);
     if (not index) return T {};
     return values_[*index];
   }
 
-  void Set(Point pos, T value) {
+  void Set(const Point& pos, T value) {
     const auto index = GetIndex(pos);
     if (not index) return;
     values_[*index] = value;
@@ -48,7 +48,7 @@ public:
   GridPoints<T>& operator=(const GridPoints<T>& other);
 
 private:
-  Optional<size_t> GetIndex(Point pos) const {
+  Optional<size_t> GetIndex(const Point& pos) const {
     if (not IsBound(pos)) return none;
     return Optional<size_t>(static_cast<size_t>(pos.y) * width_ + static_cast<size_t>(pos.x));
   }

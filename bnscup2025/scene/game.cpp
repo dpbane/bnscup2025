@@ -50,26 +50,26 @@ Game::Game(const InitData& init_data) :
       tutorial_text_.emplace(*player_);
       tutorial_text_->AddEntry(
         ui::TutorialText::Entry {
-          .area = RectF { 0.0, 45.0, 20.0, 15.0 },
-          .text = U"WASDキー / 左スティックで移動"
+          .area = RectF { 0.0, 55.0, 20.0, 15.0 },
+          .text = U"WASDキー / 左スティックで移動。"
         }
       );
       tutorial_text_->AddEntry(
         ui::TutorialText::Entry {
-          .area = RectF { 0.0, 30.0, 20.0, 10.0 },
-          .text = U"マウスカーソル / 右スティックで周囲を見渡す"
+          .area = RectF { 0.0, 40.0, 20.0, 10.0 },
+          .text = U"マウスカーソル / 右スティックで周囲を見渡す。"
         }
       );
       tutorial_text_->AddEntry(
         ui::TutorialText::Entry {
-          .area = RectF { 0.0, 15.0, 20.0, 10.0 },
-          .text = U"左クリック / RBで地形を掘る"
+          .area = RectF { 0.0, 20.0, 20.0, 15.0 },
+          .text = U"左クリック / RBで地形を掘る。長押し可。色が暗い壁は掘れない。"
         }
       );
       tutorial_text_->AddEntry(
         ui::TutorialText::Entry {
-          .area = RectF { 0.0, 0.0, 20.0, 10.0 },
-          .text = U"出口に乗り続けると次のエリアへ"
+          .area = RectF { 0.0, 0.0, 20.0, 15.0 },
+          .text = U"出口に乗り続けると次のエリアへ。"
         }
       );
     }

@@ -64,7 +64,7 @@ void Enemy::Render() const {
   render::CharaRenderer::Render(camera_, position_, direction_face_, color_body, color_edge, 1.0, 2.0, 2.0);
 
   // デバッグ用
-  if (false) {
+  if (DebugVar::GetInstance().visible_enemy_cost_map_) {
     if (cost_map_) {
       const auto target = camera_.CreateRenderTransformer();
 

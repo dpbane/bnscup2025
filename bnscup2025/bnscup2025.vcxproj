@@ -128,6 +128,8 @@
     <ClCompile Include="npc\shop\shop_window.cpp" />
     <ClCompile Include="player\energy_ui.cpp" />
     <ClCompile Include="player\goshin\selector.cpp" />
+    <ClCompile Include="terrain\generator\lifegame.cpp" />
+    <ClCompile Include="terrain\generator\level_designer.cpp" />
     <ClCompile Include="terrain\pushback_service.cpp" />
     <ClCompile Include="ui\sinhalite_disp.cpp" />
     <ClCompile Include="ui\text_window.cpp" />
@@ -368,6 +370,7 @@
     <ClInclude Include="effect\dig.hpp" />
     <ClInclude Include="effect\dig_sinhalite.hpp" />
     <ClInclude Include="enemy\enemy.hpp" />
+    <ClInclude Include="enemy\enemy_level_designer.hpp" />
     <ClInclude Include="exit\exit.hpp" />
     <ClInclude Include="exit\exit_ui.hpp" />
     <ClInclude Include="fps_addon.hpp" />
@@ -380,6 +383,8 @@
     <ClInclude Include="player\energy_ui.hpp" />
     <ClInclude Include="player\goshin\selector.hpp" />
     <ClInclude Include="debug_var.hpp" />
+    <ClInclude Include="terrain\generator\lifegame.hpp" />
+    <ClInclude Include="terrain\generator\level_designer.hpp" />
     <ClInclude Include="terrain\pushback_service.hpp" />
     <ClInclude Include="ui\sinhalite_disp.hpp" />
     <ClInclude Include="ui\text_window.hpp" />
