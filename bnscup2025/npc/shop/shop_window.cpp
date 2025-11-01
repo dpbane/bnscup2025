@@ -38,7 +38,7 @@ void ShopWindow::Render() const {
 
   // 購入説明表示
   FontAsset(U"Text")(U"買いたいもののほうを向いて、左右クリック/LB/RB長押しで購入")
-    .drawAt(Scene::Height() * 0.05, Vec2{ Scene::Center().x, Scene::Height() * 0.035 }, ColorF{ 1.0 }.withA(items_[0]->GetAlpha()));
+    .drawAt(Scene::Height() * 0.05, Vec2 { Scene::Center().x, Scene::Height() * 0.035 }, ColorF { 1.0 }.withA(items_[0]->GetAlpha()));
 }
 
 void ShopWindow::SetActive(bool active) {
@@ -49,30 +49,19 @@ void ShopWindow::SetActive(bool active) {
 
 void ShopWindow::ReRollItems() {
   const auto selected_items = SelectRandomItems();
-  items_[0].emplace(power_grade_, sinhalite_, Vec2{ Scene::Width() * 0.25, Scene::Height() * 0.50 }, Vec2{ -1.0, 0.0 }, selected_items[0], player_);
-  items_[1].emplace(power_grade_, sinhalite_, Vec2{ Scene::Width() * 0.50, Scene::Height() * 0.25 }, Vec2{ 0.0, -1.0 }, selected_items[1], player_);
-  items_[2].emplace(power_grade_, sinhalite_, Vec2{ Scene::Width() * 0.75, Scene::Height() * 0.50 }, Vec2{ 1.0, 0.0 }, selected_items[2], player_);
-  items_[3].emplace(power_grade_, sinhalite_, Vec2{ Scene::Width() * 0.50, Scene::Height() * 0.75 }, Vec2{ 0.0, 1.0 }, selected_items[3], player_);
+  items_[0].emplace(power_grade_, sinhalite_, Vec2 { Scene::Width() * 0.25, Scene::Height() * 0.50 }, Vec2 { -1.0, 0.0 }, selected_items[0], player_);
+  items_[1].emplace(power_grade_, sinhalite_, Vec2 { Scene::Width() * 0.50, Scene::Height() * 0.25 }, Vec2 { 0.0, -1.0 }, selected_items[1], player_);
+  items_[2].emplace(power_grade_, sinhalite_, Vec2 { Scene::Width() * 0.75, Scene::Height() * 0.50 }, Vec2 { 1.0, 0.0 }, selected_items[2], player_);
+  items_[3].emplace(power_grade_, sinhalite_, Vec2 { Scene::Width() * 0.50, Scene::Height() * 0.75 }, Vec2 { 0.0, 1.0 }, selected_items[3], player_);
 }
 
 std::array<player::PowerGradeItem, 4> ShopWindow::SelectRandomItems() const {
-  const Array<player::PowerGradeItem> all_items = {
-    player::PowerGradeItem::MaxEnergy,
-    player::PowerGradeItem::EnergyRegen,
-    player::PowerGradeItem::DigSpeed,
-    player::PowerGradeItem::DigMight,
-    player::PowerGradeItem::ViewAngle,
-    player::PowerGradeItem::MoveSpeed,
-    player::PowerGradeItem::Nobiru,
-    player::PowerGradeItem::Kokoro,
-    player::PowerGradeItem::Susumu,
-    player::PowerGradeItem::Tsutsu,
-    player::PowerGradeItem::Miru,
-    player::PowerGradeItem::God
+  Array<player::PowerGradeItem> all_items;
+  for (int k = 0; k < std::to_underlying<player::PowerGradeItem>(player::PowerGradeItem::Reroll); ++k) {
+    const auto item = static_cast<player::PowerGradeItem>(k);
+    all_items.push_back(item);
   };
-
   const auto candidate_items = all_items.choice(3);
-
 
   return std::array<player::PowerGradeItem, 4> {
     candidate_items[0],

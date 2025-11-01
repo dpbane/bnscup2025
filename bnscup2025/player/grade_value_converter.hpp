@@ -40,6 +40,9 @@ public:
   /// @brief 視界角度を取得する。
   double GetViewAngle() const;
 
+  /// @brief 視界距離を取得する。 
+  double GetViewDistance() const;
+
   /// @brief 移動速度を取得する。
   double GetMoveSpeedRate() const;
 

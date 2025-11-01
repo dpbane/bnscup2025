@@ -16,8 +16,6 @@
 
 namespace bnscup2025::scene {
 
-constexpr double kCellsPerShorterSide = 54.0;
-
 Game::Game(const InitData& init_data) :
   IScene(init_data) {
 
@@ -31,7 +29,7 @@ Game::Game(const InitData& init_data) :
   visibility_.emplace(*terrain_);
 
   const double shorter_side = Min(Scene::Width(), Scene::Height());
-  const double cell_size = shorter_side / kCellsPerShorterSide;
+  const double cell_size = shorter_side / player::GradeValueConverter { getData().power_grade }.GetViewDistance();
   camera_.emplace(Vec2 { 0.0, 0.0 }, SizeF { cell_size, cell_size });
 
   enemy::EnemyParameters enemy_params {
@@ -121,13 +119,18 @@ void Game::update() {
 
   camera_->SetCenter(player_->GetPosition());
 
+  const double shorter_side = Min(Scene::Width(), Scene::Height());
+  const double cell_size = shorter_side / player::GradeValueConverter { getData().power_grade }.GetViewDistance();
+  camera_->SetCellSize(SizeF(cell_size, cell_size));
+
   getData().sinhalite_amount += terrain_->GetEarnedSinhalite();
   terrain_->Update();
 
 
   const double fov = player::GradeValueConverter { getData().power_grade }.GetViewAngle();
+  const double distance = player::GradeValueConverter { getData().power_grade }.GetViewDistance();
   visibility_mask_.SetTriangles(
-    visibility_->CalcVisibilityTriangles(*camera_, player_->GetShiftedPosition(), player_->GetDirectionFace().normalized(), fov, kCellsPerShorterSide)
+    visibility_->CalcVisibilityTriangles(*camera_, player_->GetShiftedPosition(), player_->GetDirectionFace().normalized(), fov, distance)
   );
   visibility_mask_.SetPosition(player_->GetShiftedPosition());
 
@@ -184,13 +187,22 @@ void Game::draw() const {
   render_texture_->resolve();
 
   // 視界制限
-  const double visible_radius = 24.0;
+  const double view_distance = player::GradeValueConverter { getData().power_grade }.GetViewDistance();
+  const double visible_radius = 24.0 * view_distance / 54.0;
   if (is_game_) {
     visibility_mask_.Render(*camera_, visible_radius);
   }
 
+  Print << visible_radius;
+
+  // 心
   if (player_->GetKokoroAlpha() > 0.0) {
     render_texture_->draw(ColorF { 1.0, player_->GetKokoroAlpha() });
+  }
+
+  // 視界制限（円）
+  if (is_game_) {
+    visibility_mask_.RenderCircle(*camera_, visible_radius);
   }
 
   if (tutorial_text_) tutorial_text_->Render();
@@ -200,7 +212,7 @@ void Game::draw() const {
   sinhalite_text_->Render();
 
   const double shorter_side = Min(Scene::Width(), Scene::Height());
-  player_->RenderUI(visible_radius * shorter_side / kCellsPerShorterSide);
+  player_->RenderUI(visible_radius * shorter_side / view_distance);
 
   screen::Fade::GetInstance().Render();
 

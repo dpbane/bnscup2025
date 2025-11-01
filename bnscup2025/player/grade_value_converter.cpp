@@ -35,6 +35,12 @@ double GradeValueConverter::GetViewAngle() const {
   return base + 20_deg * level;
 }
 
+double GradeValueConverter::GetViewDistance() const {
+  uint8 level = power_grade_[PowerGradeItem::ViewDistance];
+  double base = 54.0;
+  return base + 10.0 * level;
+}
+
 double GradeValueConverter::GetMoveSpeedRate() const {
   uint8 level = power_grade_[PowerGradeItem::MoveSpeed];
   double base = 1.0;
