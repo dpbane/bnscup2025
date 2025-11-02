@@ -274,7 +274,7 @@ ColorF Terrain::CalcEdgeColor(const Vec2& pos) const {
   const ColorF color_base = color_lt * coef_lt + color_rt * coef_rt + color_lb * coef_lb + color_rb * coef_rb;
 
   double sinhalite_intensity = 0.0;
-  constexpr double kSinhaliteEffectRadius = 30.0;
+  constexpr double kSinhaliteEffectRadius = 34.0;
   for (const auto& sinhalite_pos : sinhalite_positions_) {
     const double dist = pos.distanceFrom(sinhalite_pos);
     const double intensity = std::clamp(1.0 - dist / kSinhaliteEffectRadius, 0.0, 1.0);
@@ -286,7 +286,7 @@ ColorF Terrain::CalcEdgeColor(const Vec2& pos) const {
   const double int_rb = coef_rb * material_table_.at(node_grid_.Get(cell_pos.movedBy(1, 1)).material)->GetSinhaliteEffectiveness();
   const double sinhalite_effectiveness = int_lt + int_rt + int_lb + int_rb;
 
-  constexpr ColorF kSinhaliteColor { 0.20, 0.20, 0.01 };
+  constexpr ColorF kSinhaliteColor { 0.25, 0.25, 0.01 };
   return color_base.lerp(kSinhaliteColor, EaseInCubic(sinhalite_intensity * sinhalite_effectiveness));
 }
 
