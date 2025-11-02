@@ -16,7 +16,7 @@ EnemyParameters EnemyLevelDesigner::MakeParameters(int level) {
   constexpr double to_sound_speed_min = 2.8;
   constexpr double to_sound_speed_max = 3.0;
   constexpr double pursuit_speed_min = 3.0;
-  constexpr double pursuit_speed_max = 7.0;
+  constexpr double pursuit_speed_max = 9.0;
 
   double ratio = (level - 1) / (12.0 - 1.0);  // レベル1から12までを想定
 

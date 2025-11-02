@@ -74,6 +74,7 @@ void Ending::update() {
   if (finished_) {
     timer_ += Scene::DeltaTime();
     if (timer_ >= 1.0) {
+      ++getData().clear_count;
       changeScene(SceneEnum::Title, 0);
     }
   }

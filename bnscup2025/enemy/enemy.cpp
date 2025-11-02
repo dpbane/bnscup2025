@@ -158,7 +158,7 @@ void Enemy::OnProwlUpdate() {
   if (cost_map_) {
     Vec2 direction = CalcDirectionFromPathMap();
     velocity_ = direction.normalized() * parameters_.prowl_speed;
-    if (IsArrivedAtTarget()) cost_map_ = none;  // 目的地に到着したらクリア、再計算を促す
+    if (IsArrivedAtTarget()) cost_map_.reset();  // 目的地に到着したらクリア、再計算を促す
   }
   else {
     velocity_ = Vec2 { 0.0, 0.0 };
@@ -296,7 +296,7 @@ bool Enemy::IsArrivedAtTarget() const {
   Optional<Point> current_point = CalcNearestValidPoint(position_);
   if (not current_point) return false;
   if (not cost_map_) return false;
-  return cost_map_->Get(*current_point) == 0.0;
+  return cost_map_->Get(*current_point) < 1.0;
 }
 
 bool Enemy::HasHeardSound() const {

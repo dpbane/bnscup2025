@@ -17,23 +17,31 @@ Title::Title(const InitData& init_data) :
 
   switch (getData().screen_size) {
     case ScreenSizeEnum::_540p:
-      Scene::Resize(960, 540);
-      Window::Resize(960, 540);
+      if (Scene::Height() != 540) {
+        Scene::Resize(960, 540);
+        Window::Resize(960, 540);
+      }
       break;
 
     case ScreenSizeEnum::_720p:
-      Scene::Resize(1280, 720);
-      Window::Resize(1280, 720);
+      if (Scene::Height() != 720) {
+        Scene::Resize(1280, 720);
+        Window::Resize(1280, 720);
+      }
       break;
 
     case ScreenSizeEnum::_1080p:
-      Scene::Resize(1920, 1080);
-      Window::Resize(1920, 1080);
+      if (Scene::Height() != 1080) {
+        Scene::Resize(1920, 1080);
+        Window::Resize(1920, 1080);
+      }
       break;
 
     case ScreenSizeEnum::_1440p:
-      Scene::Resize(2560, 1440);
-      Window::Resize(2560, 1440);
+      if (Scene::Height() != 1440) {
+        Scene::Resize(2560, 1440);
+        Window::Resize(2560, 1440);
+      }
       break;
   }
   render::LightBloom::GetInstance().Reset();
@@ -47,12 +55,13 @@ void Title::update() {
   if (fade.CompletedFadeIn()) {
     if (input_data.confirm_trigger) {
       getData() = CommonData {
+        .screen_size = getData().screen_size,
         .next_level = 0,
         .next_room = Room::Game,
         .power_grade = player::PowerGrade{},
         .sinhalite_amount = 0,
         .death_count = 0,
-        .clear_count = 0
+        .clear_count = getData().clear_count
       };
       if (DebugVar::GetInstance().full_goshin_on_) {
         // デバッグ用
