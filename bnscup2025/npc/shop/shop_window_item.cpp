@@ -86,14 +86,15 @@ void ShopWindowItem::Render() const {
     const Vec2 tr { rect.rightX(), rect.topY() };
     const Vec2 bl { rect.leftX(), rect.bottomY() };
     const Vec2 br { rect.rightX(), rect.bottomY() };
-    const Line top { tl, tl.lerp(tr, EaseInOutQuint(buy_timer_)) };
-    const Line right { tr, tr.lerp(br, EaseInOutQuint(buy_timer_)) };
-    const Line bottom { br, br.lerp(bl, EaseInOutQuint(buy_timer_)) };
-    const Line left { bl, bl.lerp(tl, EaseInOutQuint(buy_timer_)) };
-    top.draw(size.y * 0.03, ColorF { 0.5, 1.0, 0.3, alpha_ });
-    right.draw(size.y * 0.03, ColorF { 0.5, 1.0, 0.3, alpha_ });
-    bottom.draw(size.y * 0.03, ColorF { 0.5, 1.0, 0.3, alpha_ });
-    left.draw(size.y * 0.03, ColorF { 0.5, 1.0, 0.3, alpha_ });
+    const Line top { tl, tl.lerp(tr, EaseInQuad(buy_timer_)) };
+    const Line right { tr, tr.lerp(br, EaseInQuad(buy_timer_)) };
+    const Line bottom { br, br.lerp(bl, EaseInQuad(buy_timer_)) };
+    const Line left { bl, bl.lerp(tl, EaseInQuad(buy_timer_)) };
+    const ColorF bar_color = ColorF { 0.4, 1.0, 0.6, alpha_ };
+    top.draw(size.y * 0.05, bar_color);
+    right.draw(size.y * 0.05, bar_color);
+    bottom.draw(size.y * 0.05, bar_color);
+    left.draw(size.y * 0.05, bar_color);
   }
 }
 
@@ -132,7 +133,7 @@ void ShopWindowItem::UpdateBuy() {
   const double pre_buy_timer = buy_timer_;
   if ((input_data.confirm_trigger && buy_timer_ == 0.0) ||
     (input_data.confirm_keep && buy_timer_ > 0.0)) {
-    buy_timer_ += Scene::DeltaTime();
+    buy_timer_ += Scene::DeltaTime() * 2.0;
   }
   else {
     buy_timer_ = 0.0;
