@@ -10,7 +10,15 @@ enum class Room : uint8 {
   End
 };
 
+enum class ScreenSizeEnum : uint8 {
+  _540p,
+  _720p,
+  _1080p,
+  _1440p
+};
+
 struct CommonData {
+  ScreenSizeEnum screen_size { ScreenSizeEnum::_540p };
   int next_level { 0 };
   Room next_room { Room::Game };
   player::PowerGrade power_grade {};

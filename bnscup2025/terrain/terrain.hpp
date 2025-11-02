@@ -9,7 +9,7 @@ namespace bnscup2025::terrain {
 
 class Terrain {
 public:
-  Terrain(NodeGrid node_grid);
+  Terrain(NodeGrid node_grid, int level);
   Terrain(Terrain&& terrain) noexcept;
 
 public:
@@ -94,6 +94,7 @@ private:
 
 private:
   NodeGrid node_grid_;
+  int level_;
   GridPoints<bool> updated_node_;
   MarchingSquares marching_squares_;
   AccessMap access_map_;

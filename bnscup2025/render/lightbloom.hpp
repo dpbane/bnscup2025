@@ -9,10 +9,12 @@ private:
   LightBloom& operator=(const LightBloom&) = delete;
 
 public:
-  static const LightBloom& GetInstance() {
+  static LightBloom& GetInstance() {
     static LightBloom instance;
     return instance;
   }
+
+  void Reset();
 
   ScopedRenderTarget2D CreateRenderTarget() const;
 

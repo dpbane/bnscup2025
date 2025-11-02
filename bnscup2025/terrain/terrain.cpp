@@ -13,8 +13,9 @@ namespace bnscup2025::terrain {
 constexpr int kBlurRate = 4;
 constexpr double kThreshold = 0.5;
 
-Terrain::Terrain(NodeGrid node_grid) :
+Terrain::Terrain(NodeGrid node_grid, int level) :
   node_grid_(node_grid),
+  level_(level),
   marching_squares_(node_grid_, kThreshold),
   access_map_(node_grid_, marching_squares_, kThreshold),
   updated_node_(node_grid_.GetSize()) {
@@ -29,6 +30,7 @@ Terrain::Terrain(NodeGrid node_grid) :
 
 Terrain::Terrain(Terrain&& terrain) noexcept :
   node_grid_(std::move(terrain.node_grid_)),
+  level_(terrain.level_),
   sinhalite_positions_(std::move(terrain.sinhalite_positions_)),
   marching_squares_(node_grid_, kThreshold),
   access_map_(node_grid_, marching_squares_, kThreshold),
@@ -195,6 +197,12 @@ void Terrain::DigAt(const Vec2& center, double radius, double center_might, doub
 
 void Terrain::RenderGround(const Array<Point>& visible_cells, const camera::Camera& cam) const {
 
+  const ColorF level1_color = ColorF { 0.1, 0.1, 0.30 };
+  const ColorF level12_color = ColorF { 0.2, 0.1, 0.1 };
+  int lvl = Clamp(level_, 1, 12);
+  double coef = (lvl - 1) / 11.0;
+  const ColorF ground_color = level1_color * (1.0 - coef) + level12_color * coef;
+
   {
     const ScopedRenderStates2D blend { render::BlendMode::AlphaMax() };
     const auto t = cam.CreateRenderTransformer();
@@ -203,7 +211,7 @@ void Terrain::RenderGround(const Array<Point>& visible_cells, const camera::Came
     for (const auto& pos : visible_cells) {
       const auto cell_polygons = polygons.Get(pos);
       for (const auto& polygon : cell_polygons) {
-        polygon.draw(ColorF { 0.1, 0.1, 0.30 });
+        polygon.draw(ground_color);
       }
 
       // デバッグ用: アクセスマップの表示
@@ -259,10 +267,10 @@ ColorF Terrain::CalcEdgeColor(const Vec2& pos) const {
   double x_frac = pos.x - x_i;
   double y_frac = pos.y - y_i;
   const Point cell_pos { x_i, y_i };
-  const auto color_lt = material_table_.at(node_grid_.Get(cell_pos.movedBy(0, 0)).material)->GetBaseColor();
-  const auto color_rt = material_table_.at(node_grid_.Get(cell_pos.movedBy(1, 0)).material)->GetBaseColor();
-  const auto color_lb = material_table_.at(node_grid_.Get(cell_pos.movedBy(0, 1)).material)->GetBaseColor();
-  const auto color_rb = material_table_.at(node_grid_.Get(cell_pos.movedBy(1, 1)).material)->GetBaseColor();
+  const auto color_lt = material_table_.at(node_grid_.Get(cell_pos.movedBy(0, 0)).material)->GetBaseColor(level_);
+  const auto color_rt = material_table_.at(node_grid_.Get(cell_pos.movedBy(1, 0)).material)->GetBaseColor(level_);
+  const auto color_lb = material_table_.at(node_grid_.Get(cell_pos.movedBy(0, 1)).material)->GetBaseColor(level_);
+  const auto color_rb = material_table_.at(node_grid_.Get(cell_pos.movedBy(1, 1)).material)->GetBaseColor(level_);
   const double coef_top = 1.0 - y_frac;
   const double coef_bottom = y_frac;
   const double coef_left = 1.0 - x_frac;

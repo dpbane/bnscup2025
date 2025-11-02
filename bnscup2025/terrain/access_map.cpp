@@ -131,25 +131,29 @@ void AccessMap::UpdateDirection(Point point) {
   }
   AccessableDirection direction = direction_map_.Get(point);
 
+  // 間に配置してみて、押し戻しが逆方向でなければアクセス可能とする
   auto Check = [&](const Point& offset) -> bool {
     if (not accessable_map_.Get(point.movedBy(offset))) return false;
 
-    Vec2 check_pos = point.movedBy(offset * 0.5);
-    Vec2 tested_pos = PushbackService::Exec(marching_squares_, Circle { check_pos, kCharacterRadius });
-    Vec2 dp = tested_pos - check_pos;
-    if (abs(dp.dot(Vec2 { offset }.normalized())) > 0.1) return false;
-
+    const Vec2 check_pos1 = point.movedBy(offset * 0.1);
+    const Vec2 check_pos2 = point.movedBy(offset * 0.9);
+    const Vec2 tested_pos1 = PushbackService::Exec(marching_squares_, Circle { check_pos1, kCharacterRadius });
+    const Vec2 tested_pos2 = PushbackService::Exec(marching_squares_, Circle { check_pos2, kCharacterRadius });
+    const Vec2 dp1 = tested_pos1 - check_pos1;
+    const Vec2 dp2 = tested_pos2 - check_pos2;
+    if (dp1.dot(dp2) < 0) return false;
     return true;
   };
 
-  direction.up = Check(Point { 0, -1 });
-  direction.down = Check(Point { 0, 1 });
-  direction.left = Check(Point { -1, 0 });
-  direction.right = Check(Point { 1, 0 });
+  direction.up = Check(Point({ 0, -1 }));
+  direction.down = Check(Point({ 0, 1 }));
+  direction.left = Check(Point({ -1, 0 }));
+  direction.right = Check(Point({ 1, 0 }));
   direction.up_left = Check(Point { -1, -1 });
   direction.up_right = Check(Point { 1, -1 });
   direction.down_left = Check(Point { -1, 1 });
   direction.down_right = Check(Point { 1, 1 });
+
 
   // 隣接ノードの逆方向も設定
   direction_map_.Set(point, direction);

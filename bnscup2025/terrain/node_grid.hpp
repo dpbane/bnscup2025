@@ -6,7 +6,7 @@
 namespace bnscup2025::terrain {
 
 struct NodeInfo {
-  double density;
+  double density { 0.0 };
   MaterialEnum material;
 };
 

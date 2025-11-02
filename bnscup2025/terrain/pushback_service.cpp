@@ -7,7 +7,7 @@ Vec2 PushbackService::Exec(const MarchingSquares& marching_squares, const Circle
   const double epsilon_sq = 1e-12;
 
   Vec2 current_position = circle.center;
-  for (int count = 0; count < 10; ++count) {
+  for (int count = 0; count < 50; ++count) {
     const Vec2 result = DoOneStep(marching_squares, Circle { current_position, circle.r });
     if (result.distanceFromSq(current_position) < epsilon_sq) return result;
     current_position = result;

@@ -14,7 +14,7 @@ MapGenerator::Parameters MapGenerator::Generate(int level, bool is_game) {
   if (is_game) {
     if (level == 0) {
       NodeGrid node_grid = CreateTutorialNodeGrid();
-      Terrain terrain { node_grid };
+      Terrain terrain { node_grid, level };
       return Parameters {
       .terrain = std::move(terrain),
       .player_position = Vec2{9.5, 65.0},
@@ -29,7 +29,7 @@ MapGenerator::Parameters MapGenerator::Generate(int level, bool is_game) {
 
       while (true) {
         NodeGrid node_grid = CreateNodeGrid(params.size);
-        Terrain terrain = { node_grid };
+        Terrain terrain = { node_grid, level };
         const auto& access_map = terrain.GetAccessMap();
         const auto areas = access_map.CreateAreasArray();
         if (areas.size() < 2) continue;  // 連続領域が1つ以下の場合はやり直し
@@ -56,7 +56,7 @@ MapGenerator::Parameters MapGenerator::Generate(int level, bool is_game) {
   }
   else {
     NodeGrid node_grid = CreateShopNodeGrid(level);
-    Terrain terrain { node_grid };
+    Terrain terrain { node_grid, level };
     return Parameters {
     .terrain = std::move(terrain),
     .player_position = Vec2{14.5, 20},
@@ -123,11 +123,16 @@ NodeGrid MapGenerator::CreateNodeGrid(const Size& size) {
 
 
   for (const auto& p : step(grid.GetSize())) {
+    MaterialEnum material = MaterialEnum::Normal;
+    if (p.x == 0 || p.x == grid.GetSize().x - 1 || p.y == 0 || p.y == grid.GetSize().y - 1) {
+      material = MaterialEnum::Bounds;
+    }
+
     ret.Set(
       p,
       NodeInfo {
         .density = grid.Get(p),
-        .material = MaterialEnum::Normal
+        .material = material
       }
     );
   }

@@ -47,7 +47,7 @@ void Enemy::Update() {
 
   direction_face_ = velocity_.isZero() ? direction_face_ : velocity_.normalized();
   position_ += velocity_ * Scene::DeltaTime();
-  position_ = terrain_.Pushback(Circle { position_, kCharacterRadius });
+  position_ = terrain_.Pushback(Circle { position_, kCharacterRadius * 0.9 });
 
   if (screen::Fade::GetInstance().CompletedFadeIn()) {
     ui_alpha_ += Scene::DeltaTime() * 5.0;

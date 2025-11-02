@@ -13,17 +13,19 @@
 using namespace bnscup2025;
 
 void Main() {
-  constexpr Size scene_size { 1920, 1080 };
+  //constexpr Size scene_size { 1920, 1080 };
   //constexpr Size scene_size { 2560, 1440 };
-  constexpr Size window_size = scene_size;
+  //constexpr Size window_size = scene_size;
+
+  Window::SetTitle(U"神出鬼没");
 
   Scene::SetBackground(Color { 0x10, 0x10, 0x10 });
   //Scene::SetBackground(Palette::Black);
 
-  Scene::SetResizeMode(ResizeMode::Keep);
-  Scene::Resize(scene_size);
-  Window::Resize(window_size.x, window_size.y);
-  Window::SetPos(0, 0);
+  //Scene::SetResizeMode(ResizeMode::Keep);
+  //Scene::Resize(scene_size);
+  //Window::Resize(window_size.x, window_size.y);
+  //Window::SetPos(0, 0);
 
   // 最低FPSは30（時間ベースのため低すぎると壁抜けなどが起こり得る）
   Scene::SetMaxDeltaTime(1.0 / 30);

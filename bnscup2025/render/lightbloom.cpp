@@ -12,6 +12,15 @@ LightBloom::LightBloom() :
   blur_x8_internal_texture_(Scene::Size() / 8) {
 }
 
+void LightBloom::Reset() {
+  blur_x1_texture_ = MSRenderTexture(Scene::Size());
+  blur_x1_internal_texture_ = RenderTexture(Scene::Size());
+  blur_x4_texture_ = RenderTexture(Scene::Size() / 4);
+  blur_x4_internal_texture_ = RenderTexture(Scene::Size() / 4);
+  blur_x8_texture_ = RenderTexture(Scene::Size() / 8);
+  blur_x8_internal_texture_ = RenderTexture(Scene::Size() / 8);
+}
+
 ScopedRenderTarget2D LightBloom::CreateRenderTarget() const {
   return ScopedRenderTarget2D(blur_x1_texture_.clear(ColorF { 0, 0, 0, 0 }));
 }
