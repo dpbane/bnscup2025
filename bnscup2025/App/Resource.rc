@@ -74,6 +74,8 @@ Resource(engine/shader/glsl/sky.frag)
 //
 Resource(engine/font/min/siv3d-min.woff)
 
+Resource(example/font/DotGothic16/DotGothic16-Regular.ttf)
+
 //
 //	Box-shadow Textures
 //

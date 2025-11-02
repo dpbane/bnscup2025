@@ -90,7 +90,7 @@ Game::Game(const InitData& init_data) :
   screen::Fade::GetInstance().BeginFadeIn(kFadeDuration);
 
   floor_text_.emplace(FloorNameFactory::Create(level, is_game_));
-  sinhalite_text_.emplace(getData().sinhalite_amount);
+  sinhalite_text_.emplace(getData().sinhalite_amount, level > 0);
 }
 
 void Game::update() {
