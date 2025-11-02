@@ -31,7 +31,7 @@ void Main() {
   Scene::SetMaxDeltaTime(1.0 / 30);
 
   // 一部の特殊キーを無効化
-  //System::SetTerminationTriggers(UserAction::CloseButtonClicked);
+  System::SetTerminationTriggers(UserAction::CloseButtonClicked);
   ScreenCapture::SetShortcutKeys({ KeyPrintScreen });
   LicenseManager::DisableDefaultTrigger();
 
