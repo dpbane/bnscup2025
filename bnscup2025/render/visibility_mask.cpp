@@ -13,8 +13,9 @@ void VisibilityMask::SetTriangles(Array<Triangle>&& triangles) {
   visibility_triangles_ = std::move(triangles);
 }
 
-void VisibilityMask::SetPosition(const Vec2& position) {
+void VisibilityMask::SetPosition(const Vec2& position, const Vec2& shifted) {
   position_ = position;
+  shifted_position_ = shifted;
 }
 
 void VisibilityMask::Render(const camera::Camera& camera, double radius) const {
@@ -28,7 +29,7 @@ void VisibilityMask::Render(const camera::Camera& camera, double radius) const {
     for (const auto& tri : visibility_triangles_) {
       tri.draw(ColorF { 1.0, 0.0 });
     }
-    Circle { position_, 2.5 }.draw(ColorF { 1.0, 0.0 });
+    Circle { shifted_position_, 2.5 }.draw(ColorF { 1.0, 0.0 });
   }
   Graphics2D::Flush();
   visibility_mask_texture_.resolve();

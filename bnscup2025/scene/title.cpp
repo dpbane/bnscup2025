@@ -61,14 +61,15 @@ void Title::update() {
         pg[player::PowerGradeItem::Kokoro] = 1;
         pg[player::PowerGradeItem::Susumu] = 1;
         pg[player::PowerGradeItem::Tsutsu] = 1;
-        pg[player::PowerGradeItem::Miru] = 1;
+        //pg[player::PowerGradeItem::Miru] = 1;
         //pg[player::PowerGradeItem::God] = 1;
+        pg[player::PowerGradeItem::MaxEnergy] = 5;
         pg[player::PowerGradeItem::ViewDistance] = 0;
         getData() = CommonData {
-          .next_level = 11,
+          .next_level = 3,
           .next_room = Room::Game,
           .power_grade = pg,
-          .sinhalite_amount = 200,
+          .sinhalite_amount = 0,
           .death_count = 0,
           .clear_count = 0
         };

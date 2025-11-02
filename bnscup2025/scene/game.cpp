@@ -126,7 +126,7 @@ void Game::update() {
   visibility_mask_.SetTriangles(
     visibility_->CalcVisibilityTriangles(*camera_, player_->GetShiftedPosition(), player_->GetDirectionFace().normalized(), fov, distance)
   );
-  visibility_mask_.SetPosition(player_->GetShiftedPosition());
+  visibility_mask_.SetPosition(player_->GetPosition(), player_->GetShiftedPosition());
 
 
   if (exit_ && exit_->ShouldExitGame() && fade.CompletedFadeIn()) {
